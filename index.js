@@ -1,5 +1,6 @@
 const Commando = require('discord.js-commando');
 const bot = new Commando.Client();
+const args = process.argv;
 
 /*bot.on('message', (message) => {
     if (message.content == 'ping') {
@@ -12,4 +13,4 @@ bot.registry.registerGroup('status', 'Status');
 bot.registry.registerDefaults();
 bot.registry.registerCommandsIn(__dirname + '/commands')/
 
-bot.login('MzE3MzMxODE3MzE1NDM0NDk2.DAiR0Q.OZYF55hPkDzsn-iGrACADWaES_0');
+bot.login(args[2]);
