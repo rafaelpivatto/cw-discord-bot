@@ -6,4 +6,4 @@ bot.registry.registerGroup('status', 'Status');
 bot.registry.registerDefaults();
 bot.registry.registerCommandsIn(__dirname + '/commands')/
 
-bot.login(process.env.BOTKEY);
+bot.login(process.env.BOTKEY || args[3]);
