@@ -66,9 +66,11 @@ class StatusCommand extends Commando.Command {
         });
 
         function getGMTDate() {
-            const dateLocal = new Date();
-            const GMTDate = new Date(dateLocal.valueOf() + dateLocal.getTimezoneOffset() * 30000);
-            return dateFormat(GMTDate, "dd/mm/yyyy HH:MM");
+            const now = new Date();
+            let isoDate = new Date(now).toISOString();
+            isoDate = new Date(now.getTime() - now.getTimezoneOffset() * 60000).toISOString();
+            return dateFormat(isoDate, "UTC:dd/mm/yyyy HH:MM");
+
         }
 
         function getInfo(tableInfo, tablePosition) {
