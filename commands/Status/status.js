@@ -7,7 +7,7 @@ const wrap = "\n";
 class StatusCommand extends Commando.Command {
     constructor(client) {
         super(client, {
-            name: 'cw-status',
+            name: 'cwstatus',
             group: 'status',
             memberName: 'status',
             description: 'Verify CW status'
@@ -16,7 +16,7 @@ class StatusCommand extends Commando.Command {
 
     async run(message, args) {
         let out = '';
-        let now = dateFormat(new Date(), "dd/mm/yyyy HH:MM");
+        let now = dateFormat(new Date(), "GMT-0300:dd/mm/yyyy HH:MM").substring(10);
         request('https://eddb.io/faction/74863', function (error, response, body) {
             // Print the error if one occurred 
             if (error) {
@@ -49,8 +49,8 @@ class StatusCommand extends Commando.Command {
                     
                     out += "> System: " + systemName + wrap;
                     out += "> Influence: " + influence + wrap;
-                    out += "> State: " + getInfo(tableInfo, tablePosition++) + wrap;
                     out += "> Security: " + getInfo(tableInfo, tablePosition++) + wrap;
+                    out += "> State: " + getInfo(tableInfo, tablePosition++) + wrap;
                     //out += "> Population: " + getInfo(tableInfo, tablePosition++) + wrap;
                     //out += "> Power: " + getInfo(tableInfo, tablePosition++) + wrap;
                     //out += "> Distance from sol: " + getInfo(tableInfo, tablePosition++) + "Ly" + wrap;
