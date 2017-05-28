@@ -16,7 +16,6 @@ class StatusCommand extends Commando.Command {
 
     async run(message, args) {
         let out = '';
-        let now = dateFormat(new Date(), "GMT-0300:dd/mm/yyyy HH:MM").substring(10);
         request('https://eddb.io/faction/74863', function (error, response, body) {
             // Print the error if one occurred 
             if (error) {
@@ -36,7 +35,7 @@ class StatusCommand extends Commando.Command {
             if (wingName != null) {
             
                 out += "```Markdown" + wrap;
-                out += "Status da " + wingName + " em [" + now + "]"+ wrap + wrap;
+                out += "Status da " + wingName + " em [" + getGMTDate() + "]"+ wrap + wrap;
 
                 const systems = $('.systemRow strong a');
                 const tableInfo = $('.systemRow .semi-strong');
@@ -65,6 +64,12 @@ class StatusCommand extends Commando.Command {
                 sendClientErrorMessage(message);
             }
         });
+
+        function getGMTDate() {
+            const dateLocal = new Date();
+            const GMTDate = new Date(dateLocal.valueOf() + dateLocal.getTimezoneOffset() * 30000);
+            return dateFormat(GMTDate, "dd/mm/yyyy HH:MM");
+        }
 
         function getInfo(tableInfo, tablePosition) {
             return tableInfo[tablePosition].children[0].data;
