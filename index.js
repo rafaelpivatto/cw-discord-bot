@@ -8,3 +8,4 @@ bot.registry.registerGroup('status', 'Status');
 bot.registry.registerCommandsIn(__dirname + '/commands')/
 
 bot.login(process.env.BOTKEY || args[3]);
+console.log('Bot started');
