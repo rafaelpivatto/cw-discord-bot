@@ -1,10 +1,14 @@
-const Commando = require('discord.js-commando');
+const { Command } = require('discord.js-commando');
+const { RichEmbed } = require('discord.js');
 const request = require('request');
 const cheerio = require('cheerio');
-const dateFormat = require('dateformat');
-const wrap = "\n";
+const wrapLine = "\n";
+const wingUrl = "https://eddb.io/faction/74863";
+const wingThumb = "http://i.imgur.com/ro5DQx9.png";
+const wingUrlSite = "http://elitedangerouscobra.com.br";
+const wingColor = "#f00000";
 
-class StatusCommand extends Commando.Command {
+module.exports = class EmbedCommand extends Command {
     constructor(client) {
         super(client, {
             name: 'cwstatus',
@@ -14,66 +18,65 @@ class StatusCommand extends Commando.Command {
         });
     }
 
-    async run(message, args) {
+    async run(msg, args) {
         let out = '';
-        request('https://eddb.io/faction/74863', function (error, response, body) {
+        request(wingUrl, function (error, response, body) {
+
             // Print the error if one occurred 
             if (error) {
                 console.log('error:', error);
-                sendClientErrorMessage(message);
+                sendClientErrorMessage(msg);
             }
             // Print the response status code if a response was received 
             if (response && response.statusCode != 200) {
                 console.log('statusCode:', response.statusCode);
                 console.log('statusMessage:', response.statusMessage);
-                sendClientErrorMessage(message);
-                return;
+                sendClientErrorMessage(msg);
             }
-            
             const $ = cheerio.load(body);
-            const wingName = getWingName($, message);
-            if (wingName != null) {
+            const wingName = getWingName($, msg);
             
-                out += "```Markdown" + wrap;
-                out += "Status da " + wingName + " em [" + getGMTDate() + "]"+ wrap + wrap;
-
+            if (wingName != null) {
                 const systems = $('.systemRow strong a');
                 const tableInfo = $('.systemRow .semi-strong');
+                let idxControlledSystem = 0;
                 let tablePosition = 0;
 
-                if (systems && systems.length > 0 && tableInfo && tableInfo.length > 0)
-                for(let i=0; i < systems.length; i++) {
-                    const systemName = systems[i].children[0].data;
-                    const influence = $('.systemFactionRow.isHighlighted .factionInfluence .semi-strong')[i].children[0].data
+                if (systems && systems.length > 0 && tableInfo && tableInfo.length > 0) {
+                    var embed = new RichEmbed()
+                            .setColor(wingColor)
+                            .setTimestamp()
+                            .setTitle("**Sistemas e influências da " + wingName + "**")
+                            .setDescription("Dados extraídos do [eddb.io](" + wingUrl + ")")
+                            .setThumbnail(wingThumb)
+                            .setFooter("Fly safe cmdr!")
+                            .setURL(wingUrlSite);
                     
-                    out += "> System: " + systemName + wrap;
-                    out += "> Influence: " + influence + wrap;
-                    out += "> Security: " + getInfo(tableInfo, tablePosition++) + wrap;
-                    out += "> State: " + getInfo(tableInfo, tablePosition++) + wrap;
-                    //out += "> Population: " + getInfo(tableInfo, tablePosition++) + wrap;
-                    //out += "> Power: " + getInfo(tableInfo, tablePosition++) + wrap;
-                    //out += "> Distance from sol: " + getInfo(tableInfo, tablePosition++) + "Ly" + wrap;
-                    tablePosition = tablePosition+3;
-                    out += wrap;
+                    for(let i=0; i < systems.length; i++) {
+                        let systemName = systems[i].children[0].data;
+                        if (isSystemControlled($, ++idxControlledSystem)) {
+                            idxControlledSystem++;
+                            systemName += " :crown:";
+                        }
+                        const influence = $('.systemFactionRow.isHighlighted .factionInfluence .semi-strong')[i].children[0].data;
+                        embed.addField("**" + systemName + "** ",
+                            "**Influência: ** "+ influence + wrapLine +
+                            "**Segurança: ** " + tableInfo[tablePosition++].children[0].data + wrapLine +
+                            "**Estado: ** " + tableInfo[tablePosition++].children[0].data + wrapLine
+                        );
+                        tablePosition = tablePosition+3;
+                    }
+                    return msg.embed(embed);
                 }
-
-                out += "```";
-                message.channel.send(out);
             } else {
                 console.log('Wing name not found.');
-                sendClientErrorMessage(message);
+                sendClientErrorMessage(msg);
             }
         });
 
-        function getGMTDate() {
-            const now = new Date();
-            let isoDate = new Date(now).toISOString();
-            isoDate = new Date(now.getTime() - now.getTimezoneOffset() * 60000).toISOString();
-            return dateFormat(isoDate, "dd/mm/yyyy HH:MM");
-        }
-
-        function getInfo(tableInfo, tablePosition) {
-            return tableInfo[tablePosition].children[0].data;
+        function isSystemControlled($, idxControlledSystem) {
+            const obj = $('.systemRow strong a, .systemFactionRow.isHighlighted .systemPresenceTag .fa-flip-vertical')[idxControlledSystem];
+            return obj && obj.name && obj.name === 'i';
         }
 
         function getWingName($) {
@@ -88,10 +91,8 @@ class StatusCommand extends Commando.Command {
             }
         }
 
-        function sendClientErrorMessage(message) {
-            message.channel.send("Ops, something it's wrong, try again later, sorry and fly safe!");
+        function sendClientErrorMessage(msg) {
+            msg.channel.send("Ops, algo deu errado, tente novamente mais tarde e fly safe cmdr!");
         }
     }
 }
-
-module.exports = StatusCommand;
