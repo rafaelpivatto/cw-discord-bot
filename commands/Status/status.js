@@ -41,6 +41,7 @@ module.exports = class EmbedCommand extends Command {
                 const tableInfo = $('.systemRow .semi-strong');
                 let idxControlledSystem = 0;
                 let tablePosition = 0;
+                let tableStatePosition = 3;
 
                 if (systems && systems.length > 0 && tableInfo && tableInfo.length > 0) {
                     var embed = new RichEmbed()
@@ -59,12 +60,17 @@ module.exports = class EmbedCommand extends Command {
                             systemName += " :crown:";
                         }
                         const influence = $('.systemFactionRow.isHighlighted .factionInfluence .semi-strong')[i].children[0].data;
+                        const state = $('.systemFactionRow.isHighlighted .semi-strong')[tableStatePosition].children[0].data;
+                        if (state === "War") {
+                            systemName += " :crossed_swords:";
+                        }
                         embed.addField("**" + systemName + "** ",
                             "**Influência: ** "+ influence + wrapLine +
                             "**Segurança: ** " + tableInfo[tablePosition++].children[0].data + wrapLine +
-                            "**Estado: ** " + tableInfo[tablePosition++].children[0].data + wrapLine
+                            "**Estado: ** " + state
                         );
-                        tablePosition = tablePosition+3;
+                        tablePosition += 4;
+                        tableStatePosition += 4;
                     }
                     return msg.embed(embed);
                 }
