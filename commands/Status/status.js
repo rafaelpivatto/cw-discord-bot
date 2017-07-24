@@ -64,6 +64,9 @@ module.exports = class EmbedCommand extends Command {
                         if (state === "War") {
                             systemName += " :crossed_swords:";
                         }
+                        if (state === "Election") {
+                            systemName += " :loudspeaker:";
+                        }
                         embed.addField("**" + systemName + "** ",
                             "**Influência: ** "+ influence + wrapLine +
                             "**Segurança: ** " + tableInfo[tablePosition++].children[0].data + wrapLine +
