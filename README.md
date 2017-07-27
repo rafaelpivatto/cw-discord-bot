@@ -1,18 +1,18 @@
 # Cobra Wing discord bot
 
-> Set environment variable:
+et environment variable:
 
-BOT_KEY = Discord bot id
+> BOT_KEY = Discord bot id
 
-MONGO_URL = URL to mongodb connection (like: mongodb://<dbuser>:<dbpassword>@host:37197/dbname)
+> MONGO_URL = URL to mongodb connection (like: mongodb://<dbuser>:<dbpassword>@host:37197/dbname)
 
-> Install node modules dependencies:
+Install node modules dependencies:
 
-npm install
+> npm install
 
-> And, run:
+And, run:
 
-npm start
+> npm start
 
 # Commands of bot
 
