@@ -1,6 +1,6 @@
 # Cobra Wing discord bot
 
-et environment variable:
+Set environment variable:
 
 > BOT_KEY = Discord bot id
 
