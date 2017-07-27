@@ -7,6 +7,10 @@ const wingUrl = "https://eddb.io/faction/74863";
 const wingThumb = "http://i.imgur.com/ro5DQx9.png";
 const wingUrlSite = "http://elitedangerouscobra.com.br";
 const wingColor = "#f00000";
+const errorMessage = require("../../modules/errorMessage.js");
+const normalizeWingInfo = require("../../modules/normalizeWingInfo");
+const mongoConnection = require("../../modules/mongoConnection");
+const utils = require("../../modules/utils");
 
 module.exports = class EmbedCommand extends Command {
     constructor(client) {
@@ -21,87 +25,66 @@ module.exports = class EmbedCommand extends Command {
     async run(msg, args) {
         let out = '';
         request(wingUrl, function (error, response, body) {
-
-            // Print the error if one occurred 
             if (error) {
                 console.log('error:', error);
-                sendClientErrorMessage(msg);
+                return errorMessage.sendClientErrorMessage(msg);
             }
-            // Print the response status code if a response was received 
             if (response && response.statusCode != 200) {
                 console.log('statusCode:', response.statusCode);
                 console.log('statusMessage:', response.statusMessage);
-                sendClientErrorMessage(msg);
+                return errorMessage.sendClientErrorMessage(msg);
             }
             const $ = cheerio.load(body);
-            const wingName = getWingName($, msg);
-            
-            if (wingName != null) {
-                const systems = $('.systemRow strong a');
-                const tableInfo = $('.systemRow .semi-strong');
-                let idxControlledSystem = 0;
-                let tablePosition = 0;
-                let tableStatePosition = 3;
-
-                if (systems && systems.length > 0 && tableInfo && tableInfo.length > 0) {
-                    var embed = new RichEmbed()
-                            .setColor(wingColor)
-                            .setTimestamp()
-                            .setTitle("**Sistemas e influências da " + wingName + "**")
-                            .setDescription("Dados extraídos do [eddb.io](" + wingUrl + ")")
-                            .setThumbnail(wingThumb)
-                            .setFooter("Fly safe cmdr!")
-                            .setURL(wingUrlSite);
-                    
-                    for(let i=0; i < systems.length; i++) {
-                        let systemName = systems[i].children[0].data;
-                        if (isSystemControlled($, ++idxControlledSystem)) {
-                            idxControlledSystem++;
-                            systemName += " :crown:";
-                        }
-                        const influence = $('.systemFactionRow.isHighlighted .factionInfluence .semi-strong')[i].children[0].data;
-                        const state = $('.systemFactionRow.isHighlighted .semi-strong')[tableStatePosition].children[0].data;
-                        if (state === "War") {
-                            systemName += " :crossed_swords:";
-                        }
-                        if (state === "Election") {
-                            systemName += " :loudspeaker:";
-                        }
-                        embed.addField("**" + systemName + "** ",
-                            "**Influência: ** "+ influence + wrapLine +
-                            "**Segurança: ** " + tableInfo[tablePosition++].children[0].data + wrapLine +
-                            "**Estado: ** " + state
-                        );
-                        tablePosition += 4;
-                        tableStatePosition += 4;
-                    }
-                    return msg.embed(embed);
-                }
-            } else {
+            const data = normalizeWingInfo.getInfos(body);
+            saveToMongo(data);
+            if (data.wingName == null) {
                 console.log('Wing name not found.');
-                sendClientErrorMessage(msg);
+                return errorMessage.sendClientErrorMessage(msg);
             }
+            var embed = new RichEmbed()
+                .setColor(wingColor)
+                .setTimestamp()
+                .setTitle("**Sistemas e influências da " + data.wingName + "**")
+                .setDescription("Dados extraídos do [eddb.io](" + wingUrl + ")")
+                .setThumbnail(wingThumb)
+                .setFooter("Fly safe cmdr!")
+                .setURL(wingUrlSite);
+            
+            for(let info of data.infos) {
+                embed.addField("**" + getSystemName(info) + "**",
+                    "**Influência: ** "+ utils.rpad(getInfluence(info), 10) + " " + 
+                    "**Att. à " + info.eddbUpdate + "**" + wrapLine +
+                    "**Segurança: ** " + info.security + wrapLine + 
+                    "**Estado: ** " + info.state);
+            }
+            return msg.embed(embed);
         });
 
-        function isSystemControlled($, idxControlledSystem) {
-            const obj = $('.systemRow strong a, .systemFactionRow.isHighlighted .systemPresenceTag .fa-flip-vertical')[idxControlledSystem];
-            return obj && obj.name && obj.name === 'i';
-        }
-
-        function getWingName($) {
-            if ($('h1')[0] && 
-                $('h1')[0].children &&
-                $('h1')[0].children.length >= 2  && 
-                $('h1')[0].children[2].data) {
-                
-                return $('h1')[0].children[2].data.trim();
-            } else {
-                return null;
+        function getSystemName(info) {
+            let name = info.systemName; 
+            if (info.controlledSystem) {
+                name += ' :crown:';
             }
+            if (info.state === 'War') {
+                name += ' :crossed_swords:';
+            }
+            if (info.state === 'Election') {
+                name += ' :loudspeaker:';
+            }
+            if (info.influence < 5.0) {
+                name += ' :rotating_light:';
+            }
+            return name;
         }
 
-        function sendClientErrorMessage(msg) {
-            msg.channel.send("Ops, algo deu errado, tente novamente mais tarde e fly safe cmdr!");
+        function getInfluence(info) {
+            return String(info.influence).replace('.', ',') + '%';
+        }
+
+        function saveToMongo(data) {
+            mongoConnection.saveOrUpdate(data, 'wingData', function(error) {
+                if (error) console.log(error);
+            });
         }
     }
 }
