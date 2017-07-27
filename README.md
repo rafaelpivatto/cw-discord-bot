@@ -4,7 +4,7 @@ Set environment variable:
 
 > BOT_KEY = Discord bot id
 
-> MONGO_URL = URL to mongodb connection (like: mongodb://<dbuser>:<dbpassword>@host:37197/dbname)
+> MONGO_URL = URL to mongodb connection (like: mongodb://dbuser:dbpassword@host:37197/dbname)
 
 Install node modules dependencies:
 
