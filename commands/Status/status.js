@@ -1,16 +1,18 @@
 const { Command } = require('discord.js-commando');
 const { RichEmbed } = require('discord.js');
-const request = require('request');
-const cheerio = require('cheerio');
-const wrapLine = "\n";
-const wingUrl = "https://eddb.io/faction/74863";
-const wingThumb = "http://i.imgur.com/ro5DQx9.png";
-const wingUrlSite = "http://elitedangerouscobra.com.br";
-const wingColor = "#f00000";
-const errorMessage = require("../../modules/errorMessage.js");
-const normalizeWingInfo = require("../../modules/normalizeWingInfo");
-const mongoConnection = require("../../modules/mongoConnection");
-const utils = require("../../modules/utils");
+const logger = require('heroku-logger')
+
+const errorMessage = require('../../modules/errorMessage.js');
+const normalizeWingInfo = require('../../modules/normalizeWingInfo');
+const mongoConnection = require('../../modules/mongoConnection');
+const utils = require('../../modules/utils');
+const eddbInfos = require('../../modules/eddbInfos');
+
+const wrapLine = '\n';
+const wingUrl = 'https://eddb.io/faction/74863';
+const wingThumb = 'http://i.imgur.com/ro5DQx9.png';
+const wingUrlSite = 'http://elitedangerouscobra.com.br';
+const wingColor = '#f00000';
 
 module.exports = class EmbedCommand extends Command {
     constructor(client) {
@@ -23,40 +25,36 @@ module.exports = class EmbedCommand extends Command {
     }
 
     async run(msg, args) {
+        logger.info('[status] Initializing process to retrieving status by user = ' + msg.message.author.username);
         let out = '';
-        request(wingUrl, function (error, response, body) {
+        eddbInfos.get(function(error, body) {
             if (error) {
-                console.log('error:', error);
+                logger.error('[status] Error on retrieving informations');
                 return errorMessage.sendClientErrorMessage(msg);
             }
-            if (response && response.statusCode != 200) {
-                console.log('statusCode:', response.statusCode);
-                console.log('statusMessage:', response.statusMessage);
-                return errorMessage.sendClientErrorMessage(msg);
-            }
-            const $ = cheerio.load(body);
             const data = normalizeWingInfo.getInfos(body);
             saveToMongo(data);
             if (data.wingName == null) {
-                console.log('Wing name not found.');
+                logger.error('[status] Wing name not found');
                 return errorMessage.sendClientErrorMessage(msg);
             }
-            var embed = new RichEmbed()
+            let embed = new RichEmbed()
                 .setColor(wingColor)
                 .setTimestamp()
-                .setTitle("**Sistemas e influências da " + data.wingName + "**")
-                .setDescription("Dados extraídos do [eddb.io](" + wingUrl + ")")
+                .setTitle('**Sistemas e influências da ' + data.wingName + '**')
+                .setDescription('Dados extraídos do [eddb.io](' + wingUrl + ')')
                 .setThumbnail(wingThumb)
-                .setFooter("Fly safe cmdr!")
+                .setFooter('Fly safe cmdr!')
                 .setURL(wingUrlSite);
             
             for(let info of data.infos) {
-                embed.addField("**" + getSystemName(info) + "**",
-                    "**Influência: ** "+ utils.rpad(getInfluence(info), 10) + " " + 
-                    "**Att. à " + info.eddbUpdate + "**" + wrapLine +
-                    "**Segurança: ** " + info.security + wrapLine + 
-                    "**Estado: ** " + info.state);
+                embed.addField('**' + getSystemName(info) + '**',
+                    '**Influência: ** '+ utils.rpad(getInfluence(info), 10) + ' ' + 
+                    '**Att. à ' + info.eddbUpdate + '**' + wrapLine +
+                    '**Segurança: ** ' + info.security + wrapLine + 
+                    '**Estado: ** ' + info.state);
             }
+            logger.info('[status] Finish process to retrieving status');
             return msg.embed(embed);
         });
 

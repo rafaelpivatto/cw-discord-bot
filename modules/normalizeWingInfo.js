@@ -1,9 +1,12 @@
 const cheerio = require('cheerio');
+const logger = require('heroku-logger')
+
 var exports = {};
 
 exports.getInfos = function(body) {
+    logger.info('[normalizeWingInfo] Init method');
     const $ = cheerio.load(body);
-    var data = {};
+    let data = {};
     data._id = new Date();
     data._id.setUTCHours(0,0,0,0);
     data.lastUpdate = new Date();
@@ -35,6 +38,7 @@ exports.getInfos = function(body) {
         }
     }
 
+    logger.info('[normalizeWingInfo] Finish method');
     return data;
 };
 
