@@ -18,6 +18,7 @@ exports.loadFile = function(res, fileName) {
         };
         res.sendFile(fileName, options, function (err) {
             if (err) {
+                console.log(err);
                 res.status(404).send('Sorry, we cannot find that!');
             }
         });
