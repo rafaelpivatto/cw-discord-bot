@@ -41,3 +41,7 @@ var server = app.listen(8080, function () {
 app.all('/images/*', function (req, res) {
     fileManagement.loadFile(res, req.path);
 });
+
+app.all('/', function (req, res) {
+    res.status(200).send('Work!');
+});
