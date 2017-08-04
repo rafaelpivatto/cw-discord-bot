@@ -4,7 +4,7 @@ const logger = require('heroku-logger')
 var exports = {};
 
 exports.getInfos = function(body) {
-    logger.info('[normalizeWingInfo] Init method');
+    logger.info('[normalizeWingInfoFromEddb] Init method');
     const $ = cheerio.load(body);
     let data = {};
     data._id = new Date();
@@ -38,7 +38,7 @@ exports.getInfos = function(body) {
         }
     }
 
-    logger.info('[normalizeWingInfo] Finish method');
+    logger.info('[normalizeWingInfoFromEddb] Finish method');
     return data;
 };
 

@@ -3,10 +3,10 @@ const { RichEmbed } = require('discord.js');
 const logger = require('heroku-logger')
 
 const errorMessage = require('../../modules/errorMessage.js');
-const normalizeWingInfo = require('../../modules/normalizeWingInfo');
+const normalizeWingInfoFromEddb = require('../../modules/normalizeWingInfoFromEddb');
 const mongoConnection = require('../../modules/mongoConnection');
 const utils = require('../../modules/utils');
-const eddbInfos = require('../../modules/eddbInfos');
+const searchWingInfosFromEddb = require('../../modules/searchWingInfosFromEddb');
 
 const wrapLine = '\n';
 const wingUrl = 'https://eddb.io/faction/74863';
@@ -19,7 +19,7 @@ module.exports = class EmbedCommand extends Command {
         super(client, {
             name: 'cwstatus',
             group: 'status',
-            memberName: 'status',
+            memberName: 'wingstatus',
             description: 'Verify CW status'
         });
     }
@@ -27,12 +27,12 @@ module.exports = class EmbedCommand extends Command {
     async run(msg, args) {
         logger.info('[status] Initializing process to retrieving status by user = ' + msg.message.author.username);
         let out = '';
-        eddbInfos.get(function(error, body) {
+        searchWingInfosFromEddb.get(function(error, body) {
             if (error) {
                 logger.error('[status] Error on retrieving informations');
                 return errorMessage.sendClientErrorMessage(msg);
             }
-            const data = normalizeWingInfo.getInfos(body);
+            const data = normalizeWingInfoFromEddb.getInfos(body);
             saveToMongo(data);
             if (data.wingName == null) {
                 logger.error('[status] Wing name not found');

@@ -16,8 +16,8 @@ module.exports = class GraphCommand extends Command {
     constructor(client) {
         super(client, {
             name: 'cwgrafico',
-            group: 'graph',
-            memberName: 'graph',
+            group: 'status',
+            memberName: 'winggraph',
             description: 'Verify CW Graph'
         });
     }
@@ -143,6 +143,7 @@ module.exports = class GraphCommand extends Command {
                         title: 'Informações atualizadas pela última vez às ' + 
                                 dateFormat(endGraphDate, 'HH:MM') + ' UTC',
                         tickformat: '%d/%m',
+                        nticks: 11,
                         type: 'date',
                         autorange: true,
                         range: [

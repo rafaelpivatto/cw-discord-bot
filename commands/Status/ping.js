@@ -7,7 +7,7 @@ module.exports = class PingCommand extends Command {
     constructor(client) {
         super(client, {
             name: 'cwping',
-            group: 'ping',
+            group: 'status',
             memberName: 'ping',
             description: 'Ping CW bot'
         });

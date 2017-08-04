@@ -19,6 +19,10 @@ exports.getUTCDate = function(date) {
     return new Date(utc_timestamp);
 };
 
+exports.getUTCDateNow = function() {
+    return exports.getUTCDate(new Date());
+};
+
 exports.getBRTDate = function(date) {
     const utc = exports.getUTCDate(new Date());
     return new Date(utc.valueOf() + utc.getTimezoneOffset() * -60000)
