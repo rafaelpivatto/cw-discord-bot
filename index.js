@@ -35,7 +35,7 @@ logger.info('Bot started');
 var server = app.listen(process.env.PORT || 5000, function () {
     var host = server.address().address;
     var port = server.address().port;
-    console.log('Mock listening at http://%s:%s', host, port);
+    console.log('Server listening at http://%s:%s', host, port);
 });
 
 app.all('/images/*', function (req, res) {

@@ -3,7 +3,6 @@ const { RichEmbed } = require('discord.js');
 const logger = require('heroku-logger');
 const dateFormat = require('dateformat');
 const request = require('request');
-const fs = require('fs');
 const plotly = require('plotly')(process.env.PLOTLY_USER,process.env.PLOTLY_PASS);
 
 const errorMessage = require('../../modules/errorMessage.js');
@@ -11,7 +10,8 @@ const searchSystemFactionFromEdsm = require('../../modules/searchSystemFactionFr
 const utils = require('../../modules/utils');
 const fileManagement = require('../../modules/fileManagement');
 
-const filePath = "/images/system-factions.png";
+const fileDir = '/images/graph/';
+const fileName = 'system-factions.png';
 const wingName = 'Cobra Wing';
 const wingColor = 'rgb(255, 51, 51)';
 const wingColorEmbed = '#f00000';
@@ -45,7 +45,7 @@ module.exports = class SystemFactionsCommand extends Command {
             }
             if (json.length === 0) {
                 logger.info('[systemFactionsGraph] System "' + systemName + '" not found');
-                return msg.channel.send('O sistema "' + systemName + '" não foi encontrado! tem certeza que digitou certo? :thinking:');
+                return msg.channel.send('O sistema "' + systemName + '" não foi encontrado! tem certeza que é o sistema certo? :thinking:');
             }
             msg.channel.send(':arrows_counterclockwise: Aguarde, o gráfico está sendo gerado...');
             const data = normalizeObjects(json);
@@ -64,22 +64,26 @@ module.exports = class SystemFactionsCommand extends Command {
                         return errorMessage.sendClientErrorMessage(msg);
                     }
                     
-                    fileManagement.saveFile(body, filePath, function(error) {
+                    fileManagement.saveFile(body, fileDir, fileName, function(error) {
                         if (error) {
-                            logger.error('[systemFactionsGraph] Error to save file = ' + filePath);
+                            logger.error('[systemFactionsGraph] Error to save file = ' + fileDir + fileName);
                             return errorMessage.sendClientErrorMessage(msg);
                         }
-
+                        
+                        let imageAddress = process.env.BASE_URL + fileDir + fileName;
+                        logger.info('[systemFactionsGraph] Image address: ' + imageAddress);
+                        
                         let embed = new RichEmbed()
-                            .setImage(process.env.BASE_URL + filePath)
+                            .setImage(imageAddress)
                             .setColor(wingColorEmbed)
                             .setTimestamp()
                             .setFooter('Fly safe cmdr!');
                         
+                        onlyInDev(msg, imageAddress);
+                        
                         logger.info('[systemFactionsGraph] Finished process to generate system factions graph');
 
                         return msg.embed(embed);
-
                     });
                 });
             });
@@ -117,13 +121,17 @@ module.exports = class SystemFactionsCommand extends Command {
                 const color = isThisWing ? wingColor : defaultColors[i];
                 const influence = Math.round(faction.influence * 100);
                 if (influence <= 0) continue;
-                data[0].labels.push(faction.name);
+                data[0].labels.push(faction.name + playerFactionIcon(faction));
                 data[0].marker.colors.push(color);
                 data[0].values.push(influence);
             }
 
             return data;
         };
+
+        function playerFactionIcon(faction) {
+            return faction.isPlayer ? ' (Player faction)' : '';
+        }
 
         function getGraphOption(systemName, wingControlledName) {
             return {
@@ -146,6 +154,14 @@ module.exports = class SystemFactionsCommand extends Command {
                     showlegend: true
                 }
             };
+        }
+
+        function onlyInDev(msg, imageAddress) {
+            if (process.env.ENVIRONMENT === 'DEV') {
+                msg.channel.send('', {
+                    file: imageAddress
+                });
+            }
         }
     }
     

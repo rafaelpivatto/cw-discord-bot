@@ -1,5 +1,6 @@
 const fs = require('fs');
-const logger = require('heroku-logger')
+const mkdirp = require('mkdirp');
+const logger = require('heroku-logger');
 
 var exports = {};
 
@@ -31,22 +32,42 @@ exports.loadFile = function(res, fileName) {
     });
 };
 
-exports.saveFile = function(body, filePath, callback) {
-    logger.info('[fileManagement] Starting save file = ' + filePath);
+exports.saveFile = function(body, fileDir, fileName, callback) {
+    logger.info('[fileManagement] Starting save file = ' + fileDir + fileName);
+    
     let dir = __dirname.replace('\\modules', '');
     dir = dir.replace('/modules', '');
-    dir = dir + filePath;
-    fs.writeFile(dir, body, 'binary', function(error) {
+    dir = dir + fileDir;
+
+    verifyDir(dir, function(error){
         if(error) {
-            logger.error('[fileManagement] Error to save file ');
-            callback(error)
-        } else {
-            logger.info('[fileManagement] File saved!');
-            callback(null)
+            callback(error);
         }
-    });
+        dir = dir + fileName;
+        var options = { encoding: 'binary', flag : 'w' };
+        fs.writeFile(dir, body, options, function(error) {
+            if(error) {
+                logger.error('[fileManagement] Error to save file ');
+                callback(error)
+            } else {
+                logger.info('[fileManagement] File saved!');
+                callback(null)
+            }
+        });
+    });    
 };
 
+function verifyDir(dir, callback) {
+    mkdirp(dir, function (error) {
+        if (error) {
+            logger.error('[fileManagement] Error to create directory: ' + dir);
+            callback(error);
+        } else {
+            logger.info('[fileManagement] Directory created or exists');
+            callback(null);
+        }
+    });
+}
 
 
 module.exports = exports;
