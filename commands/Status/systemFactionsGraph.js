@@ -48,6 +48,10 @@ module.exports = class SystemFactionsCommand extends Command {
                 logger.info('[systemFactionsGraph] System "' + systemName + '" not found');
                 return msg.channel.send('O sistema "' + systemName + '" não foi encontrado! tem certeza que é o sistema certo? :thinking:');
             }
+            if (json.factions.length === 0) {
+                logger.info('[systemFactionsGraph] System "' + systemName + '" not found minor factions');
+                return msg.channel.send('O sistema "' + systemName + '" não tem facções :neutral_face:');
+            }
             msg.channel.send(':arrows_counterclockwise: Aguarde, o gráfico está sendo gerado...');
             const data = normalizeObjects(json);
             const graphOptions = getGraphOption(systemName, json.controllingFaction.name);
