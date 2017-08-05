@@ -2,12 +2,16 @@ const { Command } = require('discord.js-commando');
 const { RichEmbed } = require('discord.js');
 const logger = require('heroku-logger');
 const dateFormat = require('dateformat');
+const request = require('request');
+const fs = require('fs');
 const plotly = require('plotly')(process.env.PLOTLY_USER,process.env.PLOTLY_PASS);
 
 const errorMessage = require('../../modules/errorMessage.js');
 const searchSystemFactionFromEdsm = require('../../modules/searchSystemFactionFromEdsm');
 const utils = require('../../modules/utils');
+const fileManagement = require('../../modules/fileManagement');
 
+const filePath = "/images/system-factions.png";
 const wingName = 'Cobra Wing';
 const wingColor = 'rgb(255, 51, 51)';
 const wingColorEmbed = '#f00000';
@@ -52,35 +56,32 @@ module.exports = class SystemFactionsCommand extends Command {
                     logger.error('[systemFactionsGraph] Error on plotly system factions graph', error);
                     return errorMessage.sendClientErrorMessage(msg);
                 }
-                //msg.channel.send('', {
-                //    file: res.url + '.png'
-                //});
-                
-                
-                let embed = new RichEmbed()
-                    //.setImage(res.url + '.png')
-                    //.setImage("http://plot.ly/~rafael.pivatto/14.png")
-                    .setImage("teste.png")
-                    .setColor(wingColorEmbed)
-                    .setTimestamp()
-                    .setFooter('Fly safe cmdr!')
-                    .attachFile('teste.png');
 
-                    //embed.file("attachment://teste.png");
-                
-                logger.info('[systemFactionsGraph] Finished process to generate system factions graph');
-
-                /*return msg.channel.send({
-                        embed: {
-                            color: 3447003,
-                            description: "teste",
-                            image: {
-                                url: "teste.png"
-                                //url: "http://i.imgur.com/pasTM5S.png"
-                            }
+                const imageUrl = res.url + '.png';
+                request.get({url: imageUrl, encoding: 'binary'}, function (err, response, body) {
+                    if (error) {
+                        logger.error('[systemFactionsGraph] Error get Imagem from plotly', error);
+                        return errorMessage.sendClientErrorMessage(msg);
+                    }
+                    
+                    fileManagement.saveFile(body, filePath, function(error) {
+                        if (error) {
+                            logger.error('[systemFactionsGraph] Error to save file = ' + filePath);
+                            return errorMessage.sendClientErrorMessage(msg);
                         }
-                    });*/
-                return msg.embed(embed);
+
+                        let embed = new RichEmbed()
+                            .setImage(process.env.BASE_URL + filePath)
+                            .setColor(wingColorEmbed)
+                            .setTimestamp()
+                            .setFooter('Fly safe cmdr!');
+                        
+                        logger.info('[systemFactionsGraph] Finished process to generate system factions graph');
+
+                        return msg.embed(embed);
+
+                    });
+                });
             });
         });
 

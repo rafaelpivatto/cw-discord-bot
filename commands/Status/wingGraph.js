@@ -26,7 +26,7 @@ module.exports = class GraphCommand extends Command {
         logger.info('[graph] Initializing process to generate graph by user = ' + msg.message.author.username);
         msg.channel.send(':arrows_counterclockwise: Aguarde, o gráfico está sendo gerado...');
         const inicialDate = new Date();
-        inicialDate.setDate(inicialDate.getDate() - 10);
+        inicialDate.setDate(inicialDate.getDate() - 9);
         inicialDate.setUTCHours(0, 0, 0, 0);
         const query = {_id : { '$gte' : inicialDate }, wingName: 'Cobra Wing' };
         
