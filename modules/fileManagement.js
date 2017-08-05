@@ -45,13 +45,21 @@ exports.saveFile = function(body, fileDir, fileName, callback) {
         }
         dir = dir + fileName;
         var options = { encoding: 'binary', flag : 'w' };
-        fs.writeFile(dir, body, options, function(error) {
-            if(error) {
-                logger.error('[fileManagement] Error to save file ');
-                callback(error)
+        fs.unlink(dir, function(error) {
+            if (error) {
+                logger.error('[fileManagement] Error to unlink file ');
+                callback(error);
             } else {
-                logger.info('[fileManagement] File saved!');
-                callback(null)
+                logger.info('[fileManagement] File unlinked!');
+                fs.writeFile(dir, body, options, function(error) {
+                    if(error) {
+                        logger.error('[fileManagement] Error to save file ');
+                        callback(error)
+                    } else {
+                        logger.info('[fileManagement] File saved!');
+                        callback(null)
+                    }
+                });
             }
         });
     });    
