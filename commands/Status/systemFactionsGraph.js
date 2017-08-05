@@ -11,7 +11,8 @@ const utils = require('../../modules/utils');
 const fileManagement = require('../../modules/fileManagement');
 
 const fileDir = '/images/graph/';
-const fileName = 'system-factions.png';
+const fileName = 'system-factions';
+const fileExtension = '.png';
 const wingName = 'Cobra Wing';
 const wingColor = 'rgb(255, 51, 51)';
 const wingColorEmbed = '#f00000';
@@ -64,13 +65,16 @@ module.exports = class SystemFactionsCommand extends Command {
                         return errorMessage.sendClientErrorMessage(msg);
                     }
                     
-                    fileManagement.saveFile(body, fileDir, fileName, function(error) {
+                    const now = dateFormat(utils.getUTCDateNow(), 'yyyymmddHHMMss');
+                    const fullFilename = fileName + now + fileExtension;
+
+                    fileManagement.saveFile(body, fileDir, fullFilename, function(error) {
                         if (error) {
-                            logger.error('[systemFactionsGraph] Error to save file = ' + fileDir + fileName);
+                            logger.error('[systemFactionsGraph] Error to save file = ' + fileDir + fullFilename);
                             return errorMessage.sendClientErrorMessage(msg);
                         }
                         
-                        let imageAddress = process.env.BASE_URL + fileDir + fileName;
+                        let imageAddress = process.env.BASE_URL + fileDir + fullFilename;
                         logger.info('[systemFactionsGraph] Image address: ' + imageAddress);
                         
                         let embed = new RichEmbed()
