@@ -10,8 +10,7 @@ const searchSystemFactionFromEdsm = require('../../modules/searchSystemFactionFr
 const utils = require('../../modules/utils');
 const fileManagement = require('../../modules/fileManagement');
 
-const fileDir = '/images/graph/';
-const fileName = 'system-factions';
+const fileDir = '/images/graph/systemfactions/';
 const fileExtension = '.png';
 const wingName = 'Cobra Wing';
 const wingColor = 'rgb(255, 51, 51)';
@@ -70,7 +69,7 @@ module.exports = class SystemFactionsCommand extends Command {
                     }
                     
                     const now = dateFormat(utils.getUTCDateNow(), 'yyyymmddHHMMss');
-                    const fullFilename = fileName + now + fileExtension;
+                    const fullFilename =  now + '-' + systemName + fileExtension;
 
                     fileManagement.saveFile(body, fileDir, fullFilename, function(error) {
                         if (error) {
@@ -82,6 +81,8 @@ module.exports = class SystemFactionsCommand extends Command {
                         logger.info('[systemFactionsGraph] Image address: ' + imageAddress);
                         
                         let embed = new RichEmbed()
+                            .setTitle('**Influências em ' + systemName + '**')
+                            .setDescription('Dados extraídos do [EDSM](https://www.edsm.net/)')
                             .setImage(imageAddress)
                             .setColor(wingColorEmbed)
                             .setTimestamp()
@@ -110,13 +111,13 @@ module.exports = class SystemFactionsCommand extends Command {
                     labels: [],
                     marker: {
                         line: {
-                            width: 0
+                            width: 0.5
                         },
                         colors: []
                     },
                     values: [],
                     textposition: 'outside',
-                    textinfo: 'percent',
+                    textinfo: 'label%2Bpercent',
                     rotation: -45,
                     hole: 0,
                     type: 'pie'
@@ -146,12 +147,16 @@ module.exports = class SystemFactionsCommand extends Command {
                 fileopt : 'overwrite', 
                 filename : 'systemFactions',
                 layout: {
-                    title: 'Influencias das facções no sistema <b>' + systemName + '</b> em <b>' + 
+                    title: '<b>' + systemName + '</b> - <b>' + 
                             dateFormat(utils.getUTCDateNow(), 'dd/mm/yyyy HH:MM') + '</b> UTC<br>Facção controladora: <b>' + 
                             wingControlledName + '</b>',
                     autosize: true,
+                    showlegend: false,
+                    margin: {
+                        t: 100
+                    },
                     legend: {
-                        y: -0.03763376285725575,
+                        y: -0.03763376285725584,
                         x: 0.24635761589403973,
                         font: {
                             size: 13
@@ -159,7 +164,6 @@ module.exports = class SystemFactionsCommand extends Command {
                         orientation: 'h',
                         traceorder: 'normal'
                     },
-                    showlegend: true
                 }
             };
         }

@@ -28,4 +28,9 @@ exports.getBRTDate = function(date) {
     return new Date(utc.valueOf() + utc.getTimezoneOffset() * -60000)
 };
 
+exports.removeSpaces = function(str) {
+    var re = new RegExp(' ', 'g');
+    return String(str).replace(re, '');
+};
+
 module.exports = exports;
