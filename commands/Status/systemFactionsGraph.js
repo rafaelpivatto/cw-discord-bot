@@ -69,7 +69,7 @@ module.exports = class SystemFactionsCommand extends Command {
                     }
                     
                     const now = dateFormat(utils.getUTCDateNow(), 'yyyymmddHHMMss');
-                    const fullFilename =  now + '-' + systemName + fileExtension;
+                    const fullFilename =  now + '-' + utils.removeSpaces(systemName) + fileExtension;
 
                     fileManagement.saveFile(body, fileDir, fullFilename, function(error) {
                         if (error) {
