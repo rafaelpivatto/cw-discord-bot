@@ -1,7 +1,7 @@
 const request = require('request');
 const logger = require('heroku-logger')
 
-const url = 'https://www.edsm.net/api-system-v1/factions?systemName=';
+const url = 'http://www.edsm.net/api-system-v1/factions?systemName=';
 
 var exports = {};
 
