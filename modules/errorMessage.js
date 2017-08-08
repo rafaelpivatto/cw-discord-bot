@@ -5,4 +5,8 @@ exports.sendClientErrorMessage = function(msg) {
         'novamente, fly safe CMDR!');
 };
 
+exports.sendSpecificClientErrorMessage = function(msg, errorMessage) {
+    msg.channel.send(errorMessage);
+};
+
 module.exports = exports;

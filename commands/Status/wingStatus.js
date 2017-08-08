@@ -28,9 +28,11 @@ module.exports = class EmbedCommand extends Command {
         logger.info('[status] Initializing process to retrieving status by user = ' + msg.message.author.username);
         let out = '';
         searchWingInfosFromEddb.get(function(error, body) {
-            if (error) {
+            if (error || !body) {
                 logger.error('[status] Error on retrieving informations');
-                return errorMessage.sendClientErrorMessage(msg);
+                return errorMessage.sendSpecificClientErrorMessage(msg, 
+                    "O EDDB ficou sem combustível, logo os fuel rats vão ajudar ele, daí podemos tentar novamente, Fly safe CMDR!"
+                );
             }
             const data = normalizeWingInfoFromEddb.getInfos(body);
             saveToMongo(data);

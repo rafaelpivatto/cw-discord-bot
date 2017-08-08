@@ -38,11 +38,13 @@ module.exports = class SystemFactionsCommand extends Command {
             return msg.channel.send(':warning: Comando inválido, execute !sistema <NOME DO SISTEMA>');
         }
         searchSystemFactionFromEdsm.get(systemName, function(error, body){
-            const json = JSON.parse(body);
-            if (error) {
+            if (error || !body) {
                 logger.error('[systemFactionsGraph] Error on retrieving informations');
-                return errorMessage.sendClientErrorMessage(msg);
+                return errorMessage.sendSpecificClientErrorMessage(msg, 
+                    "O EDSM não deu permissão para o bot fazer docking, aguarde um instante e tente novamente em breve, Fly safe CMDR!"
+                );
             }
+            const json = JSON.parse(body);
             if (json.length === 0) {
                 logger.info('[systemFactionsGraph] System "' + systemName + '" not found');
                 return msg.channel.send('O sistema "' + systemName + '" não foi encontrado! tem certeza que é o sistema certo? :thinking:');
