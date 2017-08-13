@@ -8,9 +8,9 @@ exports.loadFile = function(res, fileName) {
     logger.info('[fileManagement] Starting load file = ' + fileName);
     let dir = __dirname.replace('\\modules', '');
     dir = dir.replace('/modules', '');
-    fs.readFile(dir + fileName, function (err, dt) {
-        if (err) {
-            logger.error('[fileManagement] Error to load file ');
+    fs.readFile(dir + fileName, function (error, dt) {
+        if (error) {
+            logger.error('[fileManagement] Error to load file ', {'error': error});
             return res.status(404).send('Sorry, we cannot find that!');
         }
         logger.info('[fileManagement] File readed!');
@@ -21,9 +21,9 @@ exports.loadFile = function(res, fileName) {
                 'x-sent': true
             }
         };
-        res.sendFile(fileName, options, function (err) {
-            if (err) {
-                logger.error('[fileManagement] Error to send file ');
+        res.sendFile(fileName, options, function (error) {
+            if (error) {
+                logger.error('[fileManagement] Error to send file ', {'error': error});
                 res.status(404).send('Sorry, we cannot find that!');
             } else {
                 logger.info('[fileManagement] File sended!');
@@ -41,13 +41,14 @@ exports.saveFile = function(body, fileDir, fileName, callback) {
 
     verifyDir(dir, function(error){
         if(error) {
+            logger.error('[fileManagement] Error to create directory: ' + dir, {'error': error});
             callback(error);
         }
         dir = dir + fileName;
         var options = { encoding: 'binary', flag : 'w' };
         fs.writeFile(dir, body, options, function(error) {
             if(error) {
-                logger.error('[fileManagement] Error to save file ');
+                logger.error('[fileManagement] Error to save file ', {'error': error});
                 callback(error)
             } else {
                 logger.info('[fileManagement] File saved!');

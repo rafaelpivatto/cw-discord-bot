@@ -5,13 +5,13 @@ var exports = {};
 
 exports.saveOrUpdate = function(data, collectionName, callback) {
     logger.info('[mongoConnection] Save/update informations on collection=' + collectionName);
-    getConnection(function(err, db) {
-        if(err) return callback(err);
+    getConnection(function(error, db) {
+        if(error) return callback(error);
         const collection = db.collection(collectionName);
-        collection.save(data, {_id: data._id}, function(err, result) {
-            if(err) {
-                logger.log('[mongoConnection] Error to save collection=' + collectionName);
-                return callback(err);
+        collection.save(data, {_id: data._id}, function(error, result) {
+            if(error) {
+                logger.error('[mongoConnection] Error to save collection=' + collectionName, {'error': error});
+                return callback(error);
             }
             closeConnection(db);
             logger.info('[mongoConnection] Save/update success');
@@ -22,13 +22,13 @@ exports.saveOrUpdate = function(data, collectionName, callback) {
 
 exports.find = function(query, collectionName, callback) {
     logger.info('[mongoConnection] Retrieve informations on collection=' + collectionName + ', query=' + JSON.stringify(query));
-    getConnection(function(err, db) {
-        if(err) return callback(err);
+    getConnection(function(error, db) {
+        if(error) return callback(error);
         const collection = db.collection(collectionName);
-        collection.find(query).toArray(function(err, docs) {
-            if(err) {
-                logger.error('[mongoConnection] Error to retrieve collection=' + collectionName, err);
-                return callback(err);
+        collection.find(query).toArray(function(error, docs) {
+            if(error) {
+                logger.error('[mongoConnection] Error to retrieve collection=' + collectionName, {'error': error});
+                return callback(error);
             }
             closeConnection(db);
             logger.info('[mongoConnection] Retrieve success');
@@ -38,18 +38,18 @@ exports.find = function(query, collectionName, callback) {
 };
 
 function getConnection(callback) {
-    return mongodb.MongoClient.connect(process.env.MONGO_URL, function(err, db) {
-        if(err) {
-            logger.error('[mongoConnection] Error to get connection on mongodb', err);
+    return mongodb.MongoClient.connect(process.env.MONGO_URL, function(error, db) {
+        if(error) {
+            logger.error('[mongoConnection] Error to get connection on mongodb', {'error': error});
         }
-        callback(err, db);
+        callback(error, db);
     });
 }
 
 function closeConnection(db) {
-    db.close(function (err) {
-        if(err) {
-            logger.warn('[mongoConnection] Error to close connection on mongodb ', err);
+    db.close(function (error) {
+        if(error) {
+            logger.warn('[mongoConnection] Error to close connection on mongodb ', {'error': error});
         }
     });
 }

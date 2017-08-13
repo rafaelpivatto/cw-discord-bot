@@ -40,7 +40,7 @@ module.exports = class GraphCommand extends Command {
         
         mongoConnection.find(query, 'wingData', function(error, results){
             if (error) {
-                logger.error('[wingGraph] Error on retrieving informations');
+                logger.error('[wingGraph] Error on retrieving informations', {'error': error});
                 return errorMessage.sendClientErrorMessage(msg);
             }
             const data = normalizeObjects(results);
@@ -48,7 +48,7 @@ module.exports = class GraphCommand extends Command {
             
             plotly.plot(data, graphOptions, function (err, res) {
                 if (error) {
-                    logger.error('[wingGraph] Error on plotly graph', error);
+                    logger.error('[wingGraph] Error on plotly graph', {'error': error});
                     return errorMessage.sendClientErrorMessage(msg);
                 }
 
@@ -56,7 +56,7 @@ module.exports = class GraphCommand extends Command {
 
                 request.get({url: imageUrl, encoding: 'binary'}, function (err, response, body) {
                     if (error) {
-                        logger.error('[wingGraph] Error get Imagem from plotly', error);
+                        logger.error('[wingGraph] Error get Imagem from plotly', {'error': error});
                         return errorMessage.sendClientErrorMessage(msg);
                     }
 
@@ -65,7 +65,7 @@ module.exports = class GraphCommand extends Command {
 
                     fileManagement.saveFile(body, fileDir, fullFilename, function(error) {
                         if (error) {
-                            logger.error('[wingGraph] Error to save file = ' + fileDir + fullFilename);
+                            logger.error('[wingGraph] Error to save file = ' + fileDir + fullFilename, {'error': error});
                             return errorMessage.sendClientErrorMessage(msg);
                         }
 

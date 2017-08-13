@@ -29,9 +29,9 @@ module.exports = class EmbedCommand extends Command {
         let out = '';
         searchWingInfosFromEddb.get(function(error, body) {
             if (error || !body) {
-                logger.error('[status] Error on retrieving informations');
+                logger.error('[status] Error on retrieving informations', {'error': error});
                 return errorMessage.sendSpecificClientErrorMessage(msg, 
-                    "O EDDB ficou sem combustível, logo os fuel rats vão ajudar ele, daí podemos tentar novamente, Fly safe CMDR!"
+                    'O EDDB ficou sem combustível, logo os fuel rats vão ajudar ele, daí podemos tentar novamente, Fly safe CMDR!'
                 );
             }
             const data = normalizeWingInfoFromEddb.getInfos(body);

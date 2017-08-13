@@ -9,7 +9,7 @@ exports.get = function(callback) {
     logger.info('[searchWingInfosFromEddb] Getting eddb infos on site=' + wingUrl);
     request(wingUrl, function (error, response, body) {
         if (error) {
-            logger.error('[searchWingInfosFromEddb] Error to get eddb info', error);
+            logger.error('[searchWingInfosFromEddb] Error to get eddb info', {'error': error});
         }
         if (response && response.statusCode != 200) {
             logger.error('[searchWingInfosFromEddb] response code != 200', response);

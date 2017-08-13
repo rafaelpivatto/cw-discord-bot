@@ -5,9 +5,9 @@ const Commando = require('discord.js-commando');
 const logger = require('heroku-logger')
 
 var app = express();
-const utils = require("./modules/utils");
-const hourlyJob = require("./modules/hourlyJob.js");
-const fileManagement = require("./modules/fileManagement.js");
+const utils = require('./modules/utils');
+const hourlyJob = require('./modules/hourlyJob.js');
+const fileManagement = require('./modules/fileManagement.js');
 
 const bot = new Commando.Client({
     unknownCommandResponse: false,
@@ -17,13 +17,15 @@ const client = new discord.ClientUser();
 logger.info('Initializing bot');
 
 bot.on('ready', (arg) => {
-    bot.user.setGame("Elite: Dangerous");
+    bot.user.setGame('Elite: Dangerous');
 });
 
 bot.registry.registerGroup('status', 'wingstatus');
 bot.registry.registerGroup('status', 'winggraph');
 bot.registry.registerGroup('status', 'ping');
 bot.registry.registerGroup('status', 'systemfactionsgraph');
+bot.registry.registerGroup('help', 'help');
+
 bot.registry.registerCommandsIn(__dirname + '/commands')/
 
 bot.login(process.env.BOT_KEY);

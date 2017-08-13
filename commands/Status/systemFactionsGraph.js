@@ -34,14 +34,14 @@ module.exports = class SystemFactionsCommand extends Command {
         logger.info('[systemFactionsGraph] Generate system factions graph by user = ' + msg.message.author.username);
         logger.info('[systemFactionsGraph] System name = ' + systemName);
         if (!systemName) {
-            logger.warn('[systemFactionsGraph] Error on retrieving informations');
+            logger.warn('[systemFactionsGraph] Error on retrieving informations, error command.');
             return msg.channel.send(':warning: Comando inválido, execute !sistema <NOME DO SISTEMA>');
         }
-        searchSystemFactionFromEdsm.get(systemName, function(error, body){
+        searchSystemFactionFromEdsm.get(systemName, function(error, body, url){
             if (error || !body) {
-                logger.error('[systemFactionsGraph] Error on retrieving informations');
+                logger.error('[systemFactionsGraph] Error on retrieving informations', {'error': error});
                 return errorMessage.sendSpecificClientErrorMessage(msg, 
-                    "O EDSM não deu permissão para o bot fazer docking, aguarde um instante e tente novamente em breve, Fly safe CMDR!"
+                    'O EDSM não deu permissão para o bot fazer docking, aguarde um instante e tente novamente em breve, Fly safe CMDR!'
                 );
             }
             const json = JSON.parse(body);
@@ -57,16 +57,17 @@ module.exports = class SystemFactionsCommand extends Command {
             const data = normalizeObjects(json);
             const graphOptions = getGraphOption(systemName, json.controllingFaction.name);
             
-            plotly.plot(data, graphOptions, function (err, res) {
-                if (error) {
-                    logger.error('[systemFactionsGraph] Error on plotly system factions graph', error);
-                    return errorMessage.sendClientErrorMessage(msg);
+            plotly.plot(data, graphOptions, function (error, res) {
+                if (error || !res) {
+                    logger.error('[systemFactionsGraph] Error on plotly system factions graph', {'error': error});
+                    return errorMessage.sendSpecificClientErrorMessage(msg, 
+                        'Os :alien: impediram o gráfico de ser gerado, tente novamente, parece que *já se foi o disco voador*.');
                 }
 
                 const imageUrl = res.url + '.png';
-                request.get({url: imageUrl, encoding: 'binary'}, function (err, response, body) {
+                request.get({url: imageUrl, encoding: 'binary'}, function (error, response, body) {
                     if (error) {
-                        logger.error('[systemFactionsGraph] Error get Imagem from plotly', error);
+                        logger.error('[systemFactionsGraph] Error get Imagem from plotly', {'error': error});
                         return errorMessage.sendClientErrorMessage(msg);
                     }
                     
@@ -75,7 +76,7 @@ module.exports = class SystemFactionsCommand extends Command {
 
                     fileManagement.saveFile(body, fileDir, fullFilename, function(error) {
                         if (error) {
-                            logger.error('[systemFactionsGraph] Error to save file = ' + fileDir + fullFilename);
+                            logger.error('[systemFactionsGraph] Error to save file = ' + fileDir + fullFilename, {'error': error});
                             return errorMessage.sendClientErrorMessage(msg);
                         }
                         
@@ -84,7 +85,7 @@ module.exports = class SystemFactionsCommand extends Command {
                         
                         let embed = new RichEmbed()
                             .setTitle('**Influências em ' + systemName + '**')
-                            .setDescription('Dados extraídos do [EDSM](https://www.edsm.net/)')
+                            .setDescription('Dados extraídos do [EDSM](' + url + ')')
                             .setImage(imageAddress)
                             .setColor(wingColorEmbed)
                             .setTimestamp()
