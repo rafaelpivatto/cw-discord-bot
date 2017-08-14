@@ -8,10 +8,11 @@ var exports = {};
 exports.get = function(systemName, callback) {
     
     logger.info('[searchSystemFactionFromEdsm] Getting system faction infos from edsm by system = ' + systemName);
-    url += systemName;
-    request(url, function (error, response, body) {
+    const finalUrl = url + systemName;
+    request(finalUrl, function (error, response, body) {
         if (error) {
-            logger.error('[searchSystemFactionFromEdsm] system faction infos', {'error': error});
+            logger.error('[searchSystemFactionFromEdsm] error to get system faction infos by url: ' + finalUrl, 
+                        {'error': error});
         }
         if (response && response.statusCode != 200) {
             logger.error('[searchSystemFactionFromEdsm] response code != 200', response);
@@ -19,7 +20,7 @@ exports.get = function(systemName, callback) {
         }
         
         logger.info('[searchSystemFactionFromEdsm] Finish getting system faction infos from edsm');
-        callback(error, body, url);
+        callback(error, body, finalUrl);
     });
 
     
