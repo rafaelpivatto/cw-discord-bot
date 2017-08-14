@@ -45,7 +45,7 @@ module.exports = class SystemFactionsCommand extends Command {
                 );
             }
             const json = JSON.parse(body);
-            if (json.length === 0) {
+            if (!json.length && json.length === 0) {
                 logger.info('[systemFactionsGraph] System "' + systemName + '" not found');
                 return msg.channel.send('O sistema "' + systemName + '" não foi encontrado! tem certeza que é o sistema certo? :thinking:');
             }
