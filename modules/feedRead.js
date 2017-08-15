@@ -1,16 +1,18 @@
 const FeedParser = require('feedparser');
 const request = require('request');
 const logger = require('heroku-logger');
-const cheerio = require('cheerio');
+
+const logName = '[FeedRead] ';
+
 var exports = {};
 
-exports.readFeed = function() {
+exports.readFeed = function(logPrefix) {
     
     var req = request('https://forums.frontier.co.uk/external.php?type=RSS2&forumids=73')
     var feedparser = new FeedParser();
     
     req.on('error', function (error) {
-        logger.error('[feedRead] Error on request');
+        logger.error(logPrefix + logName + ' Error on request');
     });
     
     req.on('response', function (res) {
@@ -25,7 +27,7 @@ exports.readFeed = function() {
     });
     
     feedparser.on('error', function (error) {
-        logger.error('[feedRead] Error on feedparser');
+        logger.error(logPrefix + logName + ' Error on feedparser');
     });
     
     feedparser.on('readable', function () {
@@ -36,20 +38,20 @@ exports.readFeed = function() {
         
         while (item = stream.read()) {
             
-            const $ = cheerio.load(item.description);
+            /*const $ = cheerio.load(item.description);
 
             let desc = $('blockquote > table > tbody > tr > td > table:nth-child(3) > tbody > tr > td > table > tbody > tr > td > div > p:nth-child(4) > span');
 
             if (!desc) {
                 desc = $('blockquote > table > tbody > tr > td > table:nth-child(3) > tbody > tr > td > table > tbody > tr > td > div > p:nth-child(4) > font');
-            }
+            }*/
 
-            console.log(desc);
+            console.log(item.title);
+            console.log(item.date);
+            console.log(item.guid);
         }
     });
     
-    //msg.channel.send('O bot tomou interdiction, aguarde um instante e tente ' +
-    //    'novamente, fly safe CMDR!');
 };
 
 
