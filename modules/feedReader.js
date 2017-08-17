@@ -6,7 +6,7 @@ const mongoConnection = require('./mongoConnection');
 
 const wingColorEmbed = '#f00000';
 const url = 'https://forums.frontier.co.uk/external.php?type=RSS2&forumids=73';
-const logName = '[FeedRead] ';
+const logName = '[FeedReader] ';
 
 var exports = {};
 

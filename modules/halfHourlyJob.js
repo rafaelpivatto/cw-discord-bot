@@ -3,7 +3,7 @@ const logger = require('heroku-logger')
 
 const searchWingInfosFromEddb = require('./searchWingInfosFromEddb');
 const normalizeWingInfoFromEddb = require('./normalizeWingInfoFromEddb');
-const feedRead = require('./feedRead.js');
+const feedRead = require('./feedReader.js');
 
 const logName = '[HalfHourlyJob-Newsletter]';
 

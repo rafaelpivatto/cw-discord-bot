@@ -96,6 +96,8 @@ module.exports = class SystemFactionsCommand extends Command {
                         
                         logger.info(logName + ' Finished process to generate system factions graph');
 
+                        msg.client.channels.find('id', msg.channel.id).messages.find('id', msg.client.user.lastMessageID).delete();
+
                         return msg.embed(embed);
                     });
                 });
