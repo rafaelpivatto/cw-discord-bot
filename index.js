@@ -5,19 +5,21 @@ const Commando = require('discord.js-commando');
 const logger = require('heroku-logger')
 
 var app = express();
-const utils = require('./modules/utils');
 const hourlyJob = require('./modules/hourlyJob.js');
 const fileManagement = require('./modules/fileManagement.js');
+const halfHourlyJob = require('./modules/halfHourlyJob.js');
+
+const logName = '[Index]';
 
 const bot = new Commando.Client({
     unknownCommandResponse: false,
 });
-const client = new discord.ClientUser();
 
-logger.info('Initializing bot');
+logger.info(logName + ' Initializing bot');
 
 bot.on('ready', (arg) => {
     bot.user.setGame('Elite: Dangerous');
+    halfHourlyJob.execute(bot);
 });
 
 bot.registry.registerGroup('status', 'wingstatus');
@@ -32,7 +34,7 @@ bot.login(process.env.BOT_KEY);
 
 hourlyJob.execute();
 
-logger.info('Bot started');
+logger.info(logName + ' Bot started');
 
 var server = app.listen(process.env.PORT || 5000, function () {
     var host = server.address().address;
@@ -41,7 +43,7 @@ var server = app.listen(process.env.PORT || 5000, function () {
 });
 
 app.all('/images/*', function (req, res) {
-    fileManagement.loadFile(res, req.path);
+    fileManagement.loadFile(logName, res, req.path);
 });
 
 app.all('/', function (req, res) {

@@ -10,6 +10,7 @@ const mongoConnection = require('../../modules/mongoConnection');
 const utils = require('../../modules/utils');
 const fileManagement = require('../../modules/fileManagement');
 
+const logName = '[WingGraph]';
 const fileDir = '/images/graph/winggraph/';
 const fileExtension = '.png';
 const wgName = 'Cobra Wing';
@@ -31,16 +32,16 @@ module.exports = class GraphCommand extends Command {
     }
 
     async run(msg, args) {
-        logger.info('[wingGraph] Initializing process to generate wing graph by user = ' + msg.message.author.username);
+        logger.info(logName + ' Initializing process to generate wing graph by user = ' + msg.message.author.username);
         msg.channel.send(':arrows_counterclockwise: Aguarde, o gráfico está sendo gerado...');
         const inicialDate = new Date();
         inicialDate.setDate(inicialDate.getDate() - 9);
         inicialDate.setUTCHours(0, 0, 0, 0);
         const query = {_id : { '$gte' : inicialDate }, wingName: wgName };
         
-        mongoConnection.find(query, 'wingData', function(error, results){
+        mongoConnection.find(logName, query, 'wingData', function(error, results){
             if (error) {
-                logger.error('[wingGraph] Error on retrieving informations', {'error': error});
+                logger.error(logName + ' Error on retrieving informations', {'error': error});
                 return errorMessage.sendClientErrorMessage(msg);
             }
             const data = normalizeObjects(results);
@@ -48,7 +49,7 @@ module.exports = class GraphCommand extends Command {
             
             plotly.plot(data, graphOptions, function (err, res) {
                 if (error) {
-                    logger.error('[wingGraph] Error on plotly graph', {'error': error});
+                    logger.error(logName + ' Error on plotly graph', {'error': error});
                     return errorMessage.sendClientErrorMessage(msg);
                 }
 
@@ -56,21 +57,21 @@ module.exports = class GraphCommand extends Command {
 
                 request.get({url: imageUrl, encoding: 'binary'}, function (err, response, body) {
                     if (error) {
-                        logger.error('[wingGraph] Error get Imagem from plotly', {'error': error});
+                        logger.error(logName + ' Error get Imagem from plotly', {'error': error});
                         return errorMessage.sendClientErrorMessage(msg);
                     }
 
                     const now = dateFormat(utils.getUTCDateNow(), 'yyyymmddHHMMss');
                     const fullFilename =  now + '-' + utils.removeSpaces(wgName) + fileExtension;
 
-                    fileManagement.saveFile(body, fileDir, fullFilename, function(error) {
+                    fileManagement.saveFile(logName, body, fileDir, fullFilename, function(error) {
                         if (error) {
-                            logger.error('[wingGraph] Error to save file = ' + fileDir + fullFilename, {'error': error});
+                            logger.error(logName + ' Error to save file = ' + fileDir + fullFilename, {'error': error});
                             return errorMessage.sendClientErrorMessage(msg);
                         }
 
                         let imageAddress = process.env.BASE_URL + fileDir + fullFilename;
-                        logger.info('[wingGraph] Image address: ' + imageAddress);
+                        logger.info(logName + ' Image address: ' + imageAddress);
                         
                         let embed = new RichEmbed()
                             .setTitle('**Gráfico de influências da ' + wgName + '**')
@@ -82,17 +83,14 @@ module.exports = class GraphCommand extends Command {
                         
                         onlyInDev(msg, imageAddress);
                         
-                        logger.info('[wingGraph] Finished process to generate wing graph');
+                        logger.info(logName + ' Finished process to generate wing graph');
+
+                        msg.client.channels.find('id', msg.channel.id).messages.find('id', msg.client.user.lastMessageID).delete();
 
                         return msg.embed(embed);
-
                     });
                 });
-
-                /*msg.channel.send('', {
-                    file: res.url + '.png'
-                });*/
-                logger.info('[wingGraph] Finished process to generate graph');
+                logger.info(logName + ' Finished process to generate graph');
             });
         });
 

@@ -8,6 +8,8 @@ const mongoConnection = require('../../modules/mongoConnection');
 const utils = require('../../modules/utils');
 const searchWingInfosFromEddb = require('../../modules/searchWingInfosFromEddb');
 
+const logName = '[WingStatus]';
+
 const wrapLine = '\n';
 const wingUrl = 'https://eddb.io/faction/74863';
 const wingThumb = 'http://i.imgur.com/ro5DQx9.png';
@@ -25,19 +27,19 @@ module.exports = class EmbedCommand extends Command {
     }
 
     async run(msg, args) {
-        logger.info('[status] Initializing process to retrieving status by user = ' + msg.message.author.username);
+        logger.info(logName + ' Initializing process to retrieving status by user = ' + msg.message.author.username);
         let out = '';
-        searchWingInfosFromEddb.get(function(error, body) {
+        searchWingInfosFromEddb.get(logName, function(error, body) {
             if (error || !body) {
-                logger.error('[status] Error on retrieving informations', {'error': error});
+                logger.error(logName + ' Error on retrieving informations', {'error': error});
                 return errorMessage.sendSpecificClientErrorMessage(msg, 
                     'O EDDB ficou sem combustível, logo os fuel rats vão ajudar ele, daí podemos tentar novamente, Fly safe CMDR!'
                 );
             }
-            const data = normalizeWingInfoFromEddb.getInfos(body);
+            const data = normalizeWingInfoFromEddb.getInfos(logName, body);
             saveToMongo(data);
             if (data.wingName == null) {
-                logger.error('[status] Wing name not found');
+                logger.error(logName + ' Wing name not found');
                 return errorMessage.sendClientErrorMessage(msg);
             }
             let embed = new RichEmbed()
@@ -56,7 +58,7 @@ module.exports = class EmbedCommand extends Command {
                     '**Segurança: ** ' + info.security + wrapLine + 
                     '**Estado: ** ' + info.state);
             }
-            logger.info('[status] Finish process to retrieving status');
+            logger.info(logName + ' Finish process to retrieving status');
             return msg.embed(embed);
         });
 
@@ -82,7 +84,7 @@ module.exports = class EmbedCommand extends Command {
         }
 
         function saveToMongo(data) {
-            mongoConnection.saveOrUpdate(data, 'wingData', function(error) {
+            mongoConnection.saveOrUpdate(logName, data, 'wingData', function(error) {
                 if (error) console.log(error);
             });
         }
