@@ -85,6 +85,8 @@ module.exports = class GraphCommand extends Command {
                         
                         logger.info(logName + ' Finished process to generate wing graph');
 
+                        msg.client.channels.find('id', msg.channel.id).messages.find('id', msg.client.user.lastMessageID).delete();
+
                         return msg.embed(embed);
                     });
                 });

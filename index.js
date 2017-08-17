@@ -7,22 +7,19 @@ const logger = require('heroku-logger')
 var app = express();
 const hourlyJob = require('./modules/hourlyJob.js');
 const fileManagement = require('./modules/fileManagement.js');
-const feedRead = require('./modules/feedRead.js');
-const utils = require('./modules/utils.js');
+const halfHourlyJob = require('./modules/halfHourlyJob.js');
 
 const logName = '[Index]';
 
 const bot = new Commando.Client({
     unknownCommandResponse: false,
 });
-const client = new discord.ClientUser();
 
 logger.info(logName + ' Initializing bot');
 
 bot.on('ready', (arg) => {
     bot.user.setGame('Elite: Dangerous');
-
-    feedRead.readFeed(logName);
+    halfHourlyJob.execute(bot);
 });
 
 bot.registry.registerGroup('status', 'wingstatus');
