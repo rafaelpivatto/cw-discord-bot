@@ -1,5 +1,5 @@
 const { Command } = require('discord.js-commando');
-const logger = require('heroku-logger')
+const logger = require('heroku-logger');
 const { RichEmbed } = require('discord.js');
 
 const doubleWrapLine = '\n\n';
