@@ -48,7 +48,7 @@ exports.readFeed = function(logPrefix, bot) {
                                 .setDescription('Nova newsletter da frontier, para ver as novidades acesse o link abaixo:' + 
                                     '\n\n' + item.guid);
                             if (channel) {
-                                return channel.send('', {'embed': embed});
+                                return channel.send('@everyone', {'embed': embed});
                             }
                         }
                     });

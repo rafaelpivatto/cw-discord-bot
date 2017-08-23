@@ -15,7 +15,7 @@ exports.getAndUpdate = function(logPrefix, qtd, callback) {
             callback(error);
         }
 
-        if (!resultFound || resultFound.length === 0 || qtd > resultFound.qtd) {
+        if (!resultFound || resultFound.length === 0 || qtd > resultFound[0].qtd) {
             const dateSaved = {
                 _id: 'USERS-PLAYING-ED',
                 qtd: qtd,
