@@ -24,17 +24,21 @@ module.exports = class PingCommand extends Command {
     async run(msg, args) {
         logger.info(logName + ' Execute by user = ' + msg.message.author.username);
 
-        var games = [];
-        var users = msg.client.users;
-        var keyArray = users.keyArray();
-        var playersOnline = 0;
-        var playingED = 0;
+        var games = [],
+            users = msg.client.users,
+            keyArray = users.keyArray(),
+            playersRegistered = 0,
+            playersOnline = 0,
+            playingED = 0;
         for (var i = 0; i < keyArray.length; i++) {
             var user = users.get(keyArray[i]);
             if (user.bot) {
                 continue;
             }
-            playersOnline++;
+            playersRegistered++;
+            if (user.presence && user.presence.status && user.presence.status !== 'offline') {
+                playersOnline++;
+            }
             if (!user.presence || !user.presence.game || user.bot) {
                     continue;
             }
@@ -56,20 +60,18 @@ module.exports = class PingCommand extends Command {
             let embed = new RichEmbed()
                 .setColor(wingColor)
                 .setTimestamp()
-                .setTitle('**Estatísticas Cobra Wing**')
+                .setTitle('**Estatísticas Cobra Wing informa...**')
                 .setThumbnail(wingThumb)
                 .setFooter('Fly safe cmdr!')
                 .setDescription(
-                    'No momento há:\n' + 
-                    '**' + playersOnline + ' pessoas** online no discord\n' + 
+                    'Há no momento:\n' + 
+                    '**' + playersOnline + '/' + playersRegistered + ' pessoas** online no discord\n' + 
                     '**' + getPlayersLabel(playingED) + '** jogando Elite: Dangerous' +
                     doubleWrapLine + 
-                    'Nosso recorde foi de **' + getPlayersLabel(data.qtd) + '** jogando **Elite: Dangerous** em ' + 
+                    'O recorde foi de **' + getPlayersLabel(data.qtd) + '** jogando **Elite: Dangerous** em ' + 
                     dateFormat(data.date, 'dd/mm/yyyy')
                 );
-
             return msg.embed(embed);
-
         });
 
         function getPlayersLabel(qtd) {

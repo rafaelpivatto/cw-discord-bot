@@ -22,12 +22,8 @@ bot.on('ready', (arg) => {
     halfHourlyJob.execute(bot);    
 });
 
-bot.registry.registerGroup('status', 'wingstatus');
-bot.registry.registerGroup('status', 'winggraph');
-bot.registry.registerGroup('status', 'ping');
-bot.registry.registerGroup('status', 'systemfactionsgraph');
-bot.registry.registerGroup('status', 'playing');
-bot.registry.registerGroup('help', 'help');
+bot.registry.registerGroup('status');
+bot.registry.registerGroup('help');
 
 bot.registry.registerCommandsIn(__dirname + '/commands')/
 

@@ -13,7 +13,7 @@ exports.loadFile = function(logPrefix, res, fileName) {
     fs.readFile(dir + fileName, function (error, dt) {
         if (error) {
             logger.error(logPrefix + logName + ' Error to load file ', {'error': error});
-            return res.status(404).send('Sorry, we cannot find that!');
+            return res.status(404).send('Desculpe, essa imagem não está mais disponível!');
         }
         logger.info(logPrefix + logName + ' File readed!');
         var options = {
