@@ -1,4 +1,3 @@
-//const FeedParser = require('feedparser');
 const feedparser = require('feedparser-promised');
 const logger = require('heroku-logger');
 const discord = require('discord.js');

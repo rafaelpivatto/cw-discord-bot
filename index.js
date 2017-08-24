@@ -8,28 +8,31 @@ var app = express();
 const hourlyJob = require('./modules/hourlyJob.js');
 const fileManagement = require('./modules/fileManagement.js');
 const halfHourlyJob = require('./modules/halfHourlyJob.js');
+const registryCustomCommands = require('./modules/registryCustomCommands.js');
 
 const logName = '[Index]';
 
-const bot = new Commando.Client({
+const client = new Commando.Client({
     unknownCommandResponse: false,
 });
 
 logger.info(logName + ' Initializing bot');
 
-bot.on('ready', (arg) => {
-    bot.user.setPresence({ game: { name: 'ajuda? !cwhelp', type: 0 } });
-    halfHourlyJob.execute(bot);    
+client.registry.registerGroup('status');
+client.registry.registerGroup('help');
+client.registry.registerGroup('general');
+
+client.registry.registerCommandsIn(__dirname + '/commands')/
+
+client.login(process.env.BOT_KEY);
+
+client.on('ready', (arg) => {
+    client.user.setPresence({ game: { name: 'ajuda? !cwhelp', type: 0 } });
+    
+    registryCustomCommands.execute(client);
+    hourlyJob.execute();
+    halfHourlyJob.execute(client);    
 });
-
-bot.registry.registerGroup('status');
-bot.registry.registerGroup('help');
-
-bot.registry.registerCommandsIn(__dirname + '/commands')/
-
-bot.login(process.env.BOT_KEY);
-
-hourlyJob.execute();
 
 logger.info(logName + ' Bot started');
 
