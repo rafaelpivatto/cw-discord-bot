@@ -32,7 +32,7 @@ exports.readFeed = function(logPrefix, bot) {
                         link: item.guid
                     };
 
-                    mongoConnection.saveOrUpdate(logPrefix, saveData, 'notify', function(error, results) {
+                    mongoConnection.saveOrUpdate(logPrefix, saveData, 'notify', function(error) {
                         if (error) {
                             logger.error(logName + ' Error to save data ', {'data': saveData, 'error': error});
                         } else {

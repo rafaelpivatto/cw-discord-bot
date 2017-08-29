@@ -6,9 +6,9 @@ const logger = require('heroku-logger');
 const request = require('request');
 
 const errorMessage = require('../../modules/errorMessage.js');
-const mongoConnection = require('../../modules/mongoConnection');
-const utils = require('../../modules/utils');
-const fileManagement = require('../../modules/fileManagement');
+const mongoConnection = require('../../modules/mongoConnection.js');
+const utils = require('../../modules/utils.js');
+const fileManagement = require('../../modules/fileManagement.js');
 
 const logName = '[WingGraph]';
 const fileDir = '/images/graph/winggraph/';
@@ -33,6 +33,8 @@ module.exports = class GraphCommand extends Command {
     }
 
     async run(msg, args) {
+        if (utils.blockDirectMessages(msg)) return;
+
         logger.info(logName + ' Initializing process to generate wing graph by user = ' + msg.message.author.username);
         msg.channel.send(':arrows_counterclockwise: Aguarde, o gráfico está sendo gerado...');
         const inicialDate = new Date();

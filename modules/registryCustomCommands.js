@@ -10,7 +10,7 @@ exports.execute = function(client) {
     
     mongoConnection.find(logName, {}, 'customCommands', function(error, data) {
         if (error || !data) {
-            logger.error(logName + ' Error on retrieving informations', {'error': error});
+            logger.error(logName + ' Error on retrieving informations and register custom commands', {'error': error});
         }
         if (data.length && data.length > 0) {
             const aliases = [];
@@ -18,6 +18,7 @@ exports.execute = function(client) {
                 aliases.push(item._id);
             }
             client.registry.commands.get('@general').aliases = aliases;
+            logger.info(logName + ' Success to register custom commands');
         }
     });
 };
