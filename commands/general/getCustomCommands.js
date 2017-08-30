@@ -15,7 +15,7 @@ module.exports = class GetCustomCommand extends Command {
             name: '@general',
             group: 'general',
             memberName: 'getcustomcommand',
-            description: 'Command to execute custom commands'
+            description: 'Command to get a custom commands'
         });
     }
 

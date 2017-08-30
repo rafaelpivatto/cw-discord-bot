@@ -1,5 +1,6 @@
 const { Command } = require('discord.js-commando');
 const logger = require('heroku-logger');
+const jsonminify = require('jsonminify');
 const mongoConnection = require('../../modules/mongoConnection.js');
 const errorMessage = require('../../modules/errorMessage.js');
 const utils = require('../../modules/utils.js');
@@ -12,7 +13,7 @@ module.exports = class AddCustomCommand extends Command {
             name: 'addcustom',
             group: 'general',
             memberName: 'addcustomcommand',
-            description: 'Command to add custom commands'
+            description: 'Command to add a custom commands'
         });
     }
 
@@ -32,7 +33,8 @@ module.exports = class AddCustomCommand extends Command {
         }
 
         try {
-            commandData = JSON.parse(args);
+            const minified = JSON.minify(args);
+            commandData = JSON.parse(minified);
         } catch (e) {
             console.log(e);
             logger.warn(logName + ' Error on converting json');
