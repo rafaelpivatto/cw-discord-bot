@@ -13,7 +13,7 @@ module.exports = class GetCustomCommand extends Command {
     constructor(client) {
         super(client, {
             name: '@general',
-            group: 'general',
+            group: 'customcommands',
             memberName: 'getcustomcommand',
             description: 'Command to get a custom commands'
         });

@@ -12,7 +12,7 @@ module.exports = class GetCustomCommand extends Command {
     constructor(client) {
         super(client, {
             name: 'delcustom',
-            group: 'general',
+            group: 'customcommands',
             memberName: 'delcustomcommand',
             description: 'Command to delete a custom commands'
         });

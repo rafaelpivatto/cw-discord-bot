@@ -20,7 +20,7 @@ logger.info(logName + ' Initializing bot');
 
 client.registry.registerGroup('status');
 client.registry.registerGroup('help');
-client.registry.registerGroup('general');
+client.registry.registerGroup('customcommands');
 
 client.registry.registerCommandsIn(__dirname + '/commands')/
 
