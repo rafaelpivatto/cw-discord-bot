@@ -24,7 +24,7 @@ exports.getUTCDateNow = function() {
 };
 
 exports.getBRTDate = function(date) {
-    const utc = exports.getUTCDate(new Date());
+    const utc = exports.getUTCDate(date);
     return new Date(utc.valueOf() + utc.getTimezoneOffset() * -60000)
 };
 
@@ -36,5 +36,10 @@ exports.removeSpaces = function(str) {
     var re = new RegExp(' ', 'g');
     return String(str).replace(re, '');
 };
+
+exports.blockDirectMessages = function(msg) {
+    return process.env.BLOCK_BOT_DIRECT_MESSAGES && 
+        msg.message.channel.type === 'dm';
+}
 
 module.exports = exports;

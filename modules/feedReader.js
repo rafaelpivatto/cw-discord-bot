@@ -1,4 +1,3 @@
-//const FeedParser = require('feedparser');
 const feedparser = require('feedparser-promised');
 const logger = require('heroku-logger');
 const discord = require('discord.js');
@@ -33,7 +32,7 @@ exports.readFeed = function(logPrefix, bot) {
                         link: item.guid
                     };
 
-                    mongoConnection.saveOrUpdate(logPrefix, saveData, 'notify', function(error, results) {
+                    mongoConnection.saveOrUpdate(logPrefix, saveData, 'notify', function(error) {
                         if (error) {
                             logger.error(logName + ' Error to save data ', {'data': saveData, 'error': error});
                         } else {

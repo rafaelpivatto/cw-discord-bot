@@ -3,10 +3,10 @@ const { RichEmbed } = require('discord.js');
 const logger = require('heroku-logger')
 
 const errorMessage = require('../../modules/errorMessage.js');
-const normalizeWingInfoFromEddb = require('../../modules/normalizeWingInfoFromEddb');
-const mongoConnection = require('../../modules/mongoConnection');
-const utils = require('../../modules/utils');
-const searchWingInfosFromEddb = require('../../modules/searchWingInfosFromEddb');
+const normalizeWingInfoFromEddb = require('../../modules/normalizeWingInfoFromEddb.js');
+const mongoConnection = require('../../modules/mongoConnection.js');
+const utils = require('../../modules/utils.js');
+const searchWingInfosFromEddb = require('../../modules/searchWingInfosFromEddb.js');
 
 const logName = '[WingStatus]';
 
@@ -27,6 +27,8 @@ module.exports = class EmbedCommand extends Command {
     }
 
     async run(msg, args) {
+        if (utils.blockDirectMessages(msg)) return;
+
         logger.info(logName + ' Initializing process to retrieving status by user = ' + msg.message.author.username);
         let out = '';
         searchWingInfosFromEddb.get(logName, function(error, body) {

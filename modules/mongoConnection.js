@@ -36,7 +36,24 @@ exports.find = function(logPrefix, query, collectionName, callback) {
             logger.info(logPrefix + logName + ' Retrieve success');
             return callback(null, docs);
         });
-    });  
+    });
+};
+
+exports.delete = function(logPrefix, query, collectionName, callback) {
+    logger.info(logPrefix + logName + ' Delete on collection=' + collectionName + ', query=' + JSON.stringify(query));
+    getConnection(logPrefix, function(error, db) {
+        if(error) return callback(error);
+        const collection = db.collection(collectionName);
+        collection.deleteOne(query, function(error, result) {
+            if(error) {
+                logger.error(logPrefix + logName + ' Error to delete on collection=' + collectionName, {'error': error});
+                return callback(error);
+            }
+            closeConnection(db);
+            logger.info(logPrefix + logName + ' Delete success');
+            return callback(null, result);
+        });
+    });
 };
 
 function getConnection(logPrefix, callback) {

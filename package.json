@@ -22,7 +22,7 @@
     "feedparser-promised": "^1.4.0",
     "fs": "0.0.1-security",
     "heroku-logger": "^0.1.4",
-    "html-to-json": "^0.6.0",
+    "jsonminify": "^0.4.1",
     "mkdirp": "^0.5.1",
     "mongodb": "^2.2.30",
     "node-schedule": "^1.2.3",

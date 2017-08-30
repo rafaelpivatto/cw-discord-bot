@@ -6,9 +6,9 @@ const request = require('request');
 const plotly = require('plotly')(process.env.PLOTLY_USER,process.env.PLOTLY_PASS);
 
 const errorMessage = require('../../modules/errorMessage.js');
-const searchSystemFactionFromEdsm = require('../../modules/searchSystemFactionFromEdsm');
-const utils = require('../../modules/utils');
-const fileManagement = require('../../modules/fileManagement');
+const searchSystemFactionFromEdsm = require('../../modules/searchSystemFactionFromEdsm.js');
+const utils = require('../../modules/utils.js');
+const fileManagement = require('../../modules/fileManagement.js');
 
 const logName = '[SystemFactionsGraph]';
 const fileDir = '/images/graph/systemfactions/';
@@ -31,6 +31,8 @@ module.exports = class SystemFactionsCommand extends Command {
     }
 
     async run(msg, args) {
+        if (utils.blockDirectMessages(msg)) return;
+        
         const systemName = String(args).toUpperCase();
         logger.info(logName + ' Generate system factions graph by user = ' + msg.message.author.username);
         logger.info(logName + ' System name = ' + systemName);

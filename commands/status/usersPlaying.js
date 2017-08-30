@@ -1,9 +1,10 @@
 const { Command } = require('discord.js-commando');
 const logger = require('heroku-logger');
 const { RichEmbed } = require('discord.js');
+const dateFormat = require('dateformat');
+
 const utils = require('../../modules/utils.js');
 const lastSeenPlayers = require('../../modules/lastSeenPlayers.js');
-const dateFormat = require('dateformat');
 
 const logName = '[usersPlaying]';
 const doubleWrapLine = '\n\n';
@@ -22,6 +23,8 @@ module.exports = class PingCommand extends Command {
     }
 
     async run(msg, args) {
+        if (utils.blockDirectMessages(msg)) return;
+        
         logger.info(logName + ' Execute by user = ' + msg.message.author.username);
 
         var games = [],
@@ -69,7 +72,7 @@ module.exports = class PingCommand extends Command {
                     '**' + getPlayersLabel(playingED) + '** jogando Elite: Dangerous' +
                     doubleWrapLine + 
                     'O recorde foi de **' + getPlayersLabel(data.qtd) + '** jogando **Elite: Dangerous** em ' + 
-                    dateFormat(data.date, 'dd/mm/yyyy')
+                    dateFormat(utils.getBRTDate(data.date), 'dd/mm/yyyy')
                 );
             return msg.embed(embed);
         });

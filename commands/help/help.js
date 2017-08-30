@@ -1,6 +1,7 @@
 const { Command } = require('discord.js-commando');
 const logger = require('heroku-logger');
 const { RichEmbed } = require('discord.js');
+const utils = require('../../modules/utils.js');
 
 const doubleWrapLine = '\n\n';
 const wingThumb = 'http://i.imgur.com/ro5DQx9.png';
@@ -13,11 +14,14 @@ module.exports = class HelpCommand extends Command {
             name: 'cwhelp',
             group: 'help',
             memberName: 'help',
+            aliases: ['cwajuda'],
             description: 'Help for CW bot'
         });
     }
 
     async run(msg, args) {
+        if (utils.blockDirectMessages(msg)) return;
+        
         logger.info('[Help] Execute help command by user = ' + msg.message.author.username);
         
         let embed = new RichEmbed()
