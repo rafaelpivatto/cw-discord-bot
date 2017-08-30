@@ -85,9 +85,6 @@ module.exports = class AddCustomCommand extends Command {
             if (!data.content) {
                 errors.push('o campo "content" é obrigatório.');
             }
-            if (!data.description) {
-                errors.push('o campo "description" é obrigatório.');
-            }
             if (!data.type) {
                 errors.push('o campo "type" é obrigatório.');
             } else if (data.type !== 'science' && data.type !== 'meme'){
