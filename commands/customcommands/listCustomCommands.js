@@ -5,16 +5,17 @@ const mongoConnection = require('../../modules/mongoConnection.js');
 const errorMessage = require('../../modules/errorMessage.js');
 
 const logName = '[GetCustomCommand]';
-const doubleWrapLine = '\n\n';
+const wrapLine = '\n';
 const wingColor = '#f00000';
 
 module.exports = class GetCustomCommand extends Command {
     constructor(client) {
         super(client, {
-            name: '@general',
+            name: '@listcustom',
             group: 'customcommands',
-            memberName: 'getcustomcommand',
-            description: 'Command to get a custom commands',
+            memberName: 'listcustomcommand',
+            aliases: ['science', 'memes'],
+            description: 'Command to list a custom commands',
             guildOnly: true,
             patterns: [new RegExp('[a-zA-Z]')]
         });
@@ -25,7 +26,7 @@ module.exports = class GetCustomCommand extends Command {
         const commandName = String(msg.message.content).replace(args, '').replace('!', '').toLowerCase();
         logger.info(logName + ' Execute command = ' + commandName + ' by user = ' + msg.message.author.username);
         
-        const query = {_id: commandName};
+        const query = {type: commandName};
         mongoConnection.find(logName, query, 'customCommands', function(error, data) {
             
             if (error) {
@@ -34,22 +35,35 @@ module.exports = class GetCustomCommand extends Command {
             }
             if (!data || data.length == 0) {
                 logger.info(logName + ' Commands not found = ' + commandName, {'error': error});
-                return errorMessage.sendSpecificClientErrorMessage(msg, 'Comando não encontrado... :thinking:');
+                return errorMessage.sendSpecificClientErrorMessage(msg, 'Não existem comandos de ' + commandName + ' :confused:');
             }
-            const item = data[0];
+
+            data.sort(sortFunction);
+            let description = '';
+
+            for (let item of data) {
+                description += '**!' + item._id + '** - *' + String(item.description).trim() + '*' + wrapLine;
+            }
             let embed = new RichEmbed()
                 .setColor(wingColor)
                 .setTimestamp()
                 .setFooter('Fly safe cmdr!')
-                .setTitle(getValue(item.title))
-                .setImage(getValue(item.image))
-                .setDescription(getValue(item.content));
+                .setTitle('Comandos de ' + commandName)
+                .setDescription(description);
 
-            return msg.channel.send(item.alert, {'embed': embed});
+            return msg.embed(embed);
         });
 
         function getValue(param) {
             return param ? param : '';
+        }
+
+        function sortFunction(a, b) {
+            if (a._id === b._id) {
+                return 0;
+            } else {
+                return (a._id < b._id) ? -1 : 1;
+            }
         }
         
     }

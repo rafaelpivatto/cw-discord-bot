@@ -28,12 +28,13 @@ module.exports = class GraphCommand extends Command {
             name: 'cwgrafico',
             group: 'status',
             memberName: 'winggraph',
-            description: 'Verify CW Graph'
+            description: 'Verify CW Graph',
+            guildOnly: true,
+            patterns: [new RegExp('[a-zA-Z]')]
         });
     }
 
     async run(msg, args) {
-        if (utils.blockDirectMessages(msg)) return;
 
         logger.info(logName + ' Initializing process to generate wing graph by user = ' + msg.message.author.username);
         msg.channel.send(':arrows_counterclockwise: Aguarde, o gráfico está sendo gerado...');

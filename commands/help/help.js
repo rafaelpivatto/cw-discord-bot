@@ -1,7 +1,6 @@
 const { Command } = require('discord.js-commando');
 const logger = require('heroku-logger');
 const { RichEmbed } = require('discord.js');
-const utils = require('../../modules/utils.js');
 
 const doubleWrapLine = '\n\n';
 const wingThumb = 'http://i.imgur.com/ro5DQx9.png';
@@ -11,16 +10,16 @@ const wingColor = '#f00000';
 module.exports = class HelpCommand extends Command {
     constructor(client) {
         super(client, {
-            name: 'cwhelp',
+            name: 'cwajuda',
             group: 'help',
             memberName: 'help',
-            aliases: ['cwajuda'],
-            description: 'Help for CW bot'
+            aliases: ['cwhelp'],
+            description: 'Help for CW bot',
+            guildOnly: true
         });
     }
 
     async run(msg, args) {
-        if (utils.blockDirectMessages(msg)) return;
         
         logger.info('[Help] Execute help command by user = ' + msg.message.author.username);
         
@@ -37,7 +36,8 @@ module.exports = class HelpCommand extends Command {
                     '**!sistema <nome_sistema>** *Exibe um grafico das influências das facções no sistema informado, estando ou não a Cobra Wing presente. Ex: !sistema ebor*' + doubleWrapLine +
                     '**!cwping** *Um simples comando para o bot dar um sinal de vida.*' + doubleWrapLine +
                     '**!cwjogando** *Exibe quantos jogares online no discord e jogando Elite:Dangerous.*' + doubleWrapLine +
-                    '**!cwhelp** *Exibe essas informações de ajuda.*'
+                    '**!science** *Exibe todos os comandos de science*' + doubleWrapLine +
+                    '**!memes** *Exibe todos os comandos de memes*' + doubleWrapLine
                 );
 
         return msg.embed(embed);

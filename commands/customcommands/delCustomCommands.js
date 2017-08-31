@@ -2,9 +2,8 @@ const { Command } = require('discord.js-commando');
 const logger = require('heroku-logger');
 const mongoConnection = require('../../modules/mongoConnection.js');
 const errorMessage = require('../../modules/errorMessage.js');
-const utils = require('../../modules/utils.js');
 
-const logName = '[DellCustomCommand]';
+const logName = '[DelCustomCommand]';
 const doubleWrapLine = '\n\n';
 const wingColor = '#f00000';
 
@@ -14,12 +13,13 @@ module.exports = class GetCustomCommand extends Command {
             name: 'delcustom',
             group: 'customcommands',
             memberName: 'delcustomcommand',
-            description: 'Command to delete a custom commands'
+            description: 'Command to delete a custom commands',
+            guildOnly: true,
+            patterns: [new RegExp('[a-zA-Z]')]
         });
     }
 
     async run(msg, args) {
-        if (utils.blockDirectMessages(msg)) return;
         
         let commandData;
         if (msg.message.channel.name !== process.env.CUSTOM_COMMANDS_CHANNEL) {

@@ -26,12 +26,13 @@ module.exports = class SystemFactionsCommand extends Command {
             name: 'sistema',
             group: 'status',
             memberName: 'systemfactionsgraph',
-            description: 'Retrieve status for system factions'
+            description: 'Retrieve status for system factions',
+            guildOnly: true,
+            patterns: [new RegExp('[a-zA-Z]')]
         });
     }
 
     async run(msg, args) {
-        if (utils.blockDirectMessages(msg)) return;
         
         const systemName = String(args).toUpperCase();
         logger.info(logName + ' Generate system factions graph by user = ' + msg.message.author.username);
@@ -86,9 +87,10 @@ module.exports = class SystemFactionsCommand extends Command {
                         let imageAddress = process.env.BASE_URL + fileDir + fullFilename;
                         logger.info(logName + ' Image address: ' + imageAddress);
                         
+                        const urlFormatted = String(url).replace(/ /g, '%20');
                         let embed = new RichEmbed()
                             .setTitle('**Influências em ' + systemName + '**')
-                            .setDescription('Dados extraídos do [EDSM](' + url + ')')
+                            .setDescription('Dados extraídos do [EDSM](' + urlFormatted + ')')
                             .setImage(imageAddress)
                             .setColor(wingColorEmbed)
                             .setTimestamp()
@@ -134,11 +136,12 @@ module.exports = class SystemFactionsCommand extends Command {
 
             for (let i = 0; i < json.factions.length ; i++) {
                 const faction = json.factions[i];
-                const isThisWing = String(faction.name).toUpperCase() === wingName.toUpperCase();
-                const color = isThisWing ? wingColor : defaultColors[i];
+                const thisWing = String(faction.name).toUpperCase() === wingName.toUpperCase();
+                const color = thisWing ? wingColor : defaultColors[i];
                 const influence = Math.round(faction.influence * 100);
+                let factionname = String(faction.name).replace(new RegExp('&', 'g'), 'and');
                 if (influence <= 0) continue;
-                data[0].labels.push(faction.name + playerFactionIcon(faction));
+                data[0].labels.push(factionname + playerFactionIcon(faction));
                 data[0].marker.colors.push(color);
                 data[0].values.push(influence);
             }

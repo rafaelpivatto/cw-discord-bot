@@ -37,9 +37,4 @@ exports.removeSpaces = function(str) {
     return String(str).replace(re, '');
 };
 
-exports.blockDirectMessages = function(msg) {
-    return process.env.BLOCK_BOT_DIRECT_MESSAGES && 
-        msg.message.channel.type === 'dm';
-}
-
 module.exports = exports;

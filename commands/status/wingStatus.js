@@ -22,12 +22,13 @@ module.exports = class EmbedCommand extends Command {
             name: 'cwstatus',
             group: 'status',
             memberName: 'wingstatus',
-            description: 'Verify CW status'
+            description: 'Verify CW status',
+            guildOnly: true,
+            patterns: [new RegExp('[a-zA-Z]')]
         });
     }
 
     async run(msg, args) {
-        if (utils.blockDirectMessages(msg)) return;
 
         logger.info(logName + ' Initializing process to retrieving status by user = ' + msg.message.author.username);
         let out = '';
@@ -56,7 +57,7 @@ module.exports = class EmbedCommand extends Command {
             for(let info of data.infos) {
                 embed.addField('**' + getSystemName(info) + '**',
                     '**Influência: ** '+ utils.rpad(getInfluence(info), 10) + ' ' + 
-                    '**Att. à ' + info.eddbUpdate + '**' + wrapLine +
+                    '**Att. há ' + info.eddbUpdate + '**' + wrapLine +
                     '**Segurança: ** ' + info.security + wrapLine + 
                     '**Estado: ** ' + info.state);
             }

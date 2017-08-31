@@ -18,12 +18,13 @@ module.exports = class PingCommand extends Command {
             name: 'cwjogando',
             group: 'status',
             memberName: 'playing',
-            description: 'Players playing Elite: Dangerous'
+            description: 'Players playing Elite: Dangerous',
+            guildOnly: true,
+            patterns: [new RegExp('[a-zA-Z]')]
         });
     }
 
     async run(msg, args) {
-        if (utils.blockDirectMessages(msg)) return;
         
         logger.info(logName + ' Execute by user = ' + msg.message.author.username);
 

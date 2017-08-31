@@ -3,7 +3,6 @@ const logger = require('heroku-logger');
 const jsonminify = require('jsonminify');
 const mongoConnection = require('../../modules/mongoConnection.js');
 const errorMessage = require('../../modules/errorMessage.js');
-const utils = require('../../modules/utils.js');
 
 const logName = '[AddCustomCommand]';
 
@@ -13,12 +12,13 @@ module.exports = class AddCustomCommand extends Command {
             name: 'addcustom',
             group: 'customcommands',
             memberName: 'addcustomcommand',
-            description: 'Command to add a custom commands'
+            description: 'Command to add a custom commands',
+            guildOnly: true,
+            patterns: [new RegExp('[a-zA-Z]')]
         });
     }
 
     async run(msg, args) {
-        if (utils.blockDirectMessages(msg)) return;
 
         let commandData;
         if (msg.message.channel.name !== process.env.CUSTOM_COMMANDS_CHANNEL) {
@@ -69,12 +69,13 @@ module.exports = class AddCustomCommand extends Command {
                 '\t"title": "titulo do comando",\n' +
                 '\t"content": "conteúdo do comando",\n' +
                 '\t"description": "descrição do comando",\n' +
+                '\t"alert": "alerta para tags ex: @Pesquisador",\n' +
                 '\t"image": "url de uma imagem",\n' +
                 '\t"type": "science"' +
             '\n}\n\n' + 
             '¹ O campo _id deve ser totalmente em letras minusculas e sem espaços.\n' +
-            '² Os campos title e image são opcionais.\n' +
-            '³ O campo type pode ser "science" ou "meme"';
+            '² Os campos title, image e description são opcionais.\n' +
+            '³ O campo type pode ser "science" ou "memes"';
         }
 
         function validateJson(data) {
@@ -87,7 +88,7 @@ module.exports = class AddCustomCommand extends Command {
             }
             if (!data.type) {
                 errors.push('o campo "type" é obrigatório.');
-            } else if (data.type !== 'science' && data.type !== 'meme'){
+            } else if (data.type !== 'science' && data.type !== 'memes'){
                 errors.push('o campo "type" é inválido.');
             }
             return errors;
