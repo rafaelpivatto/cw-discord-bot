@@ -75,7 +75,7 @@ module.exports = class AddCustomCommand extends Command {
             '\n}\n\n' + 
             '¹ O campo _id deve ser totalmente em letras minusculas e sem espaços.\n' +
             '² Os campos title, image e description são opcionais.\n' +
-            '³ O campo type pode ser "science" ou "memes"';
+            '³ O campo type pode ser "science". "memes" ou "ranks"';
         }
 
         function validateJson(data) {
@@ -88,7 +88,9 @@ module.exports = class AddCustomCommand extends Command {
             }
             if (!data.type) {
                 errors.push('o campo "type" é obrigatório.');
-            } else if (data.type !== 'science' && data.type !== 'memes'){
+            } else if (data.type !== 'science' 
+                       && data.type !== 'memes'
+                       && data.type !== 'ranks'){
                 errors.push('o campo "type" é inválido.');
             }
             return errors;

@@ -14,7 +14,7 @@ module.exports = class GetCustomCommand extends Command {
             name: '@listcustom',
             group: 'customcommands',
             memberName: 'listcustomcommand',
-            aliases: ['science', 'memes'],
+            aliases: ['science', 'memes', 'ranks'],
             description: 'Command to list a custom commands',
             guildOnly: true,
             patterns: [new RegExp('[a-zA-Z]')]

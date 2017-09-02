@@ -15,7 +15,8 @@ module.exports = class HelpCommand extends Command {
             memberName: 'help',
             aliases: ['cwhelp'],
             description: 'Help for CW bot',
-            guildOnly: true
+            guildOnly: true,
+            patterns: [new RegExp('[a-zA-Z]')]
         });
     }
 
