@@ -32,13 +32,14 @@ module.exports = class HelpCommand extends Command {
                 .setFooter('Fly safe cmdr!')
                 .setURL(wingUrlSite)
                 .setDescription(
-                    '**!cwstatus** *Exibe os status dos sistemas onde a Cobra Wing está presente.*' + doubleWrapLine +
-                    '**!cwgrafico** *Exibe um gráfico de influência dos últimos 10 dias desses sitemas onde a Cobra Wing está presente.*' + doubleWrapLine +
-                    '**!sistema <nome_sistema>** *Exibe um grafico das influências das facções no sistema informado, estando ou não a Cobra Wing presente. Ex: !sistema ebor*' + doubleWrapLine +
-                    '**!cwping** *Um simples comando para o bot dar um sinal de vida.*' + doubleWrapLine +
-                    '**!cwjogando** *Exibe quantos jogares online no discord e jogando Elite:Dangerous.*' + doubleWrapLine +
-                    '**!science** *Exibe todos os comandos de science*' + doubleWrapLine +
-                    '**!memes** *Exibe todos os comandos de memes*' + doubleWrapLine
+                    '**!cwstatus** - *Exibe os status dos sistemas onde a Cobra Wing está presente.*' + doubleWrapLine +
+                    '**!cwgrafico** - *Exibe um gráfico de influência dos últimos 10 dias desses sitemas onde a Cobra Wing está presente.*' + doubleWrapLine +
+                    '**!sistema <nome_sistema>** - *Exibe um grafico das influências das facções no sistema informado, estando ou não a Cobra Wing presente. Ex: !sistema ebor*' + doubleWrapLine +
+                    '**!cwping** - *Um simples comando para o bot dar um sinal de vida.*' + doubleWrapLine +
+                    '**!cwjogando** - *Exibe quantos jogares online no discord e jogando Elite:Dangerous.*' + doubleWrapLine +
+                    '**!science** - *Exibe todos os comandos de science*' + doubleWrapLine +
+                    '**!memes** - *Exibe todos os comandos de memes*' + doubleWrapLine +
+                    '**!ranks** - *Exibe todos os comandos de ranks*'
                 );
 
         return msg.embed(embed);
