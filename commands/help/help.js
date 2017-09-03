@@ -4,7 +4,6 @@ const { RichEmbed } = require('discord.js');
 
 const doubleWrapLine = '\n\n';
 const wingThumb = 'http://i.imgur.com/ro5DQx9.png';
-const wingUrlSite = 'http://elitedangerouscobra.com.br';
 const wingColor = '#f00000';
 
 module.exports = class HelpCommand extends Command {
@@ -27,19 +26,19 @@ module.exports = class HelpCommand extends Command {
         let embed = new RichEmbed()
                 .setColor(wingColor)
                 .setTimestamp()
-                .setTitle('**Comandos do CobraWingBot**')
+                .setTitle('Comandos do CobraWingBot')
                 .setThumbnail(wingThumb)
                 .setFooter('Fly safe cmdr!')
-                .setURL(wingUrlSite)
                 .setDescription(
                     '**!cwstatus** - *Exibe os status dos sistemas onde a Cobra Wing está presente.*' + doubleWrapLine +
                     '**!cwgrafico** - *Exibe um gráfico de influência dos últimos 10 dias desses sitemas onde a Cobra Wing está presente.*' + doubleWrapLine +
                     '**!sistema <nome_sistema>** - *Exibe um grafico das influências das facções no sistema informado, estando ou não a Cobra Wing presente. Ex: !sistema ebor*' + doubleWrapLine +
+                    '**!utilidades** - *Conjunto de sites extremente úteis para auxiliar na jobabilidade.*' + doubleWrapLine +
                     '**!cwping** - *Um simples comando para o bot dar um sinal de vida.*' + doubleWrapLine +
                     '**!cwjogando** - *Exibe quantos jogares online no discord e jogando Elite:Dangerous.*' + doubleWrapLine +
-                    '**!science** - *Exibe todos os comandos de science*' + doubleWrapLine +
-                    '**!memes** - *Exibe todos os comandos de memes*' + doubleWrapLine +
-                    '**!ranks** - *Exibe todos os comandos de ranks*'
+                    '**!science** - *Exibe todos os comandos de science.*' + doubleWrapLine +
+                    '**!memes** - *Exibe todos os comandos de memes.*' + doubleWrapLine +
+                    '**!ranks** - *Exibe todos os comandos de ranks.*'
                 );
 
         return msg.embed(embed);
