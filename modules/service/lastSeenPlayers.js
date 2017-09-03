@@ -1,6 +1,6 @@
 const logger = require('heroku-logger')
 
-const mongoConnection = require('./mongoConnection');
+const mongoConnection = require('../connection/mongoConnection.js');
 
 const logName = '[LastSeenPlayers]';
 

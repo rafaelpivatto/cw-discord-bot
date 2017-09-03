@@ -1,7 +1,8 @@
 const { Command } = require('discord.js-commando');
 const logger = require('heroku-logger');
-const mongoConnection = require('../../modules/mongoConnection.js');
-const errorMessage = require('../../modules/errorMessage.js');
+
+const mongoConnection = require('../../modules/connection/mongoConnection.js');
+const errorMessage = require('../../modules/message/errorMessage.js');
 
 const logName = '[DelCustomCommand]';
 const doubleWrapLine = '\n\n';

@@ -1,9 +1,9 @@
 const schedule = require('node-schedule');
 const logger = require('heroku-logger')
 
-const searchWingInfosFromEddb = require('./searchWingInfosFromEddb');
-const normalizeWingInfoFromEddb = require('./normalizeWingInfoFromEddb');
-const mongoConnection = require('./mongoConnection');
+const searchWingInfosFromEddb = require('../gateway/searchWingInfosFromEddb.js');
+const normalizeWingInfoFromEddb = require('../service/normalizeWingInfoFromEddb.js');
+const mongoConnection = require('../connection/mongoConnection.js');;
 
 const logName = '[HourlyJob]';
 

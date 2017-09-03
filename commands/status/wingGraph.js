@@ -5,10 +5,10 @@ const dateFormat = require('dateformat');
 const logger = require('heroku-logger');
 const request = require('request');
 
-const errorMessage = require('../../modules/errorMessage.js');
-const mongoConnection = require('../../modules/mongoConnection.js');
+const errorMessage = require('../../modules/message/errorMessage.js');
+const mongoConnection = require('../../modules/connection/mongoConnection.js');
 const utils = require('../../modules/utils.js');
-const fileManagement = require('../../modules/fileManagement.js');
+const fileManagement = require('../../modules/service/fileManagement.js');
 
 const logName = '[WingGraph]';
 const fileDir = '/images/graph/winggraph/';

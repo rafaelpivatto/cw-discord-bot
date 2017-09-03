@@ -4,7 +4,8 @@ const { RichEmbed } = require('discord.js');
 const dateFormat = require('dateformat');
 
 const utils = require('../../modules/utils.js');
-const lastSeenPlayers = require('../../modules/lastSeenPlayers.js');
+const lastSeenPlayers = require('../../modules/service/lastSeenPlayers.js');
+const errorMessage = require('../../modules/message/errorMessage.js');
 
 const logName = '[usersPlaying]';
 const doubleWrapLine = '\n\n';

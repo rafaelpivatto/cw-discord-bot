@@ -1,9 +1,9 @@
 const schedule = require('node-schedule');
 const logger = require('heroku-logger')
 
-const searchWingInfosFromEddb = require('./searchWingInfosFromEddb');
-const normalizeWingInfoFromEddb = require('./normalizeWingInfoFromEddb');
-const feedRead = require('./feedReader.js');
+const searchWingInfosFromEddb = require('../gateway/searchWingInfosFromEddb');
+const normalizeWingInfoFromEddb = require('../service/normalizeWingInfoFromEddb');
+const feedRead = require('../gateway/feedReader.js');
 
 const logName = '[HalfHourlyJob-Newsletter]';
 

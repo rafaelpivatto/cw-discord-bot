@@ -1,7 +1,8 @@
 const feedparser = require('feedparser-promised');
 const logger = require('heroku-logger');
 const discord = require('discord.js');
-const mongoConnection = require('./mongoConnection');
+
+const mongoConnection = require('../connection/mongoConnection.js');
 
 const wingColorEmbed = '#f00000';
 const url = 'https://forums.frontier.co.uk/external.php?type=RSS2&forumids=73';

@@ -5,10 +5,11 @@ const Commando = require('discord.js-commando');
 const logger = require('heroku-logger')
 
 var app = express();
-const hourlyJob = require('./modules/hourlyJob.js');
-const fileManagement = require('./modules/fileManagement.js');
-const halfHourlyJob = require('./modules/halfHourlyJob.js');
-const registryCustomCommands = require('./modules/registryCustomCommands.js');
+
+const fileManagement = require('./modules/service/fileManagement.js');
+const hourlyJob = require('./modules/job/hourlyJob.js');
+const halfHourlyJob = require('./modules/job/halfHourlyJob.js');
+const registryCustomCommands = require('./modules/registry/registryCustomCommands.js');
 
 const logName = '[Index]';
 

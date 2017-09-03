@@ -5,10 +5,10 @@ const dateFormat = require('dateformat');
 const request = require('request');
 const plotly = require('plotly')(process.env.PLOTLY_USER,process.env.PLOTLY_PASS);
 
-const errorMessage = require('../../modules/errorMessage.js');
-const searchSystemFactionFromEdsm = require('../../modules/searchSystemFactionFromEdsm.js');
+const errorMessage = require('../../modules/message/errorMessage.js');
+const searchSystemFactionFromEdsm = require('../../modules/gateway/searchSystemFactionFromEdsm.js');
 const utils = require('../../modules/utils.js');
-const fileManagement = require('../../modules/fileManagement.js');
+const fileManagement = require('../../modules/service/fileManagement.js');
 
 const logName = '[SystemFactionsGraph]';
 const fileDir = '/images/graph/systemfactions/';

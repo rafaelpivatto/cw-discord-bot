@@ -2,11 +2,11 @@ const { Command } = require('discord.js-commando');
 const { RichEmbed } = require('discord.js');
 const logger = require('heroku-logger')
 
-const errorMessage = require('../../modules/errorMessage.js');
-const normalizeWingInfoFromEddb = require('../../modules/normalizeWingInfoFromEddb.js');
-const mongoConnection = require('../../modules/mongoConnection.js');
+const errorMessage = require('../../modules/message/errorMessage.js');
+const normalizeWingInfoFromEddb = require('../../modules/service/normalizeWingInfoFromEddb.js');
+const mongoConnection = require('../../modules/connection/mongoConnection.js');
 const utils = require('../../modules/utils.js');
-const searchWingInfosFromEddb = require('../../modules/searchWingInfosFromEddb.js');
+const searchWingInfosFromEddb = require('../../modules/gateway/searchWingInfosFromEddb.js');
 
 const logName = '[WingStatus]';
 
