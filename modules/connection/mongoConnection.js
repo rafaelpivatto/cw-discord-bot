@@ -17,7 +17,7 @@ exports.saveOrUpdate = function(logPrefix, data, collectionName, callback) {
             }
             closeConnection(db);
             logger.info(logPrefix + logName + ' Save/update success');
-            return callback(null);
+            return callback(null, result);
         });
     });
 };

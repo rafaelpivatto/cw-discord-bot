@@ -51,14 +51,15 @@ module.exports = class AddCustomCommand extends Command {
         commandData.createBy = msg.message.author.username + '#' + msg.message.author.discriminator;
         commandData._id = String(commandData._id).toLowerCase().replace(/ /g, '');
 
-        mongoConnection.saveOrUpdate(logName, commandData, 'customCommands', function(error){
+        mongoConnection.saveOrUpdate(logName, commandData, 'customCommands', function(error, result){
             if (error) {
                 logger.error(logName + ' Error to save data ', {'data': commandData, 'error': error});
                 return errorMessage.sendSpecificClientErrorMessage(msg, 'Erro ao salvar custom command, tente novamente.');
             } else {
-                logger.info(logName + ' New custom command saved = ', {'customCommand': commandData});
+                logger.info(logName + ' Custom command saved = ', {'customCommand': commandData});
                 msg.client.registry.commands.get('@general').aliases.push(commandData._id);
-                return msg.channel.send('Comando "'+ commandData._id +'" criado com sucesso.');
+                const label = result.result.nModified === 0 ? 'criado' : 'alterado';
+                return msg.channel.send('Comando **"'+ commandData._id +'"** __' + label + '__ com sucesso.');
             }
         });
 

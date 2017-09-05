@@ -44,7 +44,7 @@ module.exports = class GetCustomCommand extends Command {
                 let aliases = msg.client.registry.commands.get('@general').aliases;
                 aliases.splice(aliases.indexOf(query._id), 1);
                 if (result.result.n > 0) {
-                    return msg.channel.send('Comando "'+ query._id +'" deletado com sucesso.');
+                    return msg.channel.send('Comando **"'+ query._id +'"** __deletado__ com sucesso.');
                 } else {
                     return msg.channel.send('Nenhum comando foi deletado, verifique o nome e tente novamente.');
                 }
