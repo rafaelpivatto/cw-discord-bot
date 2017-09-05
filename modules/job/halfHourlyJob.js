@@ -7,8 +7,6 @@ const feedRead = require('../gateway/feedReader.js');
 
 const logName = '[HalfHourlyJob-Newsletter]';
 
-var exports = {};
-
 exports.execute = function(bot) {
     const j = schedule.scheduleJob('*/30 * * * *', function(){
         logger.info(logName + ' Job started...');

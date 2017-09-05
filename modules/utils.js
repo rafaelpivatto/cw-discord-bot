@@ -1,5 +1,3 @@
-var exports = {};
-
 exports.lpad = function(text, width, z) {
     z = z || ' ';
     text = text + '';

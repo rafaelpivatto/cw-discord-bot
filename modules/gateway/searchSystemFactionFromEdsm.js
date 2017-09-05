@@ -5,8 +5,6 @@ const logName = '[SearchSystemFactionFromEdsm]';
 
 let url = 'http://www.edsm.net/api-system-v1/factions?systemName=';
 
-var exports = {};
-
 exports.get = function(logPrefix, systemName, callback) {
     
     logger.info(logPrefix + logName + ' Getting system faction infos from edsm by system = ' + systemName);

@@ -7,8 +7,6 @@ const mongoConnection = require('../connection/mongoConnection.js');;
 
 const logName = '[HourlyJob]';
 
-var exports = {};
-
 exports.execute = function() {
     //Execute every hour
     const j = schedule.scheduleJob('0 * * * *', function(){

@@ -57,13 +57,15 @@ module.exports = class EmbedCommand extends Command {
             for(let info of data.infos) {
                 embed.addField('**' + getSystemName(info) + '**',
                     '**Influência: ** '+ utils.rpad(getInfluence(info), 10) + ' ' + 
-                    '**Att. há ' + info.eddbUpdate + '**' + wrapLine +
+                    '**Att. há ' + translateUnitTime(info.eddbUpdate) + '**' + wrapLine +
                     '**Segurança: ** ' + info.security + wrapLine + 
                     '**Estado: ** ' + info.state);
             }
             logger.info(logName + ' Finish process to retrieving status');
             return msg.embed(embed);
         });
+
+        //---- Methods ----
 
         function getSystemName(info) {
             let name = info.systemName; 
@@ -90,6 +92,17 @@ module.exports = class EmbedCommand extends Command {
             mongoConnection.saveOrUpdate(logName, data, 'wingData', function(error) {
                 if (error) console.log(error);
             });
+        }
+
+        function translateUnitTime(str) {
+            return str.replace('secs', 'seg.')
+                    .replace('sec', 'seg.')
+                    .replace('mins', 'min.')
+                    .replace('min', 'min.')
+                    .replace('hours', 'horas')
+                    .replace('hour', 'hora')
+                    .replace('days', 'dias')
+                    .replace('day', 'dia');
         }
     }
 }

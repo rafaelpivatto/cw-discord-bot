@@ -4,8 +4,6 @@ const mongoConnection = require('../connection/mongoConnection.js');
 
 const logName = '[GetCustomCommands] ';
 
-var exports = {};
-
 exports.execute = function(client) {
     logger.info(logName + ' start get custom commands to register');
     

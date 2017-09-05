@@ -4,8 +4,6 @@ const logger = require('heroku-logger');
 
 const logName = '[FileManagement] ';
 
-var exports = {};
-
 exports.loadFile = function(logPrefix, res, fileName) {
     logger.info(logPrefix + logName + ' Starting load file = ' + fileName);
     let dir = __dirname.replace('\\modules\\service', '');

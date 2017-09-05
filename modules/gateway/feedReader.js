@@ -8,8 +8,6 @@ const wingColorEmbed = '#f00000';
 const url = 'https://forums.frontier.co.uk/external.php?type=RSS2&forumids=73';
 const logName = '[FeedReader] ';
 
-var exports = {};
-
 exports.readFeed = function(logPrefix, bot) {
     logger.info(logPrefix + logName + ' start read feed url=' + url);
     feedparser.parse(url).then( (items) => {

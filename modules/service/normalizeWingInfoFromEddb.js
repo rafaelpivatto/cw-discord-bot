@@ -3,8 +3,6 @@ const logger = require('heroku-logger')
 
 const logName = '[NormalizeWingInfoFromEddb] ';
 
-var exports = {};
-
 exports.getInfos = function(logPrefix, body) {
     logger.info(logPrefix + logName + ' Init method');
     const $ = cheerio.load(body);
