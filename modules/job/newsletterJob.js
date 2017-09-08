@@ -9,7 +9,7 @@ const logName = '[NewsletterJob]';
 
 exports.execute = function(bot) {
     //Execute every half hour
-    const j = schedule.scheduleJob('*/30 * * * *', function(){
+    schedule.scheduleJob('*/30 * * * *', function(){
         logger.info(logName + ' started...');
         
         feedRead.readFeed(logName, bot);
