@@ -3,6 +3,7 @@ const logger = require('heroku-logger');
 
 const mongoConnection = require('../../modules/connection/mongoConnection.js');
 const errorMessage = require('../../modules/message/errorMessage.js');
+const utils = require('../../modules/utils.js');
 
 const logName = '[DelCustomCommand]';
 const doubleWrapLine = '\n\n';
@@ -22,19 +23,19 @@ module.exports = class GetCustomCommand extends Command {
 
     async run(msg, args) {
         
-        let commandData;
+        let commandData = utils.removeDiacritics(String(args)).toLowerCase();
         if (msg.message.channel.name !== process.env.CUSTOM_COMMANDS_CHANNEL) {
             return errorMessage.sendSpecificClientErrorMessage(msg, 'Esse comando não pode ser executado nessa sala.');
         }
         
         logger.info(logName + ' Execute delete command by user = ' + msg.message.author.username);
              
-        if (!args || args.length === 0) {
+        if (!commandData || commandData.length === 0) {
             logger.warn(logName + ' Command without args');
             return errorMessage.sendSpecificClientErrorMessage(msg, 'Execute passando o nome do comando a ser deletado, exemplo: !delcustom <nome_comando>');
         }
 
-        const query = {_id: args};
+        const query = {_id: commandData};
         mongoConnection.delete(logName, query, 'customCommands', function(error, result){
             if (error) {
                 logger.error(logName + ' Error to delete data ', {'data': query, 'error': error});

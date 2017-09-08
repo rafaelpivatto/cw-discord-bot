@@ -37,7 +37,7 @@ module.exports = class GraphCommand extends Command {
     async run(msg, args) {
 
         logger.info(logName + ' Initializing process to generate wing graph by user = ' + msg.message.author.username);
-        msg.channel.send(':arrows_counterclockwise: Aguarde, o gráfico está sendo gerado...');
+        msg.channel.send(':arrows_counterclockwise: Aguarde um instante, o gráfico está sendo gerado...');
         const inicialDate = new Date();
         inicialDate.setDate(inicialDate.getDate() - 9);
         inicialDate.setUTCHours(0, 0, 0, 0);

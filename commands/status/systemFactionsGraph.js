@@ -34,7 +34,7 @@ module.exports = class SystemFactionsCommand extends Command {
 
     async run(msg, args) {
         
-        const systemName = String(args).toUpperCase();
+        const systemName = utils.removeDiacritics(String(args)).toUpperCase();
         logger.info(logName + ' Generate system factions graph by user = ' + msg.message.author.username);
         logger.info(logName + ' System name = ' + systemName);
         if (!systemName) {
@@ -51,13 +51,13 @@ module.exports = class SystemFactionsCommand extends Command {
             const json = JSON.parse(body);
             if (!json.length && json.length === 0) {
                 logger.info(logName + ' System "' + systemName + '" not found');
-                return msg.channel.send('O sistema "' + systemName + '" não foi encontrado! tem certeza que é o sistema certo? :thinking:');
+                return msg.channel.send('O sistema "' + systemName + '" não foi encontrado! Está correto o nome do sistema? :thinking:');
             }
             if (json.factions.length === 0) {
                 logger.info(logName + ' System "' + systemName + '" not found minor factions');
                 return msg.channel.send('O sistema "' + systemName + '" não tem facções :neutral_face:');
             }
-            msg.channel.send(':arrows_counterclockwise: Aguarde, o gráfico está sendo gerado...');
+            msg.channel.send(':arrows_counterclockwise: Aguarde um instante, o gráfico está sendo gerado...');
             const data = normalizeObjects(json);
             const graphOptions = getGraphOption(systemName, json.controllingFaction.name);
             
