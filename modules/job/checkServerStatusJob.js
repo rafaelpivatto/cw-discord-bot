@@ -13,8 +13,8 @@ const collectionName = 'notify';
 const id = 'SERVER_STATUS';
 
 exports.execute = function(client) {
-    //Execute every half hour (*/30 * * * *)
-    schedule.scheduleJob('30 * * * * *', function(){
+    //Execute every half hour ()
+    schedule.scheduleJob('*/30 * * * *', function(){
         logger.info(logName + ' started...');
         
         getServerStatusFromEdsm.getServerStatus(logName, function(error, currentServerStatus) {

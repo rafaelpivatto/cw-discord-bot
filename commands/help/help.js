@@ -30,15 +30,16 @@ module.exports = class HelpCommand extends Command {
                 .setThumbnail(wingThumb)
                 .setFooter('Fly safe cmdr!')
                 .setDescription(
-                    '**!cwstatus** - *Exibe os status dos sistemas onde a Cobra Wing está presente.*' + doubleWrapLine +
-                    '**!cwgrafico** - *Exibe um gráfico de influência dos últimos 10 dias desses sitemas onde a Cobra Wing está presente.*' + doubleWrapLine +
-                    '**!sistema <nome_sistema>** - *Exibe um grafico das influências das facções no sistema informado, estando ou não a Cobra Wing presente. Ex: !sistema ebor*' + doubleWrapLine +
+                    '**!cwstatus** - *Status dos sistemas onde a Cobra Wing está presente.*' + doubleWrapLine +
+                    '**!cwgrafico** - *Gráfico de influência dos últimos 10 dias desses sitemas onde a Cobra Wing está presente.*' + doubleWrapLine +
+                    '**!sistema <nome_sistema>** - *Gráfico das influências das facções no sistema informado, estando ou não a Cobra Wing presente. Ex: !sistema ebor*' + doubleWrapLine +
                     '**!utilidades** - *Conjunto de sites extremente úteis para auxiliar na jobabilidade.*' + doubleWrapLine +
-                    '**!cwping** - *Um simples comando para o bot dar um sinal de vida.*' + doubleWrapLine +
-                    '**!cwjogando** - *Exibe quantos jogares online no discord e jogando Elite:Dangerous.*' + doubleWrapLine +
-                    '**!science** - *Exibe todos os comandos de science.*' + doubleWrapLine +
-                    '**!memes** - *Exibe todos os comandos de memes.*' + doubleWrapLine +
-                    '**!ranks** - *Exibe todos os comandos de ranks.*'
+                    '**!elitestatus** - *Status do servidor do Elite: Dangerous (online, offline, etc).*' + doubleWrapLine +
+                    '**!cwjogando** - *Jogares online no discord e/ou jogando Elite:Dangerous.*' + doubleWrapLine +
+                    '**!science** - *Todos os comandos de science.*' + doubleWrapLine +
+                    '**!memes** - *Todos os comandos de memes.*' + doubleWrapLine +
+                    '**!ranks** - *Todos os comandos de ranks.*' + doubleWrapLine +
+                    '**!cwping** - *Um simples comando para o bot dar um sinal de vida.*'
                 );
 
         return msg.embed(embed);

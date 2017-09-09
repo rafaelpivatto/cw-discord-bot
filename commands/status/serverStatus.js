@@ -1,6 +1,7 @@
 const { Command } = require('discord.js-commando');
 const logger = require('heroku-logger');
 const { RichEmbed } = require('discord.js');
+const dateFormat = require('dateformat');
 
 const errorMessage = require('../../modules/message/errorMessage.js');
 const getServerStatusFromEdsm = require('../../modules/service/getServerStatusFromEdsm.js');
@@ -24,16 +25,16 @@ module.exports = class PingCommand extends Command {
     async run(msg, args) {
         logger.info(logName + ' Execute check server status by user = ' + msg.message.author.username);
         
-        getServerStatusFromEdsm.getServerStatus(logName, function(error, data) {
+        getServerStatusFromEdsm.getServerStatus(logName, function(error, currentServerStatus) {
 
-            if (error || !data || data.length === 0) {
+            if (error || !currentServerStatus || currentServerStatus.length === 0) {
                 logger.error(logName + ' Error on retrieving informations', {'error': error});
                 return errorMessage.sendSpecificClientErrorMessage(msg, 
                     'Erro ao verificar o status dos servidores do Elite: Dangerous, serão os thargoids??? :rolling_eyes:'
                 );
             }
 
-            const info = getByStatus(data.status);
+            const info = getByStatus(currentServerStatus);
             let embed = new RichEmbed()
                 .setColor(wingColor)
                 .setTimestamp()
@@ -46,20 +47,24 @@ module.exports = class PingCommand extends Command {
         });
 
         //--- methrods ---
-        function getByStatus(status) {
+        function getByStatus(currentServerStatus) {
             let obj = {};
-            switch(status) {
+            const defaultMessage = '\n\n__Última atualização:__ ' +
+                        dateFormat(currentServerStatus.lastUpdate, 'dd/mm/yyyy HH:MM:ss') + ' UTC' +
+                        doubleWrapLine +
+                        '*OBS.: Consulta realizada através do EDSM, ' +
+                        'poderão ocorrer equivocos devido a falhas de comunicação com o servidor.*';
+            
+                        switch(currentServerStatus.status) {
                 case 2:
                     obj.message = '**O servidor do Elite:Dangerous está __ONLINE__ e funcionando normalmente!**';
                     obj.thumb = 'http://i.imgur.com/GD5yfU3.png';
-                    return obj
                     break;
 
                 case 1:
                     obj.message = '**O servidor do Elite:Dangerous está com algumas __instabilidades__!**' + doubleWrapLine +
                                   '__Atenção:__ você poderá sofrer desconexões...';
-                    obj.thumb = 'http://i.imgur.com/wBA85oa.png';
-                    return obj    
+                    obj.thumb = 'http://i.imgur.com/wBA85oa.png';    
                     break;
 
                 case 0:
@@ -67,11 +72,11 @@ module.exports = class PingCommand extends Command {
                                   '__Possíveis causas:__' + doubleWrapLine +
                                   '- Manutenção dos servidores;\n' +
                                   '- Atualização do jogo;\n' +
-                                  '- Ataques Thargoid :alien:.\n';
-                    obj.thumb = 'http://i.imgur.com/mQ2aFdk.png';
-                    return obj    
+                                  '- Ataques Thargoid :alien:.\n';  
                     break;
             }
+            obj.message += defaultMessage;
+            return obj
         }
     }
 }    
