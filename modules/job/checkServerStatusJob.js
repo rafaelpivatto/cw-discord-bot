@@ -1,34 +1,44 @@
 const schedule = require('node-schedule');
-const logger = require('heroku-logger')
-
+const logger = require('heroku-logger');
+const discord = require('discord.js');
 const dateFormat = require('dateformat');
+
 const getServerStatusFromEdsm = require('../service/getServerStatusFromEdsm.js');
 const mongoConnection = require('../connection/mongoConnection.js');
 
 const logName = '[CheckServerStatusJob]';
 const doubleWrapLine = '\n\n';
 const wingColor = '#f00000';
+const collectionName = 'notify';
+const id = 'SERVER_STATUS';
 
-exports.execute = function() {
-    //Execute every half hour
-    schedule.scheduleJob('*/30 * * * *', function(){
+exports.execute = function(client) {
+    //Execute every half hour (*/30 * * * *)
+    schedule.scheduleJob('30 * * * * *', function(){
         logger.info(logName + ' started...');
         
         getServerStatusFromEdsm.getServerStatus(logName, function(error, currentServerStatus) {
-            if (!error && currentServerStatus && currentServerStatus.length > 0) {
-                const query = {_id: 'SERVER_STATUS'};
-                mongoConnection.find(logName, query, 'notify', function(error, lastNotify) {
+            
+            if (!error && currentServerStatus) {
+                
+                currentServerStatus._id = id;
 
-                    if (lastNotify.status !== currentServerStatus.status &&
-                        getDate(lastNotify.lastUpdate) > getDate(currentServerStatus.lastUpdate)) {
+                //save current server status
+                mongoConnection.saveOrUpdate(logName, currentServerStatus, collectionName, function(error, data){});
+                
+                const query = {_id: id};
+                mongoConnection.find(logName, query, collectionName, function(error, lastNotify) {
+                    const lastOneNotify = lastNotify[0];
+
+                    if (lastOneNotify.status !== currentServerStatus.status &&
+                        getDate(lastOneNotify.lastUpdate) < getDate(currentServerStatus.lastUpdate)) {
                         
-                        let channel = bot.channels.find('name', process.env.SERVER_STATUS_CHANNEL);
+                        let channel = client.channels.find('name', process.env.SERVER_STATUS_CHANNEL);
                         if (channel) {
-                            //save
-
+                            
                             //notify
-                            const infos = getByStatus(lastNotify.status, currentServerStatus);
-                            let embed = new RichEmbed()
+                            const infos = getByStatus(lastOneNotify.status, currentServerStatus);
+                            let embed = new discord.RichEmbed()
                                 .setColor(wingColor)
                                 .setTimestamp()
                                 .setTitle('Status Elite: Dangerous')
@@ -51,15 +61,15 @@ exports.execute = function() {
 
     function getByStatus(fromStatus, currentServerStatus) {
         let obj = {};
-        const defaultMessage = '\n__Data da última atualização:__ ' +
-                            getDate(currentServerStatus.lastUpdate) + ' UTC' +
+        const defaultMessage = '\n__Última atualização:__ ' +
+                            dateFormat(currentServerStatus.lastUpdate, 'dd/mm/yyyy HH:MM:ss') + ' UTC' +
                             doubleWrapLine +
                             '*OBS.: Consulta realizada através do EDSM, ' +
-                            'poderão ocorrer equivocos devido a falha de comunicação com o servidor.*';
+                            'poderão ocorrer equivocos devido a falhas de comunicação com o servidor.*';
 
         switch(currentServerStatus.status) {
             case 2:
-                obj.notify = fromStatus == 0 ? '@everyone' : '';
+                obj.notify = fromStatus == 0 ? '@here' : '';
                 obj.message = '**ATENÇÃO:** Ao que tudo indica, o servidor do Elite:Dangerous voltou ao normal ' +
                                 'e está __ONLINE__ novamente.' +
                                 defaultMessage;
@@ -77,7 +87,7 @@ exports.execute = function() {
                 break;
 
             case 0:
-                obj.notify = fromStatus == 2 ? '@everyone': '';
+                obj.notify = fromStatus == 2 ? '@here': '';
                 obj.message = '**ATENÇÃO:** O servidor do Elite:Dangerous aparenta estar __OFFLINE__!!!' + 
                                 doubleWrapLine +
                                 '__Possíveis causas:__' + 
