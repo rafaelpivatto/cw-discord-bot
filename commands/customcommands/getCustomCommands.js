@@ -4,6 +4,7 @@ const { RichEmbed } = require('discord.js');
 
 const mongoConnection = require('../../modules/connection/mongoConnection.js');
 const errorMessage = require('../../modules/message/errorMessage.js');
+const utils = require('../../modules/utils.js');
 
 const logName = '[GetCustomCommand]';
 const doubleWrapLine = '\n\n';
@@ -22,6 +23,7 @@ module.exports = class GetCustomCommand extends Command {
     }
 
     async run(msg, args) {
+        let commandData = utils.removeDiacritics(String(args)).toLowerCase();
         
         if (msg.message.channel.name !== process.env.CUSTOM_COMMANDS_CHANNEL) {
             return errorMessage.sendSpecificClientErrorMessage(msg, 'Esse comando não pode ser executado nessa sala.');
@@ -29,20 +31,20 @@ module.exports = class GetCustomCommand extends Command {
         
         logger.info(logName + ' Execute add command by user = ' + msg.message.author.username);
              
-        if (!args || args.length === 0) {
+        if (!commandData || commandData.length === 0) {
             logger.warn(logName + ' Command without args');
             return errorMessage.sendSpecificClientErrorMessage(msg, 'Execute passando o nome do comando a ser pesquisado, exemplo: !getcustom <nome_comando>');
         }
         
-        const query = {_id: args};
+        const query = {_id: commandData};
         mongoConnection.find(logName, query, 'customCommands', function(error, data) {
             
             if (error) {
-                logger.error(logName + ' Error on find command = ' + args, {'error': error});
+                logger.error(logName + ' Error on find command = ' + commandData, {'error': error});
                 return errorMessage.sendClientErrorMessage(msg);
             }
             if (!data || data.length == 0) {
-                logger.info(logName + ' Commands not found = ' + args, {'error': error});
+                logger.info(logName + ' Commands not found = ' + commandData, {'error': error});
                 return errorMessage.sendSpecificClientErrorMessage(msg, 'Comando não encontrado... :thinking:');
             }
             
