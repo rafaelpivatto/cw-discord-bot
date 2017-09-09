@@ -10,7 +10,6 @@ CW are initials to ["Cobra Wing"](http://elitedangerouscobra.com.br/) our privat
 # What's your features and commands?
 
 ##### Commands to Show:
-#
 
 > System that CW there's placed and your reputations;
 > Chart by all systems and compare that CW there's placed and your reputations day by day;
@@ -19,18 +18,16 @@ CW are initials to ["Cobra Wing"](http://elitedangerouscobra.com.br/) our privat
 > Players statistics online and what's games who playing.
 
 ##### Custom Commands:
-#
 
 > Admin manager custom commands to returns a specific and static message response;
 > List all custom commands by group type.
 
 ##### Scheduled Execution:
-#
 
 >Monitor and advertise newsletter by game developer site;
 >Monitor and advertise game server status (online, offline);
 >Extraction 3rd party sites infos to show chart statistics.
-#
+
 #
 # Technologies used:
 
@@ -45,7 +42,6 @@ CW are initials to ["Cobra Wing"](http://elitedangerouscobra.com.br/) our privat
 # Steps to Run:
 
 ##### 1) configure environment variables in your system or create .env file with:
-#
 
 >**ENVIRONMENT** => set to DEV on localhost
 >**BASE_URL** => Site base URL (local http://localhost:5000 with default port)
@@ -59,11 +55,9 @@ CW are initials to ["Cobra Wing"](http://elitedangerouscobra.com.br/) our privat
 >**BLOCK_BOT_DIRECT_MESSAGES** => (true|false) to bot ignore direct messages.
 
 ##### 2) Install node modules dependencies:
-#
 >**npm install**
 
 ##### 3) Execute bot:
-#
 >**npm start**
 
 #
