@@ -30,12 +30,28 @@ module.exports = class PingCommand extends Command {
         
         logger.info(logName + ' Execute by user = ' + msg.message.author.username);
         const infos = discordStatus.getDiscordStatus(logName, msg.client);
+        infos.games.sort(sortFunction);
 
         lastSeenPlayers.getAndUpdate(logName, infos.playingED, function(error, data){
             if (error) {
                 logger.error(logName + ' Error on retrieving informations', {'error': error});
                 return errorMessage.sendClientErrorMessage(msg);
             }
+
+            let topPlaying = doubleWrapLine + ':video_game: **O que a galera está jogando:**\n\n';
+            let countLines = 0;
+            for(let game in infos.games) {
+                countLines++;
+                const g = infos.games[game];
+                const decoration = g.name === 'Elite: Dangerous' ? '**' : '';
+                topPlaying += decoration + '(' + g.count + ') ' + g.name + decoration + '\n';
+
+                if (countLines >= 5) {
+                    topPlaying += 'e + outros jogos...'
+                    break;
+                }
+            }
+
 
             let embed = new RichEmbed()
                 .setColor(wingColor)
@@ -48,11 +64,15 @@ module.exports = class PingCommand extends Command {
                     '**' + infos.playersOnline + '/' + infos.playersRegistered + ' pessoas** online no discord\n' + 
                     '**' + getPlayersLabel(infos.playingED) + '** jogando Elite: Dangerous' +
                     doubleWrapLine + 
-                    'O recorde foi de **' + getPlayersLabel(data.qtd) + '** jogando **Elite: Dangerous** em ' + 
-                    dateFormat(utils.getBRTDate(data.date), 'dd/mm/yyyy')
+                    ':trophy: O recorde foi de **' + getPlayersLabel(data.qtd) + '\*** jogando **Elite: Dangerous** em ' + 
+                    dateFormat(utils.getBRTDate(data.date), 'dd/mm/yyyy') +
+                    '\n\* *Dados contabilizados a partir de 23/08/2017*' + 
+                    topPlaying
                 );
             return msg.embed(embed);
         });
+
+        //--- Methods ---      
 
         function getPlayersLabel(qtd) {
             switch (qtd) {
@@ -64,6 +84,14 @@ module.exports = class PingCommand extends Command {
                     break;
                 default:
                     return qtd + ' pessoas';
+            }
+        }
+
+        function sortFunction(a, b) {
+            if (a.count === b.count) {
+                return 0;
+            } else {
+                return (a.count > b.count) ? -1 : 1;
             }
         }
     }

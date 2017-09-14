@@ -55,6 +55,8 @@ module.exports = class GetCustomCommand extends Command {
             return msg.embed(embed);
         });
 
+        //--- Methods ---
+
         function getValue(param) {
             return param ? param : '';
         }

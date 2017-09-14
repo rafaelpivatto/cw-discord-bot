@@ -28,12 +28,18 @@ exports.getDiscordStatus = function(logPrefix, client) {
         }
         const gameName = user.presence.game.name;
         if (gameName === 'Elite: Dangerous') infos.playingED++;
-        if(!infos.games[gameName]) {
-            infos.games[gameName] = 1;  
+        
+        let item = infos.games.find(x => x.name === gameName);
+        if (!item) {
+            infos.games.push({
+                name: gameName,
+                count: 1
+            });
         } else {
-            infos.games[gameName] = infos.games[gameName] + 1;
+            item.count++; 
         }
     }
+
 
     return infos;
 };

@@ -95,10 +95,10 @@ module.exports = class EmbedCommand extends Command {
         }
 
         function translateUnitTime(str) {
-            return str.replace('secs', 'seg.')
-                    .replace('sec', 'seg.')
-                    .replace('mins', 'min.')
-                    .replace('min', 'min.')
+            return str.replace('secs', 'seg')
+                    .replace('sec', 'seg')
+                    .replace('mins', 'min')
+                    .replace('min', 'min')
                     .replace('hours', 'horas')
                     .replace('hour', 'hora')
                     .replace('days', 'dias')
