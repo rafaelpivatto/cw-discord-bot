@@ -19,9 +19,8 @@ module.exports = class PingCommand extends Command {
 
     async run(msg, args) {
         logger.info(logName + ' Execute ping by user = ' + msg.message.author.username);
-        const message = 'Pong :ping_pong: \n' +
-                        'Seu ping é de: ' + msg.client.pings[0] + 'ms.\n\n' +
-                        '\* *Atualizado a cada minuto.*'; 
+        const message = ':ping_pong: Seu ping é de: ' + msg.client.pings[0] + 'ms.\n\n' +
+                        '\* *Entre você e o servidor do discord, atualizado a cada minuto.*'; 
         msg.channel.send();
 
         let embed = new RichEmbed()
