@@ -38,21 +38,26 @@ module.exports = class PingCommand extends Command {
                 return errorMessage.sendClientErrorMessage(msg);
             }
 
-            let topPlaying = doubleWrapLine + ':video_game: **O que a galera está jogando:**\n\n';
-            let countLines = 0;
+            let topPlaying = doubleWrapLine + ':video_game: **O que a galera está jogando:**\n\n',
+                countLines = 0,
+                otherPlaying = 0;
             for(let game in infos.games) {
                 countLines++;
-                const g = infos.games[game];
-                const decoration = g.name === 'Elite: Dangerous' ? '**' : '';
-                topPlaying += decoration + '(' + g.count + ') ' + g.name + decoration + '\n';
-
-                if (countLines >= 5) {
-                    topPlaying += 'e + outros jogos...'
-                    break;
+                if (countLines < 11) {
+                    const g = infos.games[game];
+                    const decoration = g.name === 'Elite: Dangerous' ? '**' : '';
+                    topPlaying += decoration + '(' + g.count + ') ' + g.name + decoration + '\n';
+                } else {
+                    otherPlaying++;
                 }
             }
-
-
+            if (countLines === 0) {
+                topPlaying += ':frowning: Poxa, não estão jogando nada...';
+            }
+            if (otherPlaying > 0) {
+                topPlaying += '(' + otherPlaying + ') jogando outros jogos...';
+            }
+            
             let embed = new RichEmbed()
                 .setColor(wingColor)
                 .setTimestamp()
