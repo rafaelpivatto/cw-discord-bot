@@ -35,11 +35,11 @@ module.exports = class HelpCommand extends Command {
                     '**!sistema <nome_sistema>** - *Gráfico das influências das facções no sistema informado, estando ou não a Cobra Wing presente. Ex: !sistema ebor*' + doubleWrapLine +
                     '**!utilidades** - *Conjunto de sites extremente úteis para auxiliar na jobabilidade.*' + doubleWrapLine +
                     '**!elitestatus** - *Status do servidor do Elite: Dangerous (online, offline, etc).*' + doubleWrapLine +
-                    '**!cwjogando** - *Jogares online no discord e/ou jogando Elite:Dangerous.*' + doubleWrapLine +
+                    '**!cwjogando** - *Jogadores online no discord e o que estão jogando.*' + doubleWrapLine +
                     '**!science** - *Todos os comandos de science.*' + doubleWrapLine +
                     '**!memes** - *Todos os comandos de memes.*' + doubleWrapLine +
                     '**!ranks** - *Todos os comandos de ranks.*' + doubleWrapLine +
-                    '**!cwping** - *Um simples comando para o bot dar um sinal de vida.*'
+                    '**!cwping** - *Exibe o tempo de ping entre você e o discord.*'
                 );
 
         return msg.embed(embed);

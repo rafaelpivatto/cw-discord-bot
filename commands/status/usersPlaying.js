@@ -56,7 +56,7 @@ module.exports = class PingCommand extends Command {
             let embed = new RichEmbed()
                 .setColor(wingColor)
                 .setTimestamp()
-                .setTitle('**Estatísticas Cobra Wing informa...**')
+                .setTitle('**Estatísticas CW**')
                 .setThumbnail(wingThumb)
                 .setFooter('Fly safe cmdr!')
                 .setDescription(
@@ -64,7 +64,7 @@ module.exports = class PingCommand extends Command {
                     '**' + infos.playersOnline + '/' + infos.playersRegistered + ' pessoas** online no discord\n' + 
                     '**' + getPlayersLabel(infos.playingED) + '** jogando Elite: Dangerous' +
                     doubleWrapLine + 
-                    ':trophy: O recorde foi de **' + getPlayersLabel(data.qtd) + '\*** jogando **Elite: Dangerous** em ' + 
+                    ':trophy: O recorde foi de **' + getPlayersLabel(data.qtd) + '** jogando **Elite: Dangerous** em ' + 
                     dateFormat(utils.getBRTDate(data.date), 'dd/mm/yyyy') +
                     '\n\* *Dados contabilizados a partir de 23/08/2017*' + 
                     topPlaying
