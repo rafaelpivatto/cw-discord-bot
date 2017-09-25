@@ -4,7 +4,7 @@ const logger = require('heroku-logger');
 exports.execute = function(client) {
     //Execute every one minute
     schedule.scheduleJob('*/1 * * * *', function(){
-        const target = new Date('2017-09-26T10:00:00Z');
+        const target = new Date('2017-09-26T17:00:00Z');
         const today = new Date();
 
         if (target > today) {
