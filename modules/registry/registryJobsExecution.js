@@ -12,11 +12,11 @@ const logName = '[RegistryJobsExecution] ';
 exports.execute = function(client) {
     logger.info(logName + ' start registry job execution');
     
-    //extractEddbInfosJob.execute();
-    //newsletterJob.execute(client);
-    //checkServerStatusJob.execute(client);
-    //usersPlayingEliteDangerousJob.execute(client);
-    //gameUpdateJob.execute(client);
+    extractEddbInfosJob.execute();
+    newsletterJob.execute(client);
+    checkServerStatusJob.execute(client);
+    usersPlayingEliteDangerousJob.execute(client);
+    gameUpdateJob.execute(client);
     galnetJob.execute(client);
 };
 
