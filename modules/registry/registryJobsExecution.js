@@ -16,7 +16,7 @@ exports.execute = function(client) {
     newsletterJob.execute(client);
     checkServerStatusJob.execute(client);
     usersPlayingEliteDangerousJob.execute(client);
-    gameUpdateJob.execute(client);
+    //gameUpdateJob.execute(client);
     galnetJob.execute(client);
 };
 

@@ -23,7 +23,8 @@ client.registry.registerCommandsIn(__dirname + '/commands');
 client.login(process.env.BOT_KEY);
 
 client.on('ready', (arg) => {
-    client.user.setPresence({ game: { name: 'ajuda? !cwajuda', type: 0 } });
+    //client.user.setPresence({ game: { name: 'ajuda? !cwajuda', type: 0 } });
+    client.user.setPresence({ game: { name: 'pegadinha do Malandro', type: 0 } });
     
     registryCustomCommands.execute(client);
     registryJobsExecution.execute(client);
