@@ -36,6 +36,9 @@ exports.execute = function(client) {
                         let channel = client.channels.find('name', process.env.SERVER_STATUS_CHANNEL);
                         if (channel) {
                             
+                            if (lastOneNotify.message === 'Unknown') {
+                                return;
+                            }
                             //notify
                             const infos = getByStatus(lastOneNotify.status, currentServerStatus);
                             let embed = new discord.RichEmbed()
