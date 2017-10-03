@@ -6,6 +6,7 @@ const googl = require('goo.gl');
 
 const getFromUrl = require('../gateway/getFromUrl.js');
 const mongoConnection = require('../connection/mongoConnection.js');
+const utils = require('../utils.js');
 
 const wingColor = '#f00000';
 const wrapLine = '\n';
@@ -16,7 +17,7 @@ const url = 'https://community.elitedangerous.com/en/galnet/';
 
 exports.execute = function(client) {
     googl.setKey(process.env.GOOGL_KEY);
-    //Execute every half hour
+    //Execute every half hour 
     schedule.scheduleJob('*/30 * * * *', function(){
         logger.info(logName + ' started...');
         const channel = client.channels.find('name', process.env.GALNET_INFO_CHANNEL);
@@ -29,7 +30,7 @@ exports.execute = function(client) {
                 }
 
                 if (results.length == 0 || results.length > 0) {
-                    const fullUrl = getUrl();
+                    const fullUrl = url + getDate();
                     getFromUrl.getHtml(logName, fullUrl, function(error, body) {
                         
                         if (error) return;
@@ -58,7 +59,7 @@ exports.execute = function(client) {
                                 }
                             }
                             
-                            googl.shorten('https://translate.google.com.br/?hl=pt-BR#en/pt/' + desc)
+                            googl.shorten('https://translate.google.com.br/?hl=pt-BR#en/pt/' + textToTranslate(desc))
                             .then(function (shortUrl) {
                                 let embed = new RichEmbed()
                                     .setColor(wingColor)
@@ -66,11 +67,12 @@ exports.execute = function(client) {
                                     .setTitle('**' + title + '**')
                                     .setDescription(desc + 
                                                     wrapLine +
-                                                    '[Clique aqui para traduzir](' + shortUrl + ')')
+                                                    ':flag_br: [Clique aqui para traduzir](' + shortUrl + ')')
                                     .setURL(fullUrl)
                                     .setThumbnail(thumb);
         
-                                channel.send('', {'embed': embed});
+                                channel.send(i === 0 ? '@here Atualizações da Galnet em ' + getDate() : '', 
+                                                {'embed': embed});
 
                                 mongoConnection.saveOrUpdate(logName, dataToSave, 'notify', function(){});
                             });
@@ -82,13 +84,22 @@ exports.execute = function(client) {
     });
 
     //--- Methods ---
-    function getUrl() {
+    function getDate() {
         const date = new Date();
         const monthNames = ["JAN", "FEB", "MAR", "APR", "MAY", "JUN",
             "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"
         ];
         const year = date.getFullYear() + 1286;
-        return url + date.getDate() + '-' + monthNames[date.getMonth()] + '-' + year;
+        const day = utils.lpad(date.getDate(), 2, '0');
+        return day + '-' + monthNames[date.getMonth()] + '-' + year;
+    }
+    function textToTranslate(desc) {
+        return desc.replace(/\n/g, '%0A')
+            .replace(/"/g, '%22')
+            .replace(/‘/g, '%E2%80%98')
+            .replace(/’/g, '%E2%80%99')
+            .replace(/“/g, '%E2%80%9C')
+            .replace(/”/g, '%E2%80%9D');
     }
 };
 
