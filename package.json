@@ -29,6 +29,7 @@
     "node-opus": "^0.2.7",
     "node-schedule": "^1.2.3",
     "plotly": "^1.0.6",
-    "request": "^2.81.0"
+    "request": "^2.81.0",
+    "ytdl-core": "^0.17.1"
   }
 }
