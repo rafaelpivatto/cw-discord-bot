@@ -17,7 +17,7 @@ module.exports = class PlaySoundCommand extends Command {
     }
 
     async run(msg, args) {
-
+        //test
         if (args === 'stop' && dispatcher) {
             dispatcher.end();
             return;
