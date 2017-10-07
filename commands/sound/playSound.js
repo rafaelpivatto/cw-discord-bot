@@ -4,11 +4,9 @@ const ytdl = require('ytdl-core');
 const YoutubeDL = require('youtube-dl');
 
 const logName = '[PlaySound]';
-const streamOptions = { seek: 0, volume: 0.2 };
+const streamOptions = { seek: 0, volume: 0.1 };
 let connection;
 let playlist = [];
-let playingSong = false;
-
 let dispatcher;
 
 module.exports = class PlaySoundCommand extends Command {
@@ -21,14 +19,14 @@ module.exports = class PlaySoundCommand extends Command {
             guildOnly: true,
             patterns: [new RegExp('[a-zA-Z]')]
         });
-        /*client.on('ready', (arg) => {
+        client.on('ready', (arg) => {
             const channel = client.channels.find('name', process.env.MUSIC_CHANNEL);
             if (channel && channel.type === 'voice') {
                 channel.join().then(conn => {
                     connection = conn;
                 }).catch(err => logger.error('Erro ao conectar na sala de musica: ' + err));
             }
-        });*/
+        });
     }
 
     async run(msg, args) {
@@ -38,86 +36,119 @@ module.exports = class PlaySoundCommand extends Command {
         if (isControllCommands(args)) {
             if (isModeratorUser(msg) && dispatcher) {
                 setControllCommand(args);
+            } else {
+                return msg.channel.send('Você não tem permissão para executar esse comando.');
             }
         } else {
-            
-            if (!connection) {
-                const channel = msg.client.channels.find('name', process.env.MUSIC_CHANNEL);
-                if (channel && channel.type === 'voice') {
-                    channel.join().then(conn => {
-                        connection = conn;
-                    }).catch(err => logger.error('Erro ao conectar na sala de musica: ' + err));
-                }
+            if (!args || args === '') {
+                return msg.channel.send('Envie **!musica <nome da musica>** ou ' +
+                    '**!musica <link do youtube>** para adicionar uma música na playlist');
             }
 
-            if (!playingSong) {
-                playSong(args);
-            } else {
-                playlist.push(args);
-            }
+            searchSong(msg, args)
         }
         
         //--- Functions ---
-        function playSong(args) {
+        function searchSong(msg, music) {
 
-            var searchstring = args
-			if (!args.toLowerCase().startsWith('http')) {
-				searchstring = 'gvsearch1:' + args;
-			}
+            // Get the video information.
+		    msg.channel.send('Pesquisando por "'+ music + '"...').then(response => {
+                
+                var searchstring = music
+                if (!music.toLowerCase().startsWith('http')) {
+                    searchstring = 'gvsearch1:' + music;
+                }
 
-            YoutubeDL.getInfo(searchstring, ['-q', '--no-warnings', '--force-ipv4'], (err, info) => {
-				// Verify the info.
-				if (err || info.format_id === undefined || info.format_id.startsWith('0')) {
-					return console.log('Invalid video!');
-				}
-
-				// Queue the video.
-				response.edit(wrap('Queued: ' + info.title)).then(() => {
-                    queue.push(info);
-                    
-                    //info.title
-                    //info.webpage_url
-                    //info.requester = msg.author.id;
-
-					
-				}).catch(console.log);
-			});
-
-
-
-
-            const stream = ytdl(args, { filter : 'audioonly' });
-            dispatcher = connection.playStream(stream, streamOptions);
-            playingSong = true;
-
-            dispatcher.on('end', () => {
-                // Wait a second.
-                setTimeout(() => {
-                    playingSong = false;
-                    if (playlist.length > 0) {
-                        playSong(playlist.shift());
+                YoutubeDL.getInfo(searchstring, ['-q', '--no-warnings', '--force-ipv4'], (err, info) => {
+                    // Verify the info.
+                    if (err || info.format_id === undefined || info.format_id.startsWith('0')) {
+                        return response.edit('A pesquisa não retornou nenhum resultado :(');
                     }
-                }, 1000);
-            });
+                    
+                    info.requester = msg.author.id;
+
+                    // Queue the video.
+                    response.edit('Música adicionada na playlist: ' + info.title).then(() => {
+                        playlist.push(info);
+                        
+                        // Play if only one element in the playlist.
+                        if (playlist.length === 1) executePlaylist(msg, playlist);
+                    }).catch(console.log);
+                });
+            }).catch(console.log);
+        }
+
+        function executePlaylist(msg, playlist) {
+            // If the playlist is empty, finish.
+            if (playlist.length === 0) {
+                return msg.channel.send('Todas as musicas da playlist acabaram.');
+            }
+
+            // Get the first item in the queue.
+            const music = playlist[0];
+            
+            msg.channel.send('Reproduzindo agora a musica: ' + music.title).then(response => {
+                
+                if (!connection) {
+                    const channel = msg.client.channels.find('name', process.env.MUSIC_CHANNEL);
+                    if (channel && channel.type === 'voice') {
+                        channel.join().then(conn => {
+                            connection = conn;
+                        }).catch(err => logger.error('Erro ao conectar na sala de musica: ' + err));
+                    }
+                }
+
+                const stream = ytdl(music.webpage_url, { filter : 'audioonly' });
+                dispatcher = connection.playStream(stream, streamOptions);
+
+                connection.on('error', (error) => {
+					// Skip to the next song.
+					console.log(error);
+					playlist.shift();
+					executePlaylist(msg, playlist);
+                });
+                
+                dispatcher.on('error', (error) => {
+					// Skip to the next song.
+					console.log(error);
+					playlist.shift();
+					executePlaylist(msg, playlist);
+				});
+
+				dispatcher.on('end', () => {
+					// Wait a second.
+					setTimeout(() => {
+						if (playlist.length > 0) {
+							// Remove the song from the playlist.
+							playlist.shift();
+							// Play the next song in the playlist.
+							executePlaylist(msg, playlist);
+						}
+					}, 1000);
+				});
+
+            }).catch(console.log);
         }
 
         function isControllCommands(args) {
-            const controlls = ['proxima', 'limpar','continuar','volume+','volume-'];
+            const controlls = ['proxima', 'limpar','pausar', 'continuar','volume+','volume-'];
             return controlls.includes(args);
         }
 
         function isModeratorUser(msg) {
-            return true;
+            return msg.member.hasPermission('Moderador');
         }
 
         function setControllCommand(args) {
             switch (args) {
                 case 'proxima':
+                if (connection.paused) dispatcher.resume();
                 dispatcher.end();
                 break;
 
                 case 'limpar':
                 playlist = [];
+                if (connection.paused) dispatcher.resume();
                 dispatcher.end();
                 break;
 
