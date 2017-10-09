@@ -17,7 +17,7 @@ module.exports = class PlaySoundCommand extends Command {
     constructor(client) {
         super(client, {
             name: 'musica',
-            group: 'sound',
+            group: 'music',
             memberName: 'playmusic',
             description: 'Command to play music on channel',
             guildOnly: true,
@@ -52,16 +52,12 @@ module.exports = class PlaySoundCommand extends Command {
             }
         } else if(isModeratorCommands(args)) {
             if (isModeratorUser(msg) && dispatcher) {
-                setControllCommand(args);
+                setControllCommand(args, msg);
             } else {
                 return msg.channel.send('Você não tem permissão para executar esse comando, solicite a algum moderador.');
             }
-        } else if(isNextCommand(args)) {
-            if (isModeratorUser(msg) || isRequesterMusicPlaying(msg)) {
-                setControllCommand(args);
-            } else {
-                return msg.channel.send('Você só pode passar músicas que você adicionou à playlist.');
-            }
+        } else if(isCommunityCommand(args)) {
+            setControllCommand(args, msg);
         } else {
             return msg.channel.send('Comando "' + args + '" inválido, se precisar de ajuda !ajudamusica');
         }
@@ -180,8 +176,9 @@ module.exports = class PlaySoundCommand extends Command {
             return controlls.includes(args);
         }
 
-        function isNextCommand(args) {
-            return args === 'proxima';
+        function isCommunityCommand(args) {
+            const controlls = ['proxima','playlist'];
+            return controlls.includes(args);
         }
 
         function isModeratorUser(msg) {
@@ -195,11 +192,15 @@ module.exports = class PlaySoundCommand extends Command {
             return musicPlaying.requesterId === msg.author.id;
         }
 
-        function setControllCommand(args) {
+        function setControllCommand(args, msg) {
             switch (args) {
                 case 'proxima':
-                if (connection.paused) dispatcher.resume();
-                dispatcher.end();
+                if (isModeratorUser(msg) || isRequesterMusicPlaying(msg)) {
+                    if (connection.paused) dispatcher.resume();
+                    dispatcher.end();
+                } else {
+                    return msg.channel.send('Você só pode passar músicas que você adicionou à playlist.');
+                }
                 break;
 
                 case 'limpar':
@@ -227,6 +228,10 @@ module.exports = class PlaySoundCommand extends Command {
                     dispatcher.setVolume(dispatcher.volume-0.1);
                 }
                 break;
+
+                case 'playlist':
+                getPlaylist(msg);
+                break;
             }
         }
 
@@ -239,6 +244,33 @@ module.exports = class PlaySoundCommand extends Command {
             } else {
                 return member.defaultAvatarURL;
             }
+        }
+
+        function getPlaylist(msg) {
+            if (playlist.length > 0) {
+
+                let desc = 'Tocando agora:\n\n';
+                for (let i=0; i<playlist.length; i++) {
+                    desc += i===0 ? '**' : '';
+                    desc += '#' + (Number(i)+1) + ' - ' + playlist[i].title + ' (' + playlist[i].duration + ')\n';
+                    desc += i===0 ? '**' : '';
+                    desc += i===0 ? '\n\n' : '\n';
+                }
+
+                let embed = new RichEmbed()
+                    .setColor(wingColor)
+                    .setTimestamp()
+                    .setFooter('Listen safe cmdr!')
+                    .setTitle('Playlist agora...')
+                    .setDescription(desc);
+
+                return msg.channel.send({'embed': embed});
+
+
+            } else {
+                return msg.channel.send('A playlist está vazia.');
+            }
+
         }
     }    
 }    
