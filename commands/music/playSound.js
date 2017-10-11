@@ -46,7 +46,7 @@ module.exports = class PlaySoundCommand extends Command {
             const music = args.replace('add', '').trim();
             if (!music || music === '') {
                 return msg.channel.send('Envie **!musica add <nome da musica>** ou ' +
-                    '**!musica add <link do youtube>** para adicionar uma música à playlist');
+                    '**!musica add <link do youtube>** para adicionar uma música à fila');
             } else {
                 searchSong(msg, music)
             }
@@ -79,19 +79,24 @@ module.exports = class PlaySoundCommand extends Command {
                         return response.edit('A pesquisa não retornou nenhum resultado :(');
                     }
                     
-                    info.requesterId = msg.author.id;
-                    info.requester = msg.author;
+                    info.requester = {
+                        id: msg.author.id,
+                        avatarURL: msg.author.avatarURL,
+                        defaultAvatarURL: msg.author.defaultAvatarURL,
+                        nickname: msg.member.nickname
+                    };
 
                     // Queue the video.
 
                     let embed = new RichEmbed()
                         .setColor(wingColor)
                         .setTimestamp()
-                        .setAuthor(msg.author.username, getCleanUrl(msg.author))
+                        .setAuthor(info.requester.nickname, getCleanUrl(msg.author))
                         .setThumbnail(info.thumbnail)
-                        .setFooter('Listen safe cmdr!')
-                        .setDescription('Adicionado à playlist...'+ 
+                        .setFooter('Listen safe, cmdr!')
+                        .setDescription('Adicionado à fila...'+ 
                             '\nMúsica: **' + info.title + '**' +
+                            '\nDuração: **' + getDuration(info.duration) + '**' +
                             '\nPosição: **' + (parseInt(playlist.length) + 1) + '**');
 
                     response.edit({'embed': embed}).then(() => {
@@ -107,7 +112,7 @@ module.exports = class PlaySoundCommand extends Command {
         function executePlaylist(msg, playlist) {
             // If the playlist is empty, finish.
             if (playlist.length === 0) {
-                return msg.channel.send('Fim da playlist.');
+                return msg.channel.send('Fim da fila.');
             }
 
             // Get the first item in the queue.
@@ -116,12 +121,12 @@ module.exports = class PlaySoundCommand extends Command {
             let embed = new RichEmbed()
                 .setColor(wingColor)
                 .setTimestamp()
-                .setAuthor(music.requester.username + ' adicionou essa...', getCleanUrl(music.requester))
+                .setAuthor(music.requester.nickname + ' adicionou essa...', getCleanUrl(music.requester))
                 .setThumbnail(music.thumbnail)
-                .setFooter('Listen safe cmdr!')
+                .setFooter('Listen safe, cmdr!')
                 .setDescription('Tocando agora...'+ 
                     '\nMúsica: **' + music.title + '**' +
-                    '\nDuração: **' + music.duration + '**');
+                    '\nDuração: **' + getDuration(music.duration) + '**');
 
             msg.channel.send({'embed': embed}).then(response => {
                 
@@ -172,12 +177,12 @@ module.exports = class PlaySoundCommand extends Command {
         }
 
         function isModeratorCommands(args) {
-            const controlls = ['limpar','pausar', 'continuar','vol+','vol-'];
+            const controlls = ['limpar-fila','pausar', 'continuar','vol+','vol-'];
             return controlls.includes(args);
         }
 
         function isCommunityCommand(args) {
-            const controlls = ['proxima','playlist'];
+            const controlls = ['proxima','fila'];
             return controlls.includes(args);
         }
 
@@ -189,7 +194,7 @@ module.exports = class PlaySoundCommand extends Command {
         }
 
         function isRequesterMusicPlaying(msg) {
-            return musicPlaying.requesterId === msg.author.id;
+            return musicPlaying.requester.id === msg.author.id;
         }
 
         function setControllCommand(args, msg) {
@@ -199,11 +204,11 @@ module.exports = class PlaySoundCommand extends Command {
                     if (connection.paused) dispatcher.resume();
                     dispatcher.end();
                 } else {
-                    return msg.channel.send('Você só pode passar músicas que você adicionou à playlist.');
+                    return msg.channel.send('Você só pode passar músicas que você adicionou à fila.');
                 }
                 break;
 
-                case 'limpar':
+                case 'limpar-fila':
                 playlist = [];
                 if (connection.paused) dispatcher.resume();
                 dispatcher.end();
@@ -229,7 +234,7 @@ module.exports = class PlaySoundCommand extends Command {
                 }
                 break;
 
-                case 'playlist':
+                case 'fila':
                 getPlaylist(msg);
                 break;
             }
@@ -249,28 +254,59 @@ module.exports = class PlaySoundCommand extends Command {
         function getPlaylist(msg) {
             if (playlist.length > 0) {
 
-                let desc = 'Tocando agora:\n\n';
-                for (let i=0; i<playlist.length; i++) {
-                    desc += i===0 ? '**' : '';
-                    desc += '#' + (Number(i)+1) + ' - ' + playlist[i].title + ' (' + playlist[i].duration + ')\n';
-                    desc += i===0 ? '**' : '';
-                    desc += i===0 ? '\n\n' : '\n';
+                let desc = '';
+                if (playlist.length > 0) {
+                    for (let i=0; i<playlist.length && i<10; i++) {
+                        if (i===0) {
+                            desc += '**';
+                            desc += 'Tocando agora:\n';
+                            desc += '#' + (Number(i)+1) + '- ' + playlist[i].title + '\n';
+                            desc += '\t\tDuração: ' + playlist[i].duration + ' - por: ' + playlist[i].requester.nickname;
+                            desc += '**\n\n';
+                        } else {
+                            if (i===1) {
+                                desc += '**Próximas músicas na fila:**\n';
+                            }
+                            desc += '#' + (Number(i)+1) + '- ' + playlist[i].title + '\n';
+                            desc += '\t\tDuração: ' + getDuration(playlist[i].duration) + ' - por: ' + playlist[i].requester.nickname;
+                            desc += '\n';
+                        }
+                    }
+                } else {
+
                 }
+                
 
                 let embed = new RichEmbed()
                     .setColor(wingColor)
                     .setTimestamp()
-                    .setFooter('Listen safe cmdr!')
-                    .setTitle('Playlist agora...')
+                    .setFooter('Listen safe, cmdr!')
+                    .setTitle('Fila')
                     .setDescription(desc);
 
                 return msg.channel.send({'embed': embed});
 
 
             } else {
-                return msg.channel.send('A playlist está vazia.');
+                return msg.channel.send('A fila está vazia.');
             }
+        }
 
+        function getDuration(dur) {
+            const index = dur.indexOf(':');
+            let duration;
+            if (index === -1) {
+                duration + ':00';
+            } else if (index === 1) {
+                duration = '0' + dur;
+            } else {
+                if (index+1 === duration.length) {
+                    duration + '00';
+                } else if(index+1 === duration.length-1) {
+                    return duration + '0';
+                }
+            }
+            return duration;
         }
     }    
 }    
