@@ -34,10 +34,8 @@ module.exports = class PlaySoundCommand extends Command {
     }
 
     async run(msg, args) {
-        const musicChannel = process.env.MUSIC_TEXT_CHANNEL;
-        if (musicChannel && musicChannel !== msg.message.channel.name) {
-            return errorMessage.sendSpecificClientErrorMessage(msg, 
-                'Por favor, execute os comandos de música na sala <#' + msg.client.channels.find('name', musicChannel).id + '>');
+        if (!checkRequirements(msg)) {
+            return;
         }
 
         logger.info(logName + ' Execute command by user = ' + msg.message.author.username + ' >>> ' + args);
@@ -307,6 +305,33 @@ module.exports = class PlaySoundCommand extends Command {
                 }
             }
             return duration;
+        }
+
+        function checkRequirements(msg) {
+            const textChannelAuthorized = process.env.MUSIC_TEXT_CHANNEL;
+            const voiceChannelAuthorized = process.env.MUSIC_SOUND_CHANNEL;
+            const userTextChannelCommand = msg.message.channel.name;
+            const userVoiceChannelConnected = msg.message.member.voiceChannel;
+    
+            if (!textChannelAuthorized || !voiceChannelAuthorized) {
+                errorMessage.sendSpecificClientErrorMessage(msg, 
+                    'Desculpe, esse comando está temporariamente desabilitado.');
+                return false;
+            }
+    
+            if (textChannelAuthorized !== userTextChannelCommand) {
+                errorMessage.sendSpecificClientErrorMessage(msg, 
+                    'Por favor, execute os comandos de música na sala <#' + msg.client.channels.find('name', textChannelAuthorized).id + '>');
+                return false;
+            }
+            
+            if (!userVoiceChannelConnected || voiceChannelAuthorized !== userVoiceChannelConnected.name) {
+                errorMessage.sendSpecificClientErrorMessage(msg, 
+                    'Você precisa estar na sala de aúdio ' + voiceChannelAuthorized + ' para executar os comandos de música.');
+                return false;
+            }
+
+            return true;
         }
     }    
 }    
