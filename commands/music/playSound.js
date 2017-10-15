@@ -74,6 +74,12 @@ module.exports = class PlaySoundCommand extends Command {
                 YoutubeDL.getInfo(searchstring, ['-q', '--no-warnings', '--force-ipv4'], (err, info) => {
                     // Verify the info.
                     if (err || info.format_id === undefined || info.format_id.startsWith('0')) {
+                        if (err) {
+                            logger.error('Error: ' + err);
+                        }
+                        if (info) {
+                            logger.error('Info: ' + info);
+                        }
                         return response.edit('A pesquisa não retornou nenhum resultado :(');
                     }
                     
