@@ -285,7 +285,7 @@ module.exports = class PlaySoundCommand extends Command {
                     .setColor(wingColor)
                     .setTimestamp()
                     .setFooter('Listen safe, cmdr!')
-                    .setTitle('Fila')
+                    .setTitle('Fila de músicas')
                     .setDescription(desc);
 
                 return msg.channel.send({'embed': embed});
