@@ -17,8 +17,8 @@ const url = 'https://community.elitedangerous.com/en/galnet/';
 
 exports.execute = function(client) {
     googl.setKey(process.env.GOOGL_KEY);
-    //Execute every half hour 
-    schedule.scheduleJob('*/30 * * * *', function(){
+    //Execute every hour **:02
+    schedule.scheduleJob('2 * * * *', function(){
         logger.info(logName + ' started...');
         const channel = client.channels.find('name', process.env.GALNET_INFO_CHANNEL);
                 
