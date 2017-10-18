@@ -13,7 +13,6 @@ const streamOptions = {
     quality: 'lowest' 
 };
 let connection,
-    channel,
     playlist = [],
     dispatcher,
     musicPlaying;
@@ -27,6 +26,14 @@ module.exports = class PlaySoundCommand extends Command {
             description: 'Command to play music on channel',
             guildOnly: true,
             patterns: [new RegExp('[a-zA-Z]')]
+        });
+        client.on('ready', (arg) => {
+            const channel = client.channels.find('name', process.env.MUSIC_SOUND_CHANNEL);
+            if (channel && channel.type === 'voice') {
+                channel.join().then(conn => {
+                    connection = conn;
+                }).catch(err => logger.error('Erro ao conectar na sala de musica: ' + err));
+            }
         });
     }
 
@@ -69,16 +76,15 @@ module.exports = class PlaySoundCommand extends Command {
                     searchstring = 'gvsearch1:' + music + ' Official Audio';
                 }
 
-                const params = ['-q', '--no-warnings', '--force-ipv4', 
-                                '--no-playlist', '--hls-prefer-ffmpeg'];
-                YoutubeDL.getInfo(searchstring, params, {maxBuffer: 'Infinity'}, (err, info) => {
+                const params = ['-q', '--no-warnings', '--force-ipv4'];
+                YoutubeDL.getInfo(searchstring, params, (err, info) => {
                     // Verify the info.
                     if (err || info.format_id === undefined || info.format_id.startsWith('0')) {
                         if (err) {
-                            logger.error('Error: ', err);
+                            logger.error('Error: ' + err);
                         }
                         if (info) {
-                            logger.error('Info: ', info);
+                            logger.error('Info: ' + info);
                         }
                         return response.edit('Houve um erro ao pesquisar a musica :(\n'
                             + 'Tente novamente ou adicione a música pelo link do youtube ;)');
@@ -118,8 +124,8 @@ module.exports = class PlaySoundCommand extends Command {
         function executePlaylist(msg, playlist) {
             // If the playlist is empty, finish.
             if (playlist.length === 0) {
-                connection = null;
-                channel.leave();
+                const stream = ytdl('https://www.youtube.com/watch?v=khTVEXCJKy8', streamOptions);
+                dispatcher = connection.playStream(stream, { volume: 0.1, passes: 2, bitrate: 'auto'});
                 return msg.channel.send('Fim da fila, não deixe a festa acabar, adicione mais músicas. :tada:');
             }
 
@@ -128,83 +134,62 @@ module.exports = class PlaySoundCommand extends Command {
             
             msg.channel.send('Trocando o disco, a próxima musica já vai começar :musical_note:').then(response => {
                 
-                getConnection(function(error){
-
-                    if (error) {
-                        return msg.channel.send('Houve um erro inesperado, por favor avise algum admin-bot');
+                if (!connection) {
+                    logger.warn(logName + ' Getting a new connection.');
+                    const channel = msg.client.channels.find('name', process.env.MUSIC_SOUND_CHANNEL);
+                    if (channel && channel.type === 'voice') {
+                        channel.join().then(conn => {
+                            connection = conn;
+                        }).catch(err => logger.error('Erro ao conectar na sala de musica: ' + err));
                     }
-
-                    const stream = ytdl(music.webpage_url, streamOptions);
-                    dispatcher = connection.playStream(stream, { volume: 0.1, passes: 1});
-                    musicPlaying = music;
-                    
-                    logger.info(logName + ' Tocando a música ' + music.title + ', duração: ' + music._duration_hms);
-                    const embed = new RichEmbed()
-                        .setColor(wingColor)
-                        .setTimestamp()
-                        .setAuthor(music.requester.nickname + ' adicionou essa...', getCleanUrl(music.requester))
-                        .setThumbnail(music.thumbnail)
-                        .setFooter('Listen safe, cmdr!')
-                        .setDescription('Tocando agora...'+ 
-                            '\nMúsica: **' + music.title + '**' +
-                            '\nDuração: **' + music._duration_hms + '**');
-    
-                    setTimeout(() => {
-                        response.edit({'embed': embed});
-                    }, 7000);
-                    
-                    connection.on('error', (error) => {
-                        // Skip to the next song.
-                        logger.error(logName + ' ' + error);
-                        msg.channel.send('Houve um erro inesperado, por favor avise algum admin-bot');
-                        playlist.shift();
-                        executePlaylist(msg, playlist);
-                    });
-                    
-                    dispatcher.on('error', (error) => {
-                        // Skip to the next song.
-                        logger.error(logName + ' ' + error);
-                        msg.channel.send('Houve um erro inesperado, por favor avise algum admin-bot');
-                        playlist.shift();
-                        executePlaylist(msg, playlist);
-                    });
-    
-                    dispatcher.on('end', () => {
-                        stream.end();
-                        logger.info(logName + ' fim da música.');
-                        // Wait a second.
-                        setTimeout(() => {
-                            if (playlist.length > 0) {
-                                // Remove the song from the playlist.
-                                playlist.shift();
-                                // Play the next song in the playlist.
-                                executePlaylist(msg, playlist);
-                            }
-                        }, 1000);
-                    });
-                });
-            }).catch(console.log);
-        }
-
-        function getConnection(callback) {
-            if (!connection || !channel) {
-                logger.info(logName + ' Getting a connection and connect to channel');
-                channel = msg.client.channels.find('name', process.env.MUSIC_SOUND_CHANNEL);
-                if (channel && channel.type === 'voice') {
-                    channel.join().then(conn => {
-                        connection = conn;
-                        callback();
-                    }).catch(err => {
-                        logger.error('Erro ao conectar na sala de musica: ' + err);
-                        callback('error');
-                    });
-                } else {
-                    callback('error');
                 }
-            } else {
-                callback();
-            }
-            
+
+                const stream = ytdl(music.webpage_url, streamOptions);
+                dispatcher = connection.playStream(stream, { volume: 0.1, passes: 2, bitrate: 'auto'});
+                musicPlaying = music;
+                
+                logger.info(logName + ' Tocando a música ' + music.title + ', duração: ' + music._duration_hms);
+                const embed = new RichEmbed()
+                    .setColor(wingColor)
+                    .setTimestamp()
+                    .setAuthor(music.requester.nickname + ' adicionou essa...', getCleanUrl(music.requester))
+                    .setThumbnail(music.thumbnail)
+                    .setFooter('Listen safe, cmdr!')
+                    .setDescription('Tocando agora...'+ 
+                        '\nMúsica: **' + music.title + '**' +
+                        '\nDuração: **' + music._duration_hms + '**');
+                response.edit({'embed': embed});
+
+                connection.on('error', (error) => {
+                    // Skip to the next song.
+                    logger.error(logName + ' ' + error);
+                    msg.channel.send('Houve um erro inesperado, por favor avise algum admin-bot');
+					playlist.shift();
+					executePlaylist(msg, playlist);
+                });
+                
+                dispatcher.on('error', (error) => {
+					// Skip to the next song.
+                    logger.error(logName + ' ' + error);
+                    msg.channel.send('Houve um erro inesperado, por favor avise algum admin-bot');
+					playlist.shift();
+					executePlaylist(msg, playlist);
+				});
+
+				dispatcher.on('end', () => {
+                    logger.info(logName + ' fim da música.');
+					// Wait a second.
+					setTimeout(() => {
+						if (playlist.length > 0) {
+							// Remove the song from the playlist.
+							playlist.shift();
+							// Play the next song in the playlist.
+							executePlaylist(msg, playlist);
+						}
+					}, 1000);
+				});
+
+            }).catch(console.log);
         }
 
         function isAddCommands(args) {
@@ -236,8 +221,8 @@ module.exports = class PlaySoundCommand extends Command {
             switch (args) {
                 case 'proxima':
                 if (isModeratorUser(msg) || isRequesterMusicPlaying(msg)) {
-                    if (connection && connection.paused) dispatcher.resume();
-                    if (dispatcher) dispatcher.end();
+                    if (connection.paused) dispatcher.resume();
+                    dispatcher.end();
                 } else {
                     return msg.channel.send('Você só pode passar músicas que você adicionou à fila.');
                 }
@@ -245,27 +230,25 @@ module.exports = class PlaySoundCommand extends Command {
 
                 case 'limpar-fila':
                 playlist = [];
-                if (connection && connection.paused) dispatcher.resume();
-                if (dispatcher) dispatcher.end();
+                if (connection.paused) dispatcher.resume();
+                dispatcher.end();
                 break;
 
                 case 'pausar':
-                if (dispatcher) dispatcher.pause();
+                dispatcher.pause();
                 break;
 
                 case 'continuar':
-                if (dispatcher) dispatcher.resume();
+                dispatcher.resume();
                 break;
 
                 case 'vol+':
-                if (dispatcher)
                 if (Number(dispatcher.volume).toFixed(1) < 1) {
                     dispatcher.setVolume(dispatcher.volume+0.1);
                 }
                 break;
 
                 case 'vol-':
-                if (dispatcher)
                 if (Number(dispatcher.volume).toFixed(1) > 0.1) {
                     dispatcher.setVolume(dispatcher.volume-0.1);
                 }
@@ -312,7 +295,6 @@ module.exports = class PlaySoundCommand extends Command {
                     .setTimestamp()
                     .setFooter('Listen safe, cmdr!')
                     .setTitle('Fila de músicas')
-                    .setThumbnail('https://i.imgur.com/2j485bH.png')
                     .setDescription(desc);
                 return msg.channel.send({'embed': embed});
             } else {
