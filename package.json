@@ -28,6 +28,7 @@
     "mongodb": "^2.2.30",
     "node-opus": "^0.2.7",
     "node-schedule": "^1.2.3",
+    "pc-stats": "0.0.7",
     "plotly": "^1.0.6",
     "request": "^2.81.0",
     "youtube-dl": "^1.12.2",
