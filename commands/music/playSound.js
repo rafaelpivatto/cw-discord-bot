@@ -151,7 +151,7 @@ module.exports = class PlaySoundCommand extends Command {
     
                     setTimeout(() => {
                         response.edit({'embed': embed});
-                    }, 7000);
+                    }, 3000);
                     
                     connection.on('error', (error) => {
                         // Skip to the next song.
@@ -212,12 +212,12 @@ module.exports = class PlaySoundCommand extends Command {
         }
 
         function isModeratorCommands(args) {
-            const controlls = ['limpar-fila','pausar', 'continuar','vol+','vol-'];
+            const controlls = ['parar','pausar', 'continuar','vol+','vol-'];
             return controlls.includes(args);
         }
 
         function isCommunityCommand(args) {
-            const controlls = ['proxima','fila'];
+            const controlls = ['proxima','fila', 'lista'];
             return controlls.includes(args);
         }
 
@@ -243,7 +243,7 @@ module.exports = class PlaySoundCommand extends Command {
                 }
                 break;
 
-                case 'limpar-fila':
+                case 'parar':
                 playlist = [];
                 if (connection && connection.paused) dispatcher.resume();
                 if (dispatcher) dispatcher.end();
@@ -271,6 +271,7 @@ module.exports = class PlaySoundCommand extends Command {
                 }
                 break;
 
+                case 'lista':
                 case 'fila':
                 getPlaylist(msg);
                 break;

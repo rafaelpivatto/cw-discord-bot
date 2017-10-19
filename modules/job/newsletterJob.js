@@ -6,8 +6,8 @@ const feedRead = require('../gateway/feedReader.js');
 const logName = '[NewsletterJob]';
 
 exports.execute = function(client) {
-    //Execute every 3 hours on Thursday, Friday and Saturday
-    schedule.scheduleJob('* */2 * * 4-6', function(){
+    //Execute every hour **:03
+    schedule.scheduleJob('3 * * * *', function(){
         logger.info(logName + ' started...');
         
         feedRead.readFeed(logName, client);
