@@ -135,7 +135,7 @@ module.exports = class PlaySoundCommand extends Command {
                     }
 
                     const stream = ytdl(music.webpage_url, streamOptions);
-                    dispatcher = connection.playStream(stream, { volume: 0.1, passes: 1});
+                    dispatcher = connection.playStream(stream, { volume: 0.1, passes: 2, bitrate: 'auto'});
                     musicPlaying = music;
                     
                     logger.info(logName + ' Tocando a música ' + music.title + ', duração: ' + music._duration_hms);
