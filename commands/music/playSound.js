@@ -3,20 +3,42 @@ const logger = require('heroku-logger');
 const ytdl = require('ytdl-core');
 const YoutubeDL = require('youtube-dl');
 const { RichEmbed } = require('discord.js');
+const removeItems = require('remove-array-items');
 
 const errorMessage = require('../../modules/message/errorMessage.js')
 
-const logName = '[PlaySound]';
-const wingColor = '#f00000';
-const streamOptions = { 
-    filter : 'audioonly',
-    quality: 'lowest' 
-};
+const logName = '[PlaySound]',
+    wingColor = '#f00000',
+    searchParams = [
+        '-q', 
+        '--no-warnings', 
+        '--force-ipv4', 
+        '--geo-bypass', 
+        '--no-playlist', 
+        '--hls-prefer-ffmpeg'
+    ]
+    streamOptions = { 
+        filter : 'audioonly',
+        quality: 'lowest' 
+    },
+    feedbackMessages = [
+        'Mandou muito bem,',
+        'Essa é muito boa,',
+        'Essa entrega a idade,',
+        'Quero ver todo mundo curtindo,',
+        'Essa é top,',
+        'Essa faz tempo que não ouço,',
+        'Solta o som DJ,',
+        'Estava na hora de alguém pedir essa,',
+        'Essa é uma obra prima,',
+        'Aumenta o som pra essa!'
+    ];
 let connection,
     channel,
     playlist = [],
     dispatcher,
-    musicPlaying;
+    musicPlaying,
+    countToAdvertising = 0;
 
 module.exports = class PlaySoundCommand extends Command {
     constructor(client) {
@@ -46,7 +68,7 @@ module.exports = class PlaySoundCommand extends Command {
                 searchSong(msg, music)
             }
         } else if(isModeratorCommands(args)) {
-            if (isModeratorUser(msg) && dispatcher) {
+            if (isModeratorUser(msg)) {
                 setControllCommand(args, msg);
             } else {
                 logger.info(logName + ' user dont have permission');
@@ -60,58 +82,71 @@ module.exports = class PlaySoundCommand extends Command {
         
         //--- Functions ---
         function searchSong(msg, music) {
+            const authorName = msg.member.nickname || msg.message.author.username;
+            let searchstring = music;
+            let musicLink = music;
+            if (music.toLowerCase().startsWith('http')) {
+                musicLink = '<' + music + '>'
+            } else {
+                searchstring = 'ytsearch:' + music + ' Official Audio';
+            }
 
             // Get the video information.
-		    msg.channel.send('Pesquisando por "'+ music + '"...').then(response => {
+            logger.info(logName + ' Searching for: ' + searchstring);
+            let embedSearch = new RichEmbed()
+                .setColor(wingColor)
+                .setAuthor(authorName, getCleanUrl(msg.author))
+                .setThumbnail('https://i.imgur.com/vcW4iNm.png')
+                .setDescription('Aguarde um instante, pesquisando por **"'+ musicLink + '"**...');
+		    msg.channel.send({'embed': embedSearch}).then(response => {
                 
-                var searchstring = music
-                if (!music.toLowerCase().startsWith('http')) {
-                    searchstring = 'gvsearch1:' + music + ' Official Audio';
-                }
-
-                const params = ['-q', '--no-warnings', '--force-ipv4', 
-                                '--no-playlist', '--hls-prefer-ffmpeg'];
-                YoutubeDL.getInfo(searchstring, params, {maxBuffer: 'Infinity'}, (err, info) => {
-                    // Verify the info.
-                    if (err || info.format_id === undefined || info.format_id.startsWith('0')) {
-                        if (err) {
-                            logger.error('Error: ', err);
+                msg.delete().then(del => {
+                    YoutubeDL.getInfo(searchstring, searchParams, {maxBuffer: 'Infinity'}, (err, info) => {
+                        // Verify the info.
+                        if (err || info.format_id === undefined || info.format_id.startsWith('0')) {
+                            if (err) {
+                                logger.error('Error: ', err);
+                            }
+                            if (info) {
+                                logger.error('Info: ', info);
+                            }
+                            return response.edit('Houve um erro ao pesquisar a musica :(\n'
+                                + 'Talvez a música não pode ser reproduzida fora do youtube.\n'
+                                + 'Tente novamente ou adicione a música pelo link do youtube ;)');
                         }
-                        if (info) {
-                            logger.error('Info: ', info);
-                        }
-                        return response.edit('Houve um erro ao pesquisar a musica :(\n'
-                            + 'Tente novamente ou adicione a música pelo link do youtube ;)');
-                    }
-                    
-                    info.requester = {
-                        id: msg.author.id,
-                        avatarURL: msg.author.avatarURL,
-                        defaultAvatarURL: msg.author.defaultAvatarURL,
-                        nickname: msg.member.nickname || msg.message.author.username
-                    };
-
-                    // Queue the video.
-
-                    let embed = new RichEmbed()
-                        .setColor(wingColor)
-                        .setTimestamp()
-                        .setAuthor(info.requester.nickname, getCleanUrl(msg.author))
-                        .setThumbnail(info.thumbnail)
-                        .setFooter('Listen safe, cmdr!')
-                        .setDescription('Adicionado à fila...'+ 
-                            '\nMúsica: **' + info.title + '**' +
-                            '\nDuração: **' + info._duration_hms + '**' +
-                            '\nPosição: **' + (parseInt(playlist.length) + 1) + '**');
-
-                    response.edit({'embed': embed}).then(() => {
-                        logger.info(logName + ' Adicionado à fila ' + info.title + ', duração: ' + info._duration_hms);
-                        playlist.push(info);
                         
-                        // Play if only one element in the playlist.
-                        if (playlist.length === 1) executePlaylist(msg, playlist);
-                    }).catch(console.log);
-                });
+                        logger.info(logName + ' Search finished');
+    
+                        info.requester = {
+                            id: msg.author.id,
+                            avatarURL: msg.author.avatarURL,
+                            defaultAvatarURL: msg.author.defaultAvatarURL,
+                            nickname: authorName
+                        };
+    
+                        // Queue the video.
+    
+                        let embed = new RichEmbed()
+                            .setColor(wingColor)
+                            .setTimestamp()
+                            .setAuthor(info.requester.nickname, getCleanUrl(msg.author))
+                            .setThumbnail(info.thumbnail)
+                            .setFooter('Listen safe, cmdr!')
+                            .setDescription(feedbackMessages[Math.floor((Math.random() * 10) + 1)] + ' Adicionado à fila...'+ 
+                                '\nMúsica: **' + info.title + '**' +
+                                '\nDuração: **' + info._duration_hms + '**' +
+                                '\nPosição: **' + (parseInt(playlist.length) + 1) + '**' +
+                                '\n[Link da musica](' + info.webpage_url + ')')
+    
+                        response.edit({'embed': embed}).then(() => {
+                            logger.info(logName + ' Adicionado à fila ' + info.title + ', duração: ' + info._duration_hms);
+                            playlist.push(info);
+                            
+                            // Play if only one element in the playlist.
+                            if (playlist.length === 1) executePlaylist(msg, playlist);
+                        }).catch(console.log);
+                    });
+                }).catch(console.error);                
             }).catch(console.log);
         }
 
@@ -120,13 +155,22 @@ module.exports = class PlaySoundCommand extends Command {
             if (playlist.length === 0) {
                 connection = null;
                 channel.leave();
-                return msg.channel.send('Fim da fila, não deixe a festa acabar, adicione mais músicas. :tada:');
+                let embedEndOfPlaylist = new RichEmbed()
+                    .setColor(wingColor)
+                    .setThumbnail('https://i.imgur.com/7JwvMMy.png')
+                    .setDescription('Fim da fila, não deixe o som parar, adicione mais músicas...' +
+                        '\nSe precisar de ajuda use o comando: __!ajudamusica__');
+                return msg.channel.send({'embed': embedEndOfPlaylist});
             }
 
             // Get the first item in the queue.
             const music = playlist[0];
             
-            msg.channel.send('Trocando o disco, a próxima musica já vai começar :musical_note:').then(response => {
+            let embedSearch = new RichEmbed()
+                .setColor(wingColor)
+                .setThumbnail('https://i.imgur.com/TqS03tb.png')
+                .setDescription('Trocando o disco, a próxima musica já vai começar...');
+            msg.channel.send({'embed': embedSearch}).then(response => {
                 
                 getConnection(function(error){
 
@@ -139,15 +183,27 @@ module.exports = class PlaySoundCommand extends Command {
                     musicPlaying = music;
                     
                     logger.info(logName + ' Tocando a música ' + music.title + ', duração: ' + music._duration_hms);
+                    const songsRemaining = playlist.length-1;
+                    let next = '\nDepois dessa... ';
+                    if (songsRemaining === 1) {
+                        next += 'mais 1 música na fila.'; 
+                    } else if (songsRemaining > 1) {
+                        next += String(songsRemaining) + ' músicas na fila.'; 
+                    } else{
+                        next += 'a fila não tem mais músicas.';
+                    }
+                    
                     const embed = new RichEmbed()
                         .setColor(wingColor)
                         .setTimestamp()
                         .setAuthor(music.requester.nickname + ' adicionou essa...', getCleanUrl(music.requester))
                         .setThumbnail(music.thumbnail)
                         .setFooter('Listen safe, cmdr!')
-                        .setDescription('Tocando agora...'+ 
+                        .setDescription('Tocando agora...' +
                             '\nMúsica: **' + music.title + '**' +
-                            '\nDuração: **' + music._duration_hms + '**');
+                            '\nDuração: **' + music._duration_hms + '**' +
+                            '\n[Link da musica](' + music.webpage_url + ')' +
+                            next);
     
                     setTimeout(() => {
                         response.edit({'embed': embed});
@@ -158,6 +214,7 @@ module.exports = class PlaySoundCommand extends Command {
                         logger.error(logName + ' ' + error);
                         msg.channel.send('Houve um erro inesperado, por favor avise algum admin-bot');
                         playlist.shift();
+                        stream.end();
                         executePlaylist(msg, playlist);
                     });
                     
@@ -166,6 +223,7 @@ module.exports = class PlaySoundCommand extends Command {
                         logger.error(logName + ' ' + error);
                         msg.channel.send('Houve um erro inesperado, por favor avise algum admin-bot');
                         playlist.shift();
+                        stream.end();
                         executePlaylist(msg, playlist);
                     });
     
@@ -176,7 +234,7 @@ module.exports = class PlaySoundCommand extends Command {
                         setTimeout(() => {
                             if (playlist.length > 0) {
                                 // Remove the song from the playlist.
-                                playlist.shift();
+                                removeItems(playlist, 0, 1);
                                 // Play the next song in the playlist.
                                 executePlaylist(msg, playlist);
                             }
@@ -213,12 +271,12 @@ module.exports = class PlaySoundCommand extends Command {
 
         function isModeratorCommands(args) {
             const controlls = ['parar','pausar', 'continuar','vol+','vol-'];
-            return controlls.includes(args);
+            return controlls.includes(getCommandWithoutParam(args)[0]);
         }
 
         function isCommunityCommand(args) {
-            const controlls = ['proxima','fila', 'lista'];
-            return controlls.includes(args);
+            const controlls = ['remover', 'proxima','fila', 'lista'];
+            return controlls.includes(getCommandWithoutParam(args)[0]);
         }
 
         function isModeratorUser(msg) {
@@ -228,25 +286,53 @@ module.exports = class PlaySoundCommand extends Command {
             return true;
         }
 
-        function isRequesterMusicPlaying(msg) {
-            return musicPlaying.requester.id === msg.author.id;
+        function isUserRequestMusic(msg, musicNumber) {
+            return playlist[musicNumber-1].requester.id === msg.author.id;
         }
 
         function setControllCommand(args, msg) {
-            switch (args) {
+            const command = getCommandWithoutParam(args);
+            switch (command[0]) {
                 case 'proxima':
-                if (isModeratorUser(msg) || isRequesterMusicPlaying(msg)) {
+                if (isModeratorUser(msg) || isUserRequestMusic(msg, 1)) {
                     if (connection && connection.paused) dispatcher.resume();
                     if (dispatcher) dispatcher.end();
                 } else {
-                    return msg.channel.send('Você só pode passar músicas que você adicionou à fila.');
+                    return msg.channel.send('Você só pode passar músicas que você adicionou à fila ou se tiver permissão de moderador.');
                 }
                 break;
 
+                case 'remover':
+                    const numberToRemove = Number(command[1]);
+                    if (command[1] && !isNaN(numberToRemove))
+                        if (numberToRemove < 0 || numberToRemove > playlist.length) {
+                            return msg.channel.send('O número da música informado é inválido.');
+                        } else {
+                            if (isModeratorUser(msg) || isUserRequestMusic(msg, numberToRemove)) {
+                                if (numberToRemove === 1){
+                                    if (connection && connection.paused) dispatcher.resume();
+                                    if (dispatcher) dispatcher.end();
+                                } else {
+                                    removeItems(playlist, numberToRemove-1, 1);
+                                    return msg.channel.send('A música da posição #' + numberToRemove + ' foi removida.');
+                                }
+                            } else {
+                                return msg.channel.send('Você só pode remover músicas que você adicionou à fila ou se tiver permissão de moderador.');
+                            }
+                        }
+                    else {
+                        return msg.channel.send('Você deve informar o número da musica na fila que deseja remover. ex: !musica remover 2');
+                    }
+                break;
+
                 case 'parar':
-                playlist = [];
+                if (playlist.length > 0) {
+                    msg.channel.send('Todas as músicas foram removidas da fila.');
+                }
+                removeItems(playlist, 0, playlist.length);
                 if (connection && connection.paused) dispatcher.resume();
                 if (dispatcher) dispatcher.end();
+                if (channel) channel.leave();
                 break;
 
                 case 'pausar':
@@ -275,6 +361,14 @@ module.exports = class PlaySoundCommand extends Command {
                 case 'fila':
                 getPlaylist(msg);
                 break;
+            }
+        }
+
+        function getCommandWithoutParam(args) {
+            if (args.indexOf(' ') > 0) {
+                return args.split(' ');
+            } else {
+                return [args]
             }
         }
 
