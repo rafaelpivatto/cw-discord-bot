@@ -132,7 +132,7 @@ module.exports = class PlaySoundCommand extends Command {
                             .setAuthor(info.requester.nickname, getCleanUrl(msg.author))
                             .setThumbnail(info.thumbnail)
                             .setFooter('Listen safe, cmdr!')
-                            .setDescription(feedbackMessages[Math.floor((Math.random() * 10) + 1)] + ' Adicionado à fila...'+ 
+                            .setDescription('Adicionado à fila...'+ 
                                 '\nMúsica: **' + info.title + '**' +
                                 '\nDuração: **' + info._duration_hms + '**' +
                                 '\nPosição: **' + (parseInt(playlist.length) + 1) + '**' +
@@ -199,7 +199,7 @@ module.exports = class PlaySoundCommand extends Command {
                         .setAuthor(music.requester.nickname + ' adicionou essa...', getCleanUrl(music.requester))
                         .setThumbnail(music.thumbnail)
                         .setFooter('Listen safe, cmdr!')
-                        .setDescription('Tocando agora...' +
+                        .setDescription(feedbackMessages[Math.floor((Math.random() * 10) + 1)] + 'Tocando agora...' +
                             '\nMúsica: **' + music.title + '**' +
                             '\nDuração: **' + music._duration_hms + '**' +
                             '\n[Link da musica](' + music.webpage_url + ')' +
@@ -441,7 +441,6 @@ module.exports = class PlaySoundCommand extends Command {
                 logger.info(logName + ' user not in sound channel');
                 return false;
             }
-
             return true;
         }
     }    
