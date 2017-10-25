@@ -1,15 +1,14 @@
 const feedparser = require('feedparser-promised');
 const logger = require('heroku-logger');
 const discord = require('discord.js');
-const mongoConnection = require('./mongoConnection');
+
+const mongoConnection = require('../connection/mongoConnection.js');
 
 const wingColorEmbed = '#f00000';
 const url = 'https://forums.frontier.co.uk/external.php?type=RSS2&forumids=73';
 const logName = '[FeedReader] ';
 
-var exports = {};
-
-exports.readFeed = function(logPrefix, bot) {
+exports.readFeed = function(logPrefix, client) {
     logger.info(logPrefix + logName + ' start read feed url=' + url);
     feedparser.parse(url).then( (items) => {
         logger.info(logPrefix + logName + ' feed readed.');
@@ -37,7 +36,7 @@ exports.readFeed = function(logPrefix, bot) {
                             logger.error(logName + ' Error to save data ', {'data': saveData, 'error': error});
                         } else {
                             logger.info(logName + ' Data saved', {'data': saveData});
-                            let channel = bot.channels.find('name', process.env.NEWSLETTER_CHANNEL);
+                            let channel = client.channels.find('name', process.env.NEWSLETTER_CHANNEL);
                             let embed = new discord.RichEmbed()
                                 .setTimestamp()
                                 .setTitle(':loudspeaker: Tem novidades na área pessoal! ' + item.title)
@@ -47,7 +46,7 @@ exports.readFeed = function(logPrefix, bot) {
                                 .setDescription('Nova newsletter da frontier, para ver as novidades acesse o link abaixo:' + 
                                     '\n\n' + item.guid);
                             if (channel) {
-                                return channel.send('@everyone', {'embed': embed});
+                                return channel.send('@here', {'embed': embed});
                             }
                         }
                     });

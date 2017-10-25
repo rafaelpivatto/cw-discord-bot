@@ -4,8 +4,6 @@ const logger = require('heroku-logger')
 const logName = '[SearchWingInfosFromEddb]';
 const wingUrl = 'https://eddb.io/faction/74863';
 
-var exports = {};
-
 exports.get = function(logPrefix, callback) {
     logger.info(logPrefix + logName + ' Getting eddb infos on site=' + wingUrl);
     request(wingUrl, function (error, response, body) {

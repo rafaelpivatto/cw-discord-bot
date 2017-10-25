@@ -3,8 +3,6 @@ const logger = require('heroku-logger')
 
 const logName = '[MongoConnection] ';
 
-var exports = {};
-
 exports.saveOrUpdate = function(logPrefix, data, collectionName, callback) {
     logger.info(logPrefix + logName + ' Save/update informations on collection=' + collectionName);
     getConnection(logPrefix, function(error, db) {
@@ -17,7 +15,7 @@ exports.saveOrUpdate = function(logPrefix, data, collectionName, callback) {
             }
             closeConnection(db);
             logger.info(logPrefix + logName + ' Save/update success');
-            return callback(null);
+            return callback(null, result);
         });
     });
 };

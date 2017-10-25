@@ -5,10 +5,10 @@ const dateFormat = require('dateformat');
 const request = require('request');
 const plotly = require('plotly')(process.env.PLOTLY_USER,process.env.PLOTLY_PASS);
 
-const errorMessage = require('../../modules/errorMessage.js');
-const searchSystemFactionFromEdsm = require('../../modules/searchSystemFactionFromEdsm.js');
+const errorMessage = require('../../modules/message/errorMessage.js');
+const searchSystemFactionFromEdsm = require('../../modules/gateway/searchSystemFactionFromEdsm.js');
 const utils = require('../../modules/utils.js');
-const fileManagement = require('../../modules/fileManagement.js');
+const fileManagement = require('../../modules/service/fileManagement.js');
 
 const logName = '[SystemFactionsGraph]';
 const fileDir = '/images/graph/systemfactions/';
@@ -26,14 +26,15 @@ module.exports = class SystemFactionsCommand extends Command {
             name: 'sistema',
             group: 'status',
             memberName: 'systemfactionsgraph',
-            description: 'Retrieve status for system factions'
+            description: 'Retrieve status for system factions',
+            guildOnly: true,
+            patterns: [new RegExp('[a-zA-Z]')]
         });
     }
 
     async run(msg, args) {
-        if (utils.blockDirectMessages(msg)) return;
         
-        const systemName = String(args).toUpperCase();
+        const systemName = utils.removeDiacritics(String(args)).toUpperCase();
         logger.info(logName + ' Generate system factions graph by user = ' + msg.message.author.username);
         logger.info(logName + ' System name = ' + systemName);
         if (!systemName) {
@@ -50,13 +51,13 @@ module.exports = class SystemFactionsCommand extends Command {
             const json = JSON.parse(body);
             if (!json.length && json.length === 0) {
                 logger.info(logName + ' System "' + systemName + '" not found');
-                return msg.channel.send('O sistema "' + systemName + '" não foi encontrado! tem certeza que é o sistema certo? :thinking:');
+                return msg.channel.send('O sistema "' + systemName + '" não foi encontrado! Está correto o nome do sistema? :thinking:');
             }
             if (json.factions.length === 0) {
                 logger.info(logName + ' System "' + systemName + '" not found minor factions');
                 return msg.channel.send('O sistema "' + systemName + '" não tem facções :neutral_face:');
             }
-            msg.channel.send(':arrows_counterclockwise: Aguarde, o gráfico está sendo gerado...');
+            msg.channel.send(':arrows_counterclockwise: Aguarde um instante, o gráfico está sendo gerado...');
             const data = normalizeObjects(json);
             const graphOptions = getGraphOption(systemName, json.controllingFaction.name);
             
@@ -86,9 +87,10 @@ module.exports = class SystemFactionsCommand extends Command {
                         let imageAddress = process.env.BASE_URL + fileDir + fullFilename;
                         logger.info(logName + ' Image address: ' + imageAddress);
                         
+                        const urlFormatted = String(url).replace(/ /g, '%20');
                         let embed = new RichEmbed()
                             .setTitle('**Influências em ' + systemName + '**')
-                            .setDescription('Dados extraídos do [EDSM](' + url + ')')
+                            .setDescription('Dados extraídos do [EDSM](' + urlFormatted + ')')
                             .setImage(imageAddress)
                             .setColor(wingColorEmbed)
                             .setTimestamp()
@@ -134,11 +136,12 @@ module.exports = class SystemFactionsCommand extends Command {
 
             for (let i = 0; i < json.factions.length ; i++) {
                 const faction = json.factions[i];
-                const isThisWing = String(faction.name).toUpperCase() === wingName.toUpperCase();
-                const color = isThisWing ? wingColor : defaultColors[i];
+                const thisWing = String(faction.name).toUpperCase() === wingName.toUpperCase();
+                const color = thisWing ? wingColor : defaultColors[i];
                 const influence = Math.round(faction.influence * 100);
+                let factionname = String(faction.name).replace(new RegExp('&', 'g'), 'and');
                 if (influence <= 0) continue;
-                data[0].labels.push(faction.name + playerFactionIcon(faction));
+                data[0].labels.push(factionname + playerFactionIcon(faction));
                 data[0].marker.colors.push(color);
                 data[0].values.push(influence);
             }

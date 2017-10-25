@@ -5,10 +5,10 @@ const dateFormat = require('dateformat');
 const logger = require('heroku-logger');
 const request = require('request');
 
-const errorMessage = require('../../modules/errorMessage.js');
-const mongoConnection = require('../../modules/mongoConnection.js');
+const errorMessage = require('../../modules/message/errorMessage.js');
+const mongoConnection = require('../../modules/connection/mongoConnection.js');
 const utils = require('../../modules/utils.js');
-const fileManagement = require('../../modules/fileManagement.js');
+const fileManagement = require('../../modules/service/fileManagement.js');
 
 const logName = '[WingGraph]';
 const fileDir = '/images/graph/winggraph/';
@@ -28,15 +28,16 @@ module.exports = class GraphCommand extends Command {
             name: 'cwgrafico',
             group: 'status',
             memberName: 'winggraph',
-            description: 'Verify CW Graph'
+            description: 'Verify CW Graph',
+            guildOnly: true,
+            patterns: [new RegExp('[a-zA-Z]')]
         });
     }
 
     async run(msg, args) {
-        if (utils.blockDirectMessages(msg)) return;
 
         logger.info(logName + ' Initializing process to generate wing graph by user = ' + msg.message.author.username);
-        msg.channel.send(':arrows_counterclockwise: Aguarde, o gráfico está sendo gerado...');
+        msg.channel.send(':arrows_counterclockwise: Aguarde um instante, o gráfico está sendo gerado...');
         const inicialDate = new Date();
         inicialDate.setDate(inicialDate.getDate() - 9);
         inicialDate.setUTCHours(0, 0, 0, 0);

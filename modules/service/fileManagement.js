@@ -4,12 +4,10 @@ const logger = require('heroku-logger');
 
 const logName = '[FileManagement] ';
 
-var exports = {};
-
 exports.loadFile = function(logPrefix, res, fileName) {
     logger.info(logPrefix + logName + ' Starting load file = ' + fileName);
-    let dir = __dirname.replace('\\modules', '');
-    dir = dir.replace('/modules', '');
+    let dir = __dirname.replace('\\modules\\service', '');
+    dir = dir.replace('/modules/service', '');
     fs.readFile(dir + fileName, function (error, dt) {
         if (error) {
             logger.error(logPrefix + logName + ' Error to load file ', {'error': error});
@@ -37,8 +35,8 @@ exports.loadFile = function(logPrefix, res, fileName) {
 exports.saveFile = function(logPrefix, body, fileDir, fileName, callback) {
     logger.info(logPrefix + logName + ' Starting save file = ' + fileDir + fileName);
     
-    let dir = __dirname.replace('\\modules', '');
-    dir = dir.replace('/modules', '');
+    let dir = __dirname.replace('\\modules\\service', '');
+    dir = dir.replace('/modules/service', '');
     dir = dir + fileDir;
 
     verifyDir(logPrefix, dir, function(error){

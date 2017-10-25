@@ -2,11 +2,11 @@ const { Command } = require('discord.js-commando');
 const { RichEmbed } = require('discord.js');
 const logger = require('heroku-logger')
 
-const errorMessage = require('../../modules/errorMessage.js');
-const normalizeWingInfoFromEddb = require('../../modules/normalizeWingInfoFromEddb.js');
-const mongoConnection = require('../../modules/mongoConnection.js');
+const errorMessage = require('../../modules/message/errorMessage.js');
+const normalizeWingInfoFromEddb = require('../../modules/service/normalizeWingInfoFromEddb.js');
+const mongoConnection = require('../../modules/connection/mongoConnection.js');
 const utils = require('../../modules/utils.js');
-const searchWingInfosFromEddb = require('../../modules/searchWingInfosFromEddb.js');
+const searchWingInfosFromEddb = require('../../modules/gateway/searchWingInfosFromEddb.js');
 
 const logName = '[WingStatus]';
 
@@ -22,12 +22,13 @@ module.exports = class EmbedCommand extends Command {
             name: 'cwstatus',
             group: 'status',
             memberName: 'wingstatus',
-            description: 'Verify CW status'
+            description: 'Verify CW status',
+            guildOnly: true,
+            patterns: [new RegExp('[a-zA-Z]')]
         });
     }
 
     async run(msg, args) {
-        if (utils.blockDirectMessages(msg)) return;
 
         logger.info(logName + ' Initializing process to retrieving status by user = ' + msg.message.author.username);
         let out = '';
@@ -56,13 +57,15 @@ module.exports = class EmbedCommand extends Command {
             for(let info of data.infos) {
                 embed.addField('**' + getSystemName(info) + '**',
                     '**Influência: ** '+ utils.rpad(getInfluence(info), 10) + ' ' + 
-                    '**Att. à ' + info.eddbUpdate + '**' + wrapLine +
+                    '**Att. há ' + translateUnitTime(info.eddbUpdate) + '**' + wrapLine +
                     '**Segurança: ** ' + info.security + wrapLine + 
                     '**Estado: ** ' + info.state);
             }
             logger.info(logName + ' Finish process to retrieving status');
             return msg.embed(embed);
         });
+
+        //---- Methods ----
 
         function getSystemName(info) {
             let name = info.systemName; 
@@ -71,6 +74,9 @@ module.exports = class EmbedCommand extends Command {
             }
             if (info.state === 'War') {
                 name += ' :crossed_swords:';
+            }
+            if (info.state === 'Civil War') {
+                name += ' :busts_in_silhouette::crossed_swords: ';
             }
             if (info.state === 'Election') {
                 name += ' :loudspeaker:';
@@ -89,6 +95,17 @@ module.exports = class EmbedCommand extends Command {
             mongoConnection.saveOrUpdate(logName, data, 'wingData', function(error) {
                 if (error) console.log(error);
             });
+        }
+
+        function translateUnitTime(str) {
+            return str.replace('secs', 'seg')
+                    .replace('sec', 'seg')
+                    .replace('mins', 'min')
+                    .replace('min', 'min')
+                    .replace('hours', 'horas')
+                    .replace('hour', 'hora')
+                    .replace('days', 'dias')
+                    .replace('day', 'dia');
         }
     }
 }

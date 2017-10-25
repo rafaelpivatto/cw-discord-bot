@@ -1,14 +1,11 @@
-require('dotenv').config()
-const express = require('express');
-const discord = require('discord.js');
+require('dotenv').config();
+require('discord.js');
 const Commando = require('discord.js-commando');
-const logger = require('heroku-logger')
+const logger = require('heroku-logger');
 
-var app = express();
-const hourlyJob = require('./modules/hourlyJob.js');
-const fileManagement = require('./modules/fileManagement.js');
-const halfHourlyJob = require('./modules/halfHourlyJob.js');
-const registryCustomCommands = require('./modules/registryCustomCommands.js');
+const registryCustomCommands = require('./modules/registry/registryCustomCommands.js');
+const registryJobsExecution = require('./modules/registry/registryJobsExecution.js');
+const registryEndPoints = require('./modules/registry/registryEndPoints.js');
 
 const logName = '[Index]';
 
@@ -21,31 +18,17 @@ logger.info(logName + ' Initializing bot');
 client.registry.registerGroup('status');
 client.registry.registerGroup('help');
 client.registry.registerGroup('customcommands');
-
-client.registry.registerCommandsIn(__dirname + '/commands')/
+client.registry.registerGroup('music');
+client.registry.registerCommandsIn(__dirname + '/commands');
 
 client.login(process.env.BOT_KEY);
 
 client.on('ready', (arg) => {
-    client.user.setPresence({ game: { name: 'ajuda? !cwhelp', type: 0 } });
+    client.user.setPresence({ game: { name: 'EliteDangerous 2.4', type: 0 } });
     
     registryCustomCommands.execute(client);
-    hourlyJob.execute();
-    halfHourlyJob.execute(client);    
-});
+    registryJobsExecution.execute(client);
+    registryEndPoints.execute();
 
-logger.info(logName + ' Bot started');
-
-var server = app.listen(process.env.PORT || 5000, function () {
-    var host = server.address().address;
-    var port = server.address().port;
-    console.log('Server listening at http://%s:%s', host, port);
-});
-
-app.all('/images/*', function (req, res) {
-    fileManagement.loadFile(logName, res, req.path);
-});
-
-app.all('/', function (req, res) {
-    res.status(200).send('Work!');
+    logger.info(logName + ' Bot started');
 });

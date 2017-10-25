@@ -1,10 +1,8 @@
 const logger = require('heroku-logger')
 
-const mongoConnection = require('./mongoConnection');
+const mongoConnection = require('../connection/mongoConnection.js');
 
 const logName = '[LastSeenPlayers]';
-
-var exports = {};
 
 exports.getAndUpdate = function(logPrefix, qtd, callback) {
     logger.info(logPrefix + logName + ' Starting get, qtd: ' + qtd);

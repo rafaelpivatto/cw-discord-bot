@@ -14,19 +14,25 @@
   "dependencies": {
     "cheerio": "^0.22.0",
     "dateformat": "^2.0.0",
-    "discord.js": "^11.1.0",
+    "discord.js": "^11.2.1",
     "discord.js-commando": "^0.9.0",
     "dotenv": "^4.0.0",
     "express": "^4.15.3",
     "feedparser": "^2.2.1",
     "feedparser-promised": "^1.4.0",
     "fs": "0.0.1-security",
+    "goo.gl": "^0.1.4",
     "heroku-logger": "^0.1.4",
     "jsonminify": "^0.4.1",
     "mkdirp": "^0.5.1",
     "mongodb": "^2.2.30",
+    "node-opus": "^0.2.7",
     "node-schedule": "^1.2.3",
+    "pc-stats": "0.0.7",
     "plotly": "^1.0.6",
-    "request": "^2.81.0"
+    "remove-array-items": "^1.0.0",
+    "request": "^2.81.0",
+    "youtube-dl": "^1.12.2",
+    "ytdl-core": "^0.17.1"
   }
 }
