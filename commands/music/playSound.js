@@ -48,6 +48,7 @@ module.exports = class PlaySoundCommand extends Command {
         super(client, {
             name: 'musica',
             group: 'music',
+            aliases: ['música', 'music'],
             memberName: 'playmusic',
             description: 'Command to play music on channel',
             guildOnly: true,
@@ -101,57 +102,56 @@ module.exports = class PlaySoundCommand extends Command {
                 .setAuthor(authorName, getCleanUrl(msg.author))
                 .setThumbnail('https://i.imgur.com/vcW4iNm.png')
                 .setDescription('Aguarde um instante, pesquisando por **"'+ musicLink + '"**...');
-		    msg.channel.send({'embed': embedSearch}).then(response => {
-                
-                msg.delete().then(del => {
-                    YoutubeDL.getInfo(searchstring, searchParams, {maxBuffer: 'Infinity'}, (err, info) => {
-                        // Verify the info.
-                        if (err || info.format_id === undefined || info.format_id.startsWith('0')) {
-                            if (err) {
-                                logger.error('Error: ', err);
-                            }
-                            if (info) {
-                                logger.error('Info: ', info);
-                            }
-                            response.delete();
-                            return msg.channel.send('Houve um erro ao pesquisar a musica :(\n'
-                                + '__Talvez__ a música não pode ser reproduzida fora do youtube.\n'
-                                + 'Tente novamente ou adicione a música por outro link do youtube ;)');
+            
+            msg.channel.send({'embed': embedSearch}).then(response => {
+                msg.delete();
+                YoutubeDL.getInfo(searchstring, searchParams, {maxBuffer: 'Infinity'}, (err, info) => {
+                    // Verify the info.
+                    if (err || info.format_id === undefined || info.format_id.startsWith('0')) {
+                        if (err) {
+                            logger.error('Error: ', err);
                         }
-                        
-                        logger.info(logName + ' Search finished');
-    
-                        info.requester = {
-                            id: msg.author.id,
-                            avatarURL: msg.author.avatarURL,
-                            defaultAvatarURL: msg.author.defaultAvatarURL,
-                            nickname: authorName
-                        };
-    
-                        // Queue the video.
-                        let embed = new RichEmbed()
-                            .setColor(embedRed)
-                            .setTimestamp()
-                            .setAuthor(info.requester.nickname, getCleanUrl(msg.author))
-                            .setThumbnail(info.thumbnail)
-                            .setFooter('Listen safe, cmdr!')
-                            .setDescription('Adicionado à fila...'+ 
-                                '\nMúsica: **' + info.title + '**' +
-                                '\nDuração: **' + info._duration_hms + '**' +
-                                '\nPosição: **' + (parseInt(playlist.length) + 1) + '**' +
-                                '\n[Link da musica](' + info.webpage_url + ')');
-
-                        playlist.push(info);
+                        if (info) {
+                            logger.error('Info: ', info);
+                        }
                         response.delete();
-                        msg.channel.send({'embed': embed}).then(() => {
-                            logger.info(logName + ' Adicionado à fila ' + info.title + ', duração: ' + info._duration_hms);
-                            
-                            // Play if only one element in the playlist.
-                            if (playlist.length === 1) executePlaylist(msg, playlist);
-                        }).catch(console.log);
-                    });
-                }).catch(console.error);                
-            }).catch(console.log);
+                        return msg.channel.send('Houve um erro ao pesquisar a musica :(\n'
+                            + '__Talvez__ a música não pode ser reproduzida fora do youtube.\n'
+                            + 'Tente novamente ou adicione a música por outro link do youtube ;)');
+                    }
+                    
+                    logger.info(logName + ' Search finished');
+
+                    info.requester = {
+                        id: msg.author.id,
+                        avatarURL: msg.author.avatarURL,
+                        defaultAvatarURL: msg.author.defaultAvatarURL,
+                        nickname: authorName
+                    };
+
+                    // Queue the video.
+                    let embed = new RichEmbed()
+                        .setColor(embedRed)
+                        .setTimestamp()
+                        .setAuthor(info.requester.nickname, getCleanUrl(msg.author))
+                        .setThumbnail(info.thumbnail)
+                        .setFooter('Listen safe, cmdr!')
+                        .setDescription('Adicionado à fila...'+ 
+                            '\nMúsica: **' + info.title + '**' +
+                            '\nDuração: **' + getDuration(info) + '**' +
+                            '\nPosição: **' + (parseInt(playlist.length) + 1) + '**' +
+                            '\n[Link da musica](' + info.webpage_url + ')');
+
+                    playlist.push(info);
+                    response.delete();
+                    msg.channel.send({'embed': embed}).then(() => {
+                        logger.info(logName + ' Adicionado à fila ' + info.title + ', duração: ' + getDuration(info));
+                        
+                        // Play if only one element in the playlist.
+                        if (playlist.length === 1) executePlaylist(msg, playlist);
+                    }).catch(console.log);
+                });
+            }).catch(console.error);
         }
 
         function executePlaylist(msg, playlist) {
@@ -182,11 +182,11 @@ module.exports = class PlaySoundCommand extends Command {
                         return msg.channel.send('Houve um erro inesperado, por favor avise algum admin-bot');
                     }
 
-                    const stream = ytdl(music.webpage_url, streamOptions);
+                    const stream = ytdl(music.webpage_url, music.is_live ? {} : streamOptions);
                     dispatcher = connection.playStream(stream, { volume: 0.1, passes: 2, bitrate: 'auto'});
                     musicPlaying = music;
                     
-                    logger.info(logName + ' Tocando a música ' + music.title + ', duração: ' + music._duration_hms);
+                    logger.info(logName + ' Tocando a música ' + music.title + ', duração: ' + getDuration(music));
                     const songsRemaining = playlist.length-1;
                     let next = '\nDepois dessa... ';
                     if (songsRemaining === 1) {
@@ -197,6 +197,11 @@ module.exports = class PlaySoundCommand extends Command {
                         next += 'a fila não tem mais músicas.';
                     }
                     
+                    let textLive = '';
+                    if (music.is_live) {
+                        textLive += '\n*Essa música só termina quando finalizar a live ou quando executar o comando !musica proxima.*'
+                    }
+
                     const embed = new RichEmbed()
                         .setColor(embedGreen)
                         .setTimestamp()
@@ -205,7 +210,7 @@ module.exports = class PlaySoundCommand extends Command {
                         .setFooter('Listen safe, cmdr!')
                         .setDescription(feedbackMessages[Math.floor(Math.random() * 10)] + ' tocando agora...' +
                             '\nMúsica: **' + music.title + '**' +
-                            '\nDuração: **' + music._duration_hms + '**' +
+                            '\nDuração: **' + getDuration(music) + '**' + textLive +
                             '\n[Link da musica](' + music.webpage_url + ')' +
                             next);
     
@@ -412,6 +417,14 @@ module.exports = class PlaySoundCommand extends Command {
             }
         }
 
+        function getDuration(music) {
+            if (music.is_live) {
+                return '∞ (live stream)';
+            } else {
+                return music._duration_hms
+            }
+        }
+
         function getPlaylist(msg) {
             if (playlist.length > 0) {
                 let desc = '';
@@ -420,14 +433,20 @@ module.exports = class PlaySoundCommand extends Command {
                         desc += ':radio: ';
                         desc += '**Tocando agora:\n';
                         desc += '#' + (Number(i)+1) + '- ' + playlist[i].title + '\n';
-                        desc += '\t\tDuração: ' + playlist[i]._duration_hms + ' - por: ' + playlist[i].requester.nickname;
-                        desc += '**\n\n';
+                        desc += '\t\tDuração: ' + getDuration(playlist[i]) + ' - por: ' + playlist[i].requester.nickname + '**';
+                        if (playlist[i].is_live) {
+                            desc += '\n\t\t*Essa música só termina quando finalizar a live ou quando executar o comando !musica proxima.*'
+                        }
+                        desc += '\n\n';
                     } else {
                         if (i===1) {
                             desc += ':track_next: **Próximas músicas na fila:**\n';
                         }
                         desc += '**#' + (Number(i)+1) + '**- ' + playlist[i].title + '\n';
-                        desc += '\t\tDuração: ' + playlist[i]._duration_hms + ' - por: ' + playlist[i].requester.nickname;
+                        desc += '\t\tDuração: ' + getDuration(playlist[i]) + ' - por: ' + playlist[i].requester.nickname;
+                        if (playlist[i].is_live) {
+                            desc += '\n\t\t*Essa música só termina quando finalizar a live ou quando executar o comando !musica proxima.*'
+                        }
                         desc += '\n\n';
                     }
                 }
