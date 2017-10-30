@@ -179,7 +179,8 @@ module.exports = class PlaySoundCommand extends Command {
                 getConnection(function(error){
 
                     if (error) {
-                        return msg.channel.send('Houve um erro inesperado, por favor avise algum admin-bot');
+                        return msg.channel.send('Houve um erro inesperado, por favor avise algum admin-bot\n' +
+                        '```Código: get connection => ' + error + '```');
                     }
 
                     const stream = ytdl(music.webpage_url, music.is_live ? {} : streamOptions);
@@ -223,7 +224,8 @@ module.exports = class PlaySoundCommand extends Command {
                     connection.on('error', (error) => {
                         // Skip to the next song.
                         logger.error(logName + ' ' + error);
-                        msg.channel.send('Houve um erro inesperado, por favor avise algum admin-bot');
+                        msg.channel.send('Houve um erro inesperado, por favor avise algum admin-bot\n' +
+                            '```Código: connection => ' + error + '```');
                         playlist.shift();
                         stream.end();
                         executePlaylist(msg, playlist);
@@ -232,7 +234,8 @@ module.exports = class PlaySoundCommand extends Command {
                     dispatcher.on('error', (error) => {
                         // Skip to the next song.
                         logger.error(logName + ' ' + error);
-                        msg.channel.send('Houve um erro inesperado, por favor avise algum admin-bot');
+                        msg.channel.send('Houve um erro inesperado, por favor avise algum admin-bot\n' +
+                            '```Código: dispatcher => ' + error + '```');
                         playlist.shift();
                         stream.end();
                         executePlaylist(msg, playlist);
@@ -265,10 +268,10 @@ module.exports = class PlaySoundCommand extends Command {
                         callback();
                     }).catch(err => {
                         logger.error('Erro ao conectar na sala de musica: ' + err);
-                        callback('error');
+                        callback('error, ' + err);
                     });
                 } else {
-                    callback('error');
+                    callback('error, channel.type=' + channel.type);
                 }
             } else {
                 callback();
@@ -419,7 +422,7 @@ module.exports = class PlaySoundCommand extends Command {
 
         function getDuration(music) {
             if (music.is_live) {
-                return '∞ (live stream)';
+                return '∞ - live ao vivo ;P';
             } else {
                 return music._duration_hms
             }
