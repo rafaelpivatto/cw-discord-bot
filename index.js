@@ -18,7 +18,6 @@ logger.info(logName + ' Initializing bot');
 client.registry.registerGroup('status');
 client.registry.registerGroup('help');
 client.registry.registerGroup('customcommands');
-client.registry.registerGroup('music');
 client.registry.registerCommandsIn(__dirname + '/commands');
 
 client.login(process.env.BOT_KEY);
