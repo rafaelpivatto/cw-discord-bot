@@ -1,3 +1,5 @@
+const logger = require('heroku-logger');
+
 exports.lpad = function(text, width, z) {
     z = z || ' ';
     text = text + '';
@@ -34,6 +36,32 @@ exports.removeSpaces = function(str) {
     var re = new RegExp(' ', 'g');
     return String(str).replace(re, '');
 };
+
+exports.getUserNickName = function(msg) {
+    if (msg.member.nickname) {
+        return msg.member.nickname;
+    } else if (msg.message.author.username) {
+        return msg.message.author.username;
+    } else {
+        return 'user';
+    }
+}
+
+exports.getUserAvatar = function(msg) {
+    if (msg.author.avatarURL) {
+        const index = msg.author.avatarURL.indexOf('?');
+        if (index > 0) {
+            return msg.author.avatarURL.substring(0, index);
+        }
+    } else {
+        return msg.author.defaultAvatarURL;
+    }
+}
+
+exports.logMessageUserExecuteCommand = function(logName, commandName, msg) {
+    logger.info(logName + ' Execute command ' + commandName + ' by user = ' + exports.getUserNickName(msg) + 
+        ' #' + msg.message.author.discriminator + ' on channel ' + msg.message.channel.name);
+}
 
 exports.removeDiacritics = function(str) {
     const defaultDiacriticsRemovalMap = [
