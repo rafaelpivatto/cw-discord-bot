@@ -58,8 +58,8 @@ exports.getUserAvatar = function(msg) {
     }
 }
 
-exports.logMessageUserExecuteCommand = function(logName, commandName, msg) {
-    logger.info(logName + ' Execute command ' + commandName + ' by user = ' + exports.getUserNickName(msg) + 
+exports.logMessageUserExecuteCommand = function(logName, msg) {
+    logger.info(logName + ' Execute command ' + msg.command.name + ' by user = ' + exports.getUserNickName(msg) + 
         ' #' + msg.message.author.discriminator + ' on channel ' + msg.message.channel.name);
 }
 

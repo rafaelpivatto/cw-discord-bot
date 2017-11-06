@@ -1,12 +1,13 @@
 const { Command } = require('discord.js-commando');
-const logger = require('heroku-logger');
 const { RichEmbed } = require('discord.js');
+const logger = require('heroku-logger');
 const dateFormat = require('dateformat');
 
 const errorMessage = require('../../modules/message/errorMessage.js');
 const getServerStatusFromEdsm = require('../../modules/service/getServerStatusFromEdsm.js');
+const utils = require('../../modules/utils.js');
 
-const logName = '[Ping]';
+const logName = '[ServerStatus]';
 const doubleWrapLine = '\n\n';
 const wingColor = '#f00000';
 
@@ -23,7 +24,7 @@ module.exports = class PingCommand extends Command {
     }
 
     async run(msg, args) {
-        logger.info(logName + ' Execute check server status by user = ' + msg.message.author.username);
+        utils.logMessageUserExecuteCommand(logName, msg);
         
         getServerStatusFromEdsm.getServerStatus(logName, function(error, currentServerStatus) {
 
@@ -37,6 +38,7 @@ module.exports = class PingCommand extends Command {
             const info = getByStatus(currentServerStatus);
             let embed = new RichEmbed()
                 .setColor(wingColor)
+                .setAuthor(utils.getUserNickName(msg), utils.getUserAvatar(msg))
                 .setTimestamp()
                 .setTitle('Elite: Dangerous')
                 .setThumbnail(info.thumb)

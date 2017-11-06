@@ -23,8 +23,7 @@ module.exports = class HelpCommand extends Command {
     }
 
     async run(msg, args) {
-        
-        utils.logMessageUserExecuteCommand(logName, 'cwajuda', msg);
+        utils.logMessageUserExecuteCommand(logName, msg);
         
         let embed = new RichEmbed()
                 .setColor(wingColor)

@@ -23,10 +23,9 @@ module.exports = class GetCustomCommand extends Command {
     }
 
     async run(msg, args) {
+        utils.logMessageUserExecuteCommand(logName, msg);
         
         const commandName = String(msg.message.content).replace(args, '').replace('!', '').toLowerCase();
-        utils.logMessageUserExecuteCommand(logName, commandName, msg);
-        
         const query = {_id: commandName};
         mongoConnection.find(logName, query, 'customCommands', function(error, data) {
             

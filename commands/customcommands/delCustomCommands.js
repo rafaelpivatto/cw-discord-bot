@@ -24,7 +24,7 @@ module.exports = class GetCustomCommand extends Command {
 
     async run(msg, args) {
         
-        utils.logMessageUserExecuteCommand(logName, 'delcustom', msg);
+        utils.logMessageUserExecuteCommand(logName, msg);
 
         let commandData = utils.removeDiacritics(String(args)).toLowerCase();
         if (msg.message.channel.name !== process.env.CUSTOM_COMMANDS_CHANNEL) {

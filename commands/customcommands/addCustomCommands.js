@@ -22,8 +22,7 @@ module.exports = class AddCustomCommand extends Command {
     }
 
     async run(msg, args) {
-
-        utils.logMessageUserExecuteCommand(logName, 'addcustom', msg);
+        utils.logMessageUserExecuteCommand(logName, msg);
 
         let commandData;
         if (msg.message.channel.name !== process.env.CUSTOM_COMMANDS_CHANNEL) {
