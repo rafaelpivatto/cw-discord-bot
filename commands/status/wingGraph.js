@@ -15,7 +15,7 @@ const fileDir = '/images/graph/winggraph/';
 const fileExtension = '.png';
 const wgName = 'Cobra Wing';
 const wingUrl = 'https://eddb.io/faction/74863';
-const wingColorEmbed = '#f00000';
+const wingColor = '#f00000';
 const UP = '⬆';
 const DOWN = '⬇';
 const EQUAL = '⬌';
@@ -35,68 +35,78 @@ module.exports = class GraphCommand extends Command {
     }
 
     async run(msg, args) {
+        utils.logMessageUserExecuteCommand(logName, msg);
 
-        logger.info(logName + ' Initializing process to generate wing graph by user = ' + msg.message.author.username);
-        msg.channel.send(':arrows_counterclockwise: Aguarde um instante, o gráfico está sendo gerado...');
-        const inicialDate = new Date();
-        inicialDate.setDate(inicialDate.getDate() - 9);
-        inicialDate.setUTCHours(0, 0, 0, 0);
-        const query = {_id : { '$gte' : inicialDate }, wingName: wgName };
-        
-        mongoConnection.find(logName, query, 'wingData', function(error, results){
-            if (error) {
-                logger.error(logName + ' Error on retrieving informations', {'error': error});
-                return errorMessage.sendClientErrorMessage(msg);
-            }
-            const data = normalizeObjects(results);
-            const graphOptions = getGraphOptions();
+        msg.channel.send({'embed': new RichEmbed()
+            .setColor(wingColor)
+            .setAuthor(utils.getUserNickName(msg), utils.getUserAvatar(msg))
+            .setTimestamp()
+            .setFooter('Fly safe cmdr!')
+            .setDescription(':arrows_counterclockwise: Aguarde um instante, o gráfico está sendo gerado...')}).then(waitMessage => {
+
+            const inicialDate = new Date();
+            inicialDate.setDate(inicialDate.getDate() - 9);
+            inicialDate.setUTCHours(0, 0, 0, 0);
+            const query = {_id : { '$gte' : inicialDate }, wingName: wgName };
             
-            plotly.plot(data, graphOptions, function (err, res) {
+            mongoConnection.find(logName, query, 'wingData', function(error, results){
                 if (error) {
-                    logger.error(logName + ' Error on plotly graph', {'error': error});
+                    logger.error(logName + ' Error on retrieving informations', {'error': error});
+                    waitMessage.delete();
                     return errorMessage.sendClientErrorMessage(msg);
                 }
-
-                const imageUrl = res.url + '.png';
-
-                request.get({url: imageUrl, encoding: 'binary'}, function (err, response, body) {
+                const data = normalizeObjects(results);
+                const graphOptions = getGraphOptions();
+                
+                plotly.plot(data, graphOptions, function (err, res) {
                     if (error) {
-                        logger.error(logName + ' Error get Imagem from plotly', {'error': error});
+                        logger.error(logName + ' Error on plotly graph', {'error': error});
+                        waitMessage.delete();
                         return errorMessage.sendClientErrorMessage(msg);
                     }
 
-                    const now = dateFormat(utils.getUTCDateNow(), 'yyyymmddHHMMss');
-                    const fullFilename =  now + '-' + utils.removeSpaces(wgName) + fileExtension;
+                    const imageUrl = res.url + '.png';
 
-                    fileManagement.saveFile(logName, body, fileDir, fullFilename, function(error) {
+                    request.get({url: imageUrl, encoding: 'binary'}, function (err, response, body) {
                         if (error) {
-                            logger.error(logName + ' Error to save file = ' + fileDir + fullFilename, {'error': error});
+                            logger.error(logName + ' Error get Imagem from plotly', {'error': error});
+                            waitMessage.delete();
                             return errorMessage.sendClientErrorMessage(msg);
                         }
 
-                        let imageAddress = process.env.BASE_URL + fileDir + fullFilename;
-                        logger.info(logName + ' Image address: ' + imageAddress);
-                        
-                        let embed = new RichEmbed()
-                            .setTitle('**Gráfico de influências da ' + wgName + '**')
-                            .setDescription('Dados extraídos do [EDDB](' + wingUrl + ')')
-                            .setImage(imageAddress)
-                            .setColor(wingColorEmbed)
-                            .setTimestamp()
-                            .setFooter('Fly safe cmdr!');
-                        
-                        onlyInDev(msg, imageAddress);
-                        
-                        logger.info(logName + ' Finished process to generate wing graph');
+                        const now = dateFormat(utils.getUTCDateNow(), 'yyyymmddHHMMss');
+                        const fullFilename =  now + '-' + utils.removeSpaces(wgName) + fileExtension;
 
-                        msg.client.channels.find('id', msg.channel.id).messages.find('id', msg.client.user.lastMessageID).delete();
+                        fileManagement.saveFile(logName, body, fileDir, fullFilename, function(error) {
+                            if (error) {
+                                logger.error(logName + ' Error to save file = ' + fileDir + fullFilename, {'error': error});
+                                waitMessage.delete();
+                                return errorMessage.sendClientErrorMessage(msg);
+                            }
 
-                        return msg.embed(embed);
+                            let imageAddress = process.env.BASE_URL + fileDir + fullFilename;
+                            logger.info(logName + ' Image address: ' + imageAddress);
+                            
+                            let embed = new RichEmbed()
+                                .setTitle('**Gráfico de influências da ' + wgName + '**')
+                                .setAuthor(utils.getUserNickName(msg), utils.getUserAvatar(msg))
+                                .setDescription('Dados extraídos do [EDDB](' + wingUrl + ')')
+                                .setImage(imageAddress)
+                                .setColor(wingColor)
+                                .setTimestamp()
+                                .setFooter('Fly safe cmdr!');
+                            
+                            onlyInDev(msg, imageAddress);
+                            
+                            logger.info(logName + ' Finished process to generate wing graph');
+                            waitMessage.delete();
+                            return msg.embed(embed);
+                        });
                     });
+                    logger.info(logName + ' Finished process to generate graph');
                 });
-                logger.info(logName + ' Finished process to generate graph');
             });
-        });
+        }).catch(console.log);
 
         function onlyInDev(msg, imageAddress) {
             if (process.env.ENVIRONMENT === 'DEV') {

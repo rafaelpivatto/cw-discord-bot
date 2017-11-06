@@ -1,9 +1,10 @@
 const { Command } = require('discord.js-commando');
-const logger = require('heroku-logger');
 const { RichEmbed } = require('discord.js');
+const logger = require('heroku-logger');
 
 const mongoConnection = require('../../modules/connection/mongoConnection.js');
 const errorMessage = require('../../modules/message/errorMessage.js');
+const utils = require('../../modules/utils.js');
 
 const logName = '[RunCustomCommand]';
 const doubleWrapLine = '\n\n';
@@ -22,10 +23,9 @@ module.exports = class GetCustomCommand extends Command {
     }
 
     async run(msg, args) {
+        utils.logMessageUserExecuteCommand(logName, msg);
         
         const commandName = String(msg.message.content).replace(args, '').replace('!', '').toLowerCase();
-        logger.info(logName + ' Execute command = ' + commandName + ' by user = ' + msg.message.author.username);
-        
         const query = {_id: commandName};
         mongoConnection.find(logName, query, 'customCommands', function(error, data) {
             
@@ -42,8 +42,10 @@ module.exports = class GetCustomCommand extends Command {
                 .setColor(wingColor)
                 .setTimestamp()
                 .setFooter('Fly safe cmdr!')
+                .setAuthor(utils.getUserNickName(msg), utils.getUserAvatar(msg))
                 .setTitle(getValue(item.title))
                 .setImage(getValue(item.image))
+                .setThumbnail(getValue(item.thumbnail))
                 .setDescription(getValue(item.content));
 
             return msg.channel.send(item.alert, {'embed': embed});

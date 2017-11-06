@@ -1,10 +1,13 @@
 const { Command } = require('discord.js-commando');
-const logger = require('heroku-logger');
 const { RichEmbed } = require('discord.js');
+const logger = require('heroku-logger');
+
+const utils = require('../../modules/utils.js');
 
 const doubleWrapLine = '\n\n';
 const wingThumb = 'http://i.imgur.com/ro5DQx9.png';
 const wingColor = '#f00000';
+const logName = '[CWAjuda]';
 
 module.exports = class HelpCommand extends Command {
     constructor(client) {
@@ -20,13 +23,13 @@ module.exports = class HelpCommand extends Command {
     }
 
     async run(msg, args) {
-        
-        logger.info('[Help] Execute help command by user = ' + msg.message.author.username);
+        utils.logMessageUserExecuteCommand(logName, msg);
         
         let embed = new RichEmbed()
                 .setColor(wingColor)
                 .setTimestamp()
                 .setTitle('Comandos do CobraWingBot')
+                .setAuthor(utils.getUserNickName(msg), utils.getUserAvatar(msg))
                 .setThumbnail(wingThumb)
                 .setFooter('Fly safe cmdr!')
                 .setDescription(

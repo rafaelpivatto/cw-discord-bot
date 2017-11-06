@@ -33,79 +33,97 @@ module.exports = class SystemFactionsCommand extends Command {
     }
 
     async run(msg, args) {
+        utils.logMessageUserExecuteCommand(logName, msg);
         
         const systemName = utils.removeDiacritics(String(args)).toUpperCase();
-        logger.info(logName + ' Generate system factions graph by user = ' + msg.message.author.username);
         logger.info(logName + ' System name = ' + systemName);
+
         if (!systemName) {
             logger.warn(logName + ' Error on retrieving informations, error command.');
-            return msg.channel.send(':warning: Comando inválido, execute !sistema <NOME DO SISTEMA>');
+            return errorMessage.sendSpecificClientErrorMessage(msg, 'Comando inválido, execute !sistema <NOME DO SISTEMA>');
         }
+
         searchSystemFactionFromEdsm.get(logName, systemName, function(error, body, url){
+
             if (error || !body) {
                 logger.error(logName + ' Error on retrieving informations', {'error': error});
                 return errorMessage.sendSpecificClientErrorMessage(msg, 
                     'O EDSM não deu permissão para o bot fazer docking, aguarde um instante e tente novamente em breve, Fly safe CMDR!'
                 );
             }
+
             const json = JSON.parse(body);
+
             if (!json.length && json.length === 0) {
                 logger.info(logName + ' System "' + systemName + '" not found');
-                return msg.channel.send('O sistema "' + systemName + '" não foi encontrado! Está correto o nome do sistema? :thinking:');
+                return errorMessage.sendSpecificClientErrorMessage(msg, 
+                    'O sistema "' + systemName + '" não foi encontrado! Está correto o nome do sistema? :thinking:');
             }
+
             if (json.factions.length === 0) {
                 logger.info(logName + ' System "' + systemName + '" not found minor factions');
-                return msg.channel.send('O sistema "' + systemName + '" não tem facções :neutral_face:');
+                return errorMessage.sendSpecificClientErrorMessage(msg, 
+                    'O sistema "' + systemName + '" não tem facções :neutral_face:');
             }
-            msg.channel.send(':arrows_counterclockwise: Aguarde um instante, o gráfico está sendo gerado...');
-            const data = normalizeObjects(json);
-            const graphOptions = getGraphOption(systemName, json.controllingFaction.name);
-            
-            plotly.plot(data, graphOptions, function (error, res) {
-                if (error || !res) {
-                    logger.error(logName + ' Error on plotly system factions graph', {'error': error});
-                    return errorMessage.sendSpecificClientErrorMessage(msg, 
-                        'Os :alien: impediram o gráfico de ser gerado, tente novamente, parece que *já se foi o disco voador*.');
-                }
 
-                const imageUrl = res.url + '.png';
-                request.get({url: imageUrl, encoding: 'binary'}, function (error, response, body) {
-                    if (error) {
-                        logger.error(logName + ' Error get Imagem from plotly', {'error': error});
-                        return errorMessage.sendClientErrorMessage(msg);
+            msg.channel.send({'embed': new RichEmbed()
+                .setColor(wingColor)
+                .setAuthor(utils.getUserNickName(msg), utils.getUserAvatar(msg))
+                .setTimestamp()
+                .setFooter('Fly safe cmdr!')
+                .setDescription(':arrows_counterclockwise: Aguarde um instante, o gráfico está sendo gerado...')}).then(waitMessage => {
+                
+                const data = normalizeObjects(json);
+                const graphOptions = getGraphOption(systemName, json.controllingFaction.name);
+                
+                plotly.plot(data, graphOptions, function (error, res) {
+                    if (error || !res) {
+                        logger.error(logName + ' Error on plotly system factions graph', {'error': error});
+                        waitMessage.delete();
+                        return errorMessage.sendSpecificClientErrorMessage(msg, 
+                            'Os :alien: impediram o gráfico de ser gerado, tente novamente, parece que *já se foi o disco voador*.');
                     }
-                    
-                    const now = dateFormat(utils.getUTCDateNow(), 'yyyymmddHHMMss');
-                    const fullFilename =  now + '-' + utils.removeSpaces(systemName) + fileExtension;
 
-                    fileManagement.saveFile(logName, body, fileDir, fullFilename, function(error) {
+                    const imageUrl = res.url + '.png';
+                    request.get({url: imageUrl, encoding: 'binary'}, function (error, response, body) {
                         if (error) {
-                            logger.error(logName + ' Error to save file = ' + fileDir + fullFilename, {'error': error});
+                            logger.error(logName + ' Error get Imagem from plotly', {'error': error});
+                            waitMessage.delete();
                             return errorMessage.sendClientErrorMessage(msg);
                         }
                         
-                        let imageAddress = process.env.BASE_URL + fileDir + fullFilename;
-                        logger.info(logName + ' Image address: ' + imageAddress);
-                        
-                        const urlFormatted = String(url).replace(/ /g, '%20');
-                        let embed = new RichEmbed()
-                            .setTitle('**Influências em ' + systemName + '**')
-                            .setDescription('Dados extraídos do [EDSM](' + urlFormatted + ')')
-                            .setImage(imageAddress)
-                            .setColor(wingColorEmbed)
-                            .setTimestamp()
-                            .setFooter('Fly safe cmdr!');
-                        
-                        onlyInDev(msg, imageAddress);
-                        
-                        logger.info(logName + ' Finished process to generate system factions graph');
+                        const now = dateFormat(utils.getUTCDateNow(), 'yyyymmddHHMMss');
+                        const fullFilename =  now + '-' + utils.removeSpaces(systemName) + fileExtension;
 
-                        msg.client.channels.find('id', msg.channel.id).messages.find('id', msg.client.user.lastMessageID).delete();
-
-                        return msg.embed(embed);
+                        fileManagement.saveFile(logName, body, fileDir, fullFilename, function(error) {
+                            if (error) {
+                                logger.error(logName + ' Error to save file = ' + fileDir + fullFilename, {'error': error});
+                                waitMessage.delete();
+                                return errorMessage.sendClientErrorMessage(msg);
+                            }
+                            
+                            let imageAddress = process.env.BASE_URL + fileDir + fullFilename;
+                            logger.info(logName + ' Image address: ' + imageAddress);
+                            
+                            const urlFormatted = String(url).replace(/ /g, '%20');
+                            let embed = new RichEmbed()
+                                .setTitle('**Influências em ' + systemName + '**')
+                                .setAuthor(utils.getUserNickName(msg), utils.getUserAvatar(msg))
+                                .setDescription('Dados extraídos do [EDSM](' + urlFormatted + ')')
+                                .setImage(imageAddress)
+                                .setColor(wingColorEmbed)
+                                .setTimestamp()
+                                .setFooter('Fly safe cmdr!');
+                            
+                            onlyInDev(msg, imageAddress);
+                            
+                            logger.info(logName + ' Finished process to generate system factions graph');
+                            waitMessage.delete();
+                            return msg.embed(embed);
+                        });
                     });
                 });
-            });
+            }).catch(console.log);
         });
 
         function normalizeObjects(json) {

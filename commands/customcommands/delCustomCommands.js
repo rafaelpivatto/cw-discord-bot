@@ -1,4 +1,5 @@
 const { Command } = require('discord.js-commando');
+const { RichEmbed } = require('discord.js');
 const logger = require('heroku-logger');
 
 const mongoConnection = require('../../modules/connection/mongoConnection.js');
@@ -23,12 +24,12 @@ module.exports = class GetCustomCommand extends Command {
 
     async run(msg, args) {
         
+        utils.logMessageUserExecuteCommand(logName, msg);
+
         let commandData = utils.removeDiacritics(String(args)).toLowerCase();
         if (msg.message.channel.name !== process.env.CUSTOM_COMMANDS_CHANNEL) {
             return errorMessage.sendSpecificClientErrorMessage(msg, 'Esse comando não pode ser executado nessa sala.');
         }
-        
-        logger.info(logName + ' Execute delete command by user = ' + msg.message.author.username);
              
         if (!commandData || commandData.length === 0) {
             logger.warn(logName + ' Command without args');
@@ -44,11 +45,18 @@ module.exports = class GetCustomCommand extends Command {
                 logger.info(logName + ' Custom command deleted = ', {'customCommand': query});
                 let aliases = msg.client.registry.commands.get('@general').aliases;
                 aliases.splice(aliases.indexOf(query._id), 1);
+                let message;
                 if (result.result.n > 0) {
-                    return msg.channel.send('Comando **"'+ query._id +'"** __deletado__ com sucesso.');
+                    message = 'Comando **"'+ query._id +'"** __deletado__ com sucesso.';
                 } else {
-                    return msg.channel.send('Nenhum comando foi deletado, verifique o nome e tente novamente.');
+                    message = 'Nenhum comando foi deletado, verifique o nome e tente novamente.';
                 }
+
+                return msg.channel.send({'embed': new RichEmbed()
+                    .setColor('#f00000')
+                    .setTimestamp()
+                    .setAuthor(utils.getUserNickName(msg), utils.getUserAvatar(msg))
+                    .setDescription(message)});
             }
         });
         

@@ -1,6 +1,6 @@
 const { Command } = require('discord.js-commando');
-const logger = require('heroku-logger');
 const { RichEmbed } = require('discord.js');
+const logger = require('heroku-logger');
 const dateFormat = require('dateformat');
 
 const utils = require('../../modules/utils.js');
@@ -27,8 +27,8 @@ module.exports = class PingCommand extends Command {
     }
 
     async run(msg, args) {
+        utils.logMessageUserExecuteCommand(logName, msg);
         
-        logger.info(logName + ' Execute by user = ' + msg.message.author.username);
         const infos = discordStatus.getDiscordStatus(logName, msg.client);
         infos.games.sort(sortFunction);
 
@@ -55,11 +55,12 @@ module.exports = class PingCommand extends Command {
                 topPlaying += ':frowning: Poxa, não estão jogando nada...';
             }
             if (otherPlaying > 0) {
-                topPlaying += '(' + otherPlaying + ') jogando outros jogos...';
+                topPlaying += '(' + otherPlaying + ') Jogando outros variados jogos...';
             }
             
             let embed = new RichEmbed()
                 .setColor(wingColor)
+                .setAuthor(utils.getUserNickName(msg), utils.getUserAvatar(msg))
                 .setTimestamp()
                 .setTitle('**Estatísticas CW**')
                 .setThumbnail(wingThumb)

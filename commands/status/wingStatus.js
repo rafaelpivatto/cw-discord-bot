@@ -29,14 +29,14 @@ module.exports = class EmbedCommand extends Command {
     }
 
     async run(msg, args) {
-
-        logger.info(logName + ' Initializing process to retrieving status by user = ' + msg.message.author.username);
+        utils.logMessageUserExecuteCommand(logName, msg);
+        
         let out = '';
         searchWingInfosFromEddb.get(logName, function(error, body) {
             if (error || !body) {
                 logger.error(logName + ' Error on retrieving informations', {'error': error});
                 return errorMessage.sendSpecificClientErrorMessage(msg, 
-                    'O EDDB ficou sem combustível, logo os fuel rats vão ajudar ele, daí podemos tentar novamente, Fly safe CMDR!'
+                    'O EDDB ficou sem combustível, logo os fuel rats vão ajudar ele, daí poderemos tentar novamente, Fly safe CMDR!'
                 );
             }
             const data = normalizeWingInfoFromEddb.getInfos(logName, body);
@@ -47,6 +47,7 @@ module.exports = class EmbedCommand extends Command {
             }
             let embed = new RichEmbed()
                 .setColor(wingColor)
+                .setAuthor(utils.getUserNickName(msg), utils.getUserAvatar(msg))
                 .setTimestamp()
                 .setTitle('**Sistemas e influências da ' + data.wingName + '**')
                 .setDescription('Dados extraídos do [eddb.io](' + wingUrl + ')')
