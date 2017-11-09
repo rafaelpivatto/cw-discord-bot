@@ -16,8 +16,9 @@ exports.execute = function(client) {
                     rulesText = '<#' + rulesChannel.id + '>';
                 }
                 if (channel) {
-                    channel.send('<@' + member.user.id + '>, Bem-vindo a recepção da Cobra Wing, ' + 
-                        'após ler as ' + rulesText + ', digite **!aceito** para ser liberado em todas as salas.').then(message => {
+                    channel.send('<@' + member.user.id + '>, Bem-vindo à **COBRA WING**! Sua papelada parece estar em ordem, ' + 
+                        'após ler as ' + rulesText + ', digite **!aceito** para ser liberado em todas as salas. ' + 
+                        'Pode pegar suas malas e entrar.\n').then(message => {
                     }).catch(error => {
                         console.log(error);
                     });

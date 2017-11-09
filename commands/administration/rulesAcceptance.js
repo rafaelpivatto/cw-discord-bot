@@ -56,9 +56,9 @@ module.exports = class PingCommand extends Command {
             const channel = msg.client.channels.find('name', process.env.USER_PRESENTATION_CHANNEL);
     
             if (channel) {
-                return channel.send('<@' + member.user.id + '>, Bem-vindo a Cobra Wing, ' + 
+                return channel.send('<@' + member.user.id + '>, Bem-vindo a **Cobra Wing**, ' + 
                     'aqui é a sala onde a galera conversa mais, seu acesso foi liberado e agora você ' + 
-                    'tem acesso a todas as salas, quaisquer dúvidas é só perguntar nos canais.\n' + 
+                    'tem acesso às salas, quaisquer dúvidas é só perguntar :wink:\n' +
                     'Fly safe, commander!');
             }
         }).catch(error => {
