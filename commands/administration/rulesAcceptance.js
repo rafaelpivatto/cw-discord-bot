@@ -41,6 +41,7 @@ module.exports = class PingCommand extends Command {
         msg.message.member.addRole(role, 'added by rules acceptance.').then(member => {
             logger.info(logName + ' Adding role to member');
             //delete user messages
+            msg.message.delete();
             msg.message.channel.fetchMessages().then(messages => {
                 const messagesToDelete = [];
                 for(let message of messages) {
