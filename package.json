@@ -23,6 +23,7 @@
     "fs": "0.0.1-security",
     "goo.gl": "^0.1.4",
     "heroku-logger": "^0.1.4",
+    "imgur": "^0.2.1",
     "jsonminify": "^0.4.1",
     "mkdirp": "^0.5.1",
     "mongodb": "^2.2.30",

@@ -31,7 +31,10 @@ module.exports = class AddCustomCommand extends Command {
         
         if (!args || args.length === 0) {
             logger.warn(logName + ' Command without args');
-            return errorMessage.sendSpecificClientErrorMessage(msg, 'Execute o comando passando o json, exemplo: ' + getExample());
+            errorMessage.sendSpecificClientErrorMessage(msg, 'Execute o comando passando o json, exemplo: \n\n' +
+                '¹ O campo _id deve ser totalmente em letras minusculas e sem espaços.\n' +
+                '² Os campos title, description, alert, image e thumbnail são opcionais.\n');
+            return msg.message.channel.send(getExample());
         }
 
         try {
@@ -71,7 +74,7 @@ module.exports = class AddCustomCommand extends Command {
         //--- Methods ---
 
         function getExample() {
-            return '\n{\n' +
+            return '```JSON\n{\n' +
                 '\t"_id": "nomedocomando",\n' +
                 '\t"title": "titulo do comando",\n' +
                 '\t"content": "conteúdo do comando",\n' +
@@ -80,9 +83,7 @@ module.exports = class AddCustomCommand extends Command {
                 '\t"image": "url de uma imagem",\n' +
                 '\t"thumbnail": "url de uma thumbnail",\n' +
                 '\t"type": "science"' +
-            '\n}\n\n' + 
-            '¹ O campo _id deve ser totalmente em letras minusculas e sem espaços.\n' +
-            '² Os campos title, description, alert, image e thumbnail são opcionais.';
+            '\n}\n```\n';
         }
 
         function validateJson(data) {

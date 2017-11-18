@@ -7,6 +7,7 @@ const registryCustomCommands = require('./modules/registry/registryCustomCommand
 const registryJobsExecution = require('./modules/registry/registryJobsExecution.js');
 const registryEndPoints = require('./modules/registry/registryEndPoints.js');
 const registryUserWelcome = require('./modules/registry/registryUserWelcome.js');
+const registryControllerToImageContest = require('./modules/registry/registryControllerToImageContest.js');
 
 const logName = '[Index]';
 
@@ -31,6 +32,7 @@ client.on('ready', (arg) => {
     registryJobsExecution.execute(client);
     registryEndPoints.execute();
     registryUserWelcome.execute(client);
+    registryControllerToImageContest.execute(client);
 
     logger.info(logName + ' Bot started');
 });
