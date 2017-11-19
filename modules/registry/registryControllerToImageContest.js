@@ -84,7 +84,7 @@ exports.execute = function(client) {
                     .setTimestamp();
 
                 setTimeout(() => {
-                    if (process.env.IMGUR_CREDENTIALS) {
+                    if (process.env.IMGUR_CREDENTIALS && process.env.IMAGE_CONTEST_LOAD_FROM === 'IMGUR') {
                         imgur.uploadUrl(msgAttachment.url, albumId).then(function (json) {
                             logger.info(logName + 'Added a screenshot to album: ' + msgAttachment.url);
                             embed.setImage(json.data.link);
@@ -106,6 +106,9 @@ exports.execute = function(client) {
                             message.delete();
                             msgSended.react('👍');                            
                         });
+                        if (process.env.IMGUR_CREDENTIALS) {
+                            imgur.uploadUrl(msgAttachment.url, albumId);
+                        }
                     }
                 }, 2000);
             }
