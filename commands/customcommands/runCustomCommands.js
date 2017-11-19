@@ -12,12 +12,13 @@ const wingColor = '#f00000';
 
 module.exports = class GetCustomCommand extends Command {
     constructor(client) {
+        const directMessage = (process.env.BLOCK_BOT_DIRECT_MESSAGES === 'true');
         super(client, {
             name: '@general',
             group: 'customcommands',
             memberName: 'runcustomcommand',
             description: 'Command to run a custom commands',
-            guildOnly: true,
+            guildOnly: directMessage,
             patterns: [new RegExp('[a-zA-Z]')]
         });
     }
@@ -47,7 +48,7 @@ module.exports = class GetCustomCommand extends Command {
                 .setImage(getValue(item.image))
                 .setThumbnail(getValue(item.thumbnail))
                 .setDescription(getValue(item.content));
-
+            
             return msg.channel.send(item.alert, {'embed': embed});
         });
 

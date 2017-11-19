@@ -12,13 +12,14 @@ const wingColor = '#f00000';
 
 module.exports = class GetCustomCommand extends Command {
     constructor(client) {
+        const directMessage = (process.env.BLOCK_BOT_DIRECT_MESSAGES === 'true');
         super(client, {
             name: '@listcustom',
             group: 'customcommands',
             memberName: 'listcustomcommand',
             aliases: ['science', 'memes', 'ranks'],
             description: 'Command to list a custom commands',
-            guildOnly: true,
+            guildOnly: directMessage,
             patterns: [new RegExp('[a-zA-Z]')]
         });
     }

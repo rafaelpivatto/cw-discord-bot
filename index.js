@@ -26,7 +26,7 @@ client.registry.registerCommandsIn(__dirname + '/commands');
 client.login(process.env.BOT_KEY);
 
 client.on('ready', (arg) => {
-    client.user.setPresence({ game: { name: 'EliteDangerous 2.4', type: 0 } });
+    client.user.setPresence({ game: { name: '!cwajuda', type: 0 } });
     
     registryCustomCommands.execute(client);
     registryJobsExecution.execute(client);

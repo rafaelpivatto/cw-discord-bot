@@ -38,9 +38,9 @@ exports.removeSpaces = function(str) {
 };
 
 exports.getUserNickName = function(msg) {
-    if (msg.member.nickname) {
+    if (msg.member && msg.member.nickname) {
         return msg.member.nickname;
-    } else if (msg.message && msg.message.author.username) {
+    } else if (msg.message && msg.message.author && msg.message.author.username) {
         return msg.message.author.username;
     } else if (msg.author && msg.author.username) {
         return msg.author.username;
@@ -61,8 +61,14 @@ exports.getUserAvatar = function(msg) {
 }
 
 exports.logMessageUserExecuteCommand = function(logName, msg) {
+    let channel = '';
+    if (msg.message.channel.type === 'dm') {
+        channel = ' on direct message';
+    } else {
+        channel = ' on channel ' + msg.message.channel.name;
+    }
     logger.info(logName + ' Execute command ' + msg.command.name + ' by user = ' + exports.getUserNickName(msg) + 
-        ' #' + msg.message.author.discriminator + ' on channel ' + msg.message.channel.name);
+        ' #' + msg.message.author.discriminator + channel);
 }
 
 exports.removeDiacritics = function(str) {
