@@ -34,7 +34,7 @@ exports.execute = function(client) {
             .setImage('https://i.imgur.com/dJ0o6TK.png');
 
         //Discard message with content and notify 
-        if (message.content !== '') {
+        if (message.content !== '' && message.content.indexOf('Aviso:') === -1) {
             message.delete();
             const embed = new RichEmbed()
                 .setColor(wingColor)
