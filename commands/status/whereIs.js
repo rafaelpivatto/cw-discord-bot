@@ -170,7 +170,7 @@ module.exports = class WherIsCommand extends Command {
                         let systemsVisited = shipField[7].children[3].children[1].children[0].data.trim();
                         systemsVisited = systemsVisited.replace(/\,/g, '.');
 
-                        message += 'Sistemas visitados: **' + systemsVisited + '**\n';
+                        message += 'Sistemas visitados (EDSM): **' + systemsVisited + '**\n';
                     }
                     if (shipField && shipField[8] && shipField[8].children[3] &&
                         shipField[8].children[3].children[1] && 
@@ -180,7 +180,7 @@ module.exports = class WherIsCommand extends Command {
                         let systemsDiscoveryFirst = shipField[8].children[3].children[1].children[0].data.trim();
                         systemsDiscoveryFirst = systemsDiscoveryFirst.replace(/\,/g, '.');
 
-                        message += 'Sistemas encontrados (edsm): **' + systemsDiscoveryFirst + '**\n\n';
+                        message += 'Sistemas encontrados (EDSM): **' + systemsDiscoveryFirst + '**\n\n';
                     }
                 }
 
@@ -206,7 +206,9 @@ module.exports = class WherIsCommand extends Command {
                         rankFederation[data.ranks.Federation] + ' (' + data.progress.Federation + '%)**\n';
 
                         message += 'Império: **' + data.ranksVerbose.Empire + ' / ' + 
-                        rankEmpire[data.ranks.Empire] + ' (' + data.progress.Empire + '%)**\n';
+                        rankEmpire[data.ranks.Empire] + ' (' + data.progress.Empire + '%)**\n\n';
+
+                        message += 'Link do perfil no EDSM: \n' + json.url;
                     }
                     
                     embed.setDescription(message);
