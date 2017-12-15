@@ -7,32 +7,30 @@ exports.execute = function(client) {
     
     client.on('guildMemberAdd', (member) => {
         setTimeout(() => {
-            if (process.env.WELCOME_USER_CHANNEL) {
-                const guild = client.guilds.filter(x => x.id === process.env.GUILD_ID).first();
-                if (!guild) {
+            if (process.env.WELCOME_USER_MESSAGE === 'true' && process.env.GUILD_ID) {
+                if (member.guild.id !== process.env.GUILD_ID){
                     return;
                 }
-                const guildMember = guild.members.filter(x => x.id === member.user.id).first();
-                if (!guildMember) {
-                    return;
+                const role = member.guild.roles.filter(x => x.name === process.env.ACCCEPTANCE_RULE).first();
+                if (!role) {
+                    logger.error(logName + ' Role not found to apply => ' + process.env.ACCCEPTANCE_RULE);
+                } else {
+                    member.addRole(role, 'added by bot.')
                 }
-                const channel = client.channels.find('name', process.env.WELCOME_USER_CHANNEL);
-                const rulesChannel = client.channels.find('name', process.env.RULES_CHANNEL);
-    
-                let rulesText = 'regras';
-                if (rulesChannel) {
-                    rulesText = '<#' + rulesChannel.id + '>';
-                }
+                
+                const channel = client.channels.find('name', process.env.USER_PRESENTATION_CHANNEL);
                 if (channel) {
-                    const nickname = member.nickname || member.user.username;
-                    logger.info(logName + ' Welcome message to new member: ' + nickname);
-                    channel.send('<@' + member.user.id + '>, Bem-vindo à **COBRA WING**! Sua papelada parece estar em ordem, ' + 
-                        'após ler as ' + rulesText + ', digite **!aceito** para ser liberado em todas as salas. ' + 
-                        'Pode pegar suas malas e entrar.\n').then(message => {
-                        message.delete(86400000);
-                    }).catch(error => {
-                        console.log(error);
-                    });
+                    const rulesChannel = client.channels.find('name', process.env.RULES_CHANNEL);
+                    let rulesText = 'regras';
+                    if (rulesChannel) {
+                        rulesText = '<#' + rulesChannel.id + '>';
+                    }
+                    return channel.send('<@' + member.user.id + '>, Bem-vindo a **Cobra Wing**, ' + 
+                        'aqui é a sala onde a galera conversa mais, seu acesso foi liberado e agora você ' + 
+                        'tem acesso às salas.\n' + 
+                        'Não esqueça de ler as ' + rulesText + ' e quaisquer dúvidas é ' +
+                        'só perguntar ou digitar !cwajuda :wink:\n' +
+                        'Fly safe, commander!');
                 }
             }
         }, 1000);        
