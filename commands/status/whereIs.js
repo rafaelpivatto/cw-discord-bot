@@ -105,7 +105,7 @@ module.exports = class WherIsCommand extends Command {
 
         let commanderId, commanderName;
         if (args.indexOf('<@') !== -1) {
-            commanderId = args.replace('<@', '').replace('>', '');
+            commanderId = args.replace('<', '').replace('@', '').replace('!', '').replace('>', '');
 
             mongoConnection.find(logName, {_id: commanderId}, 'cwUsers', (error, data) => {
                 if (error) {
