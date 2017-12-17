@@ -54,7 +54,7 @@ const logName = '[WhereIs]',
         'Elite'
     ],
     rankFederation = [
-        '',
+        'Nenhum',
         'Recruta',
         'Aspirante',
         'Cabo',
@@ -71,7 +71,7 @@ const logName = '[WhereIs]',
         'Almirante'
     ],
     rankEmpire = [
-        '',
+        'Nenhum',
         'Forasteiro',
         'Servo',
         'Mestre',
