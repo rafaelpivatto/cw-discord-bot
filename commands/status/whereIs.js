@@ -165,7 +165,7 @@ module.exports = class WherIsCommand extends Command {
 
                 let message = 'Dados do comandante: **' + commanderName + '**\n' +
                     'Último sistema: **' + json.system + '**\n' +
-                    'Data (UTC): **' + json.date + '**\n';
+                    'Data (UTC): **' + json.date + '**\n\n';
 
                 getFromUrl.getHtml(logName, json.url, function(error, body){
 
@@ -211,7 +211,17 @@ module.exports = class WherIsCommand extends Command {
                             let systemsDiscoveryFirst = shipField[8].children[3].children[1].children[0].data.trim();
                             systemsDiscoveryFirst = systemsDiscoveryFirst.replace(/\,/g, '.');
 
-                            message += 'Sistemas encontrados (EDSM): **' + systemsDiscoveryFirst + '**\n\n';
+                            message += 'Sistemas encontrados (EDSM): **' + systemsDiscoveryFirst + '**\n';
+                        }
+                        if (shipField && shipField[5] && shipField[5].children[3] &&
+                            shipField[5].children[3].children[1] && 
+                            shipField[5].children[3].children[1].children[0] &&
+                            shipField[5].children[3].children[1].children[0].data) {
+
+                            let systemsSubmmited = shipField[5].children[3].children[1].children[0].data.trim();
+                            systemsSubmmited = systemsSubmmited.replace(/\,/g, '.');
+
+                            message += 'Sistemas enviados/confirmados (EDSM): **' + systemsSubmmited + '**\n\n';
                         }
                     }
 

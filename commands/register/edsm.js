@@ -77,9 +77,9 @@ module.exports = class HelpCommand extends Command {
                     .setTitle('Usuário discord vinculado ao EDSM')
                     .setAuthor(utils.getUserNickName(msg), utils.getUserAvatar(msg))
                     .setFooter('Fly safe cmdr!')
-                    .setDescription('Tudo ok, seu usuário do discord foi associado ao EDSM informado.\n' + 
-                        'Para fazer consultas agora esse usuário pode ser encontrado usando:\n' + 
-                        '**!cmdr @usuario**'
+                    .setDescription('Tudo ok, seu usuário do discord foi associado ao EDSM.\n' + 
+                        'Agora vocẽ já pode consultar os dados usando co comando:\n' + 
+                        '**!cmdr <@' + msg.author.id + '>**'
                     );
                 return msg.embed(embed);
             });
