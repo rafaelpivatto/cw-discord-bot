@@ -11,11 +11,15 @@ exports.sendClientErrorMessage = function(msg) {
             'novamente, fly safe CMDR!')});
 };
 
-exports.sendSpecificClientErrorMessage = function(msg, errorMessage) {
+exports.sendSpecificClientErrorMessage = function(msg, errorMessage, thumbnail) {
+    let thumb = 'https://i.imgur.com/JYY3pCv.png';
+    if (thumbnail) {
+        thumb = thumbnail;
+    }
     msg.channel.send({'embed': new RichEmbed()
         .setColor('#f00000')
         .setTimestamp()
-        .setThumbnail('https://i.imgur.com/JYY3pCv.png')
+        .setThumbnail(thumb)
         .setAuthor(utils.getUserNickName(msg), utils.getUserAvatar(msg))
         .setDescription(errorMessage)});
 };
