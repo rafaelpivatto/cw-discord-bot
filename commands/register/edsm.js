@@ -28,7 +28,7 @@ module.exports = class HelpCommand extends Command {
         if (!args || args === '') {
             logger.info(logName + ' invalid association to edsm: ');
             return errorMessage.sendSpecificClientErrorMessage(msg, 
-                'Para associar seu usuário do EDSM no discord, execute o comando !edsm link_do_edsm', ' ');
+                'Para associar seu usuário do EDSM no discord, execute o comando !edsm nome_do_comander ou !edsm link_do_edsm', ' ');
         }
         let commanderName = args;
         if (args.indexOf('edsm.net') !== -1) {
