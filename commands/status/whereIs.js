@@ -234,10 +234,10 @@ module.exports = class WherIsCommand extends Command {
                             rankCQC[data.ranks.CQC] + ' (' + data.progress.CQC + '% ' + (data.ranks.CQC+1) + '/'+ rankCQC.length + ' )**\n';
 
                             message += 'Federação: **' + data.ranksVerbose.Federation + ' / ' + 
-                            rankFederation[data.ranks.Federation] + ' (' + data.progress.Federation + '% ' + data.ranks.Federation+ '/'+ rankFederation.length + ' )**\n';
+                            rankFederation[data.ranks.Federation] + ' (' + data.progress.Federation + '% ' + data.ranks.Federation+ '/'+ (rankFederation.length-1) + ' )**\n';
 
                             message += 'Império: **' + data.ranksVerbose.Empire + ' / ' + 
-                            rankEmpire[data.ranks.Empire] + ' (' + data.progress.Empire + '% ' + data.ranks.Empire+ '/'+ rankEmpire.length + ' )**\n\n';
+                            rankEmpire[data.ranks.Empire] + ' (' + data.progress.Empire + '% ' + data.ranks.Empire+ '/'+ (rankEmpire.length-1) + ' )**\n\n';
 
                             message += '[Link do perfil no EDSM](' + json.url + ')\n\n';
 
