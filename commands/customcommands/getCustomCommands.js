@@ -57,7 +57,11 @@ module.exports = class GetCustomCommand extends Command {
                 .setTimestamp()
                 .setAuthor(utils.getUserNickName(msg), utils.getUserAvatar(msg))
                 .setDescription('Conteúdo do comando: ' + data[0]._id + '\n\n')});
-            return msg.channel.send(desc, {code: 'json'});
-        });        
+            return msg.channel.send(desc, {code: 'json'}).then(() => {
+                
+                msg.delete();
+            
+            }).catch(console.log);
+        });
     }
 }    

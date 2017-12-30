@@ -56,7 +56,11 @@ module.exports = class GetCustomCommand extends Command {
                     .setColor('#f00000')
                     .setTimestamp()
                     .setAuthor(utils.getUserNickName(msg), utils.getUserAvatar(msg))
-                    .setDescription(message)});
+                    .setDescription(message)}).then(() => {
+                        
+                    msg.delete();
+                
+                }).catch(console.log);
             }
         });
         
