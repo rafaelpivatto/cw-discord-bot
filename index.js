@@ -21,6 +21,7 @@ client.registry.registerGroup('status');
 client.registry.registerGroup('help');
 client.registry.registerGroup('customcommands');
 client.registry.registerGroup('register');
+client.registry.registerGroup('administration');
 client.registry.registerCommandsIn(__dirname + '/commands');
 
 client.login(process.env.BOT_KEY);
