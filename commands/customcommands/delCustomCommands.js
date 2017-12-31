@@ -37,14 +37,33 @@ module.exports = class GetCustomCommand extends Command {
         }
 
         const query = {_id: commandData};
-        mongoConnection.delete(logName, query, 'customCommands', function(error, result){
+        mongoConnection.delete(logName, query, 'customCommandsV2', function(error, result){
             if (error) {
                 logger.error(logName + ' Error to delete data ', {'data': query, 'error': error});
                 return errorMessage.sendSpecificClientErrorMessage(msg, 'Erro ao deletar o custom command, tente novamente.');
             } else {
                 logger.info(logName + ' Custom command deleted = ', {'customCommand': query});
+                
+                //remove command from index
                 let aliases = msg.client.registry.commands.get('@general').aliases;
                 aliases.splice(aliases.indexOf(query._id), 1);
+                
+                //registry type
+                mongoConnection.findGroup(logName, {}, ['type'], 'customCommandsV2', function(error, data) {
+                    if (error || !data) {
+                        logger.error(logName + ' Error on retrieving informations and register custom commands', {'error': error});
+                    }
+                    if (data.length && data.length > 0) {
+                        const aliases = [];
+                        for(let item of data) {
+                            aliases.push(item.type);
+                        }
+                        msg.client.registry.commands.get('@listcustom').aliases = aliases;
+                        logger.info(logName + ' Success to register group custom commands');
+                    }
+                });
+
+                //send message
                 let message;
                 if (result.result.n > 0) {
                     message = 'Comando **"'+ query._id +'"** __deletado__ com sucesso.';

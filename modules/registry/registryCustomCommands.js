@@ -7,7 +7,23 @@ const logName = '[GetCustomCommands] ';
 exports.execute = function(client) {
     logger.info(logName + ' start get custom commands to register');
     
-    mongoConnection.find(logName, {}, 'customCommands', function(error, data) {
+    //List of custom commands by type
+    mongoConnection.findGroup(logName, {}, ['type'], 'customCommandsV2', function(error, data) {
+        if (error || !data) {
+            logger.error(logName + ' Error on retrieving informations and register custom commands', {'error': error});
+        }
+        if (data.length && data.length > 0) {
+            const aliases = [];
+            for(let item of data) {
+                aliases.push(item.type);
+            }
+            client.registry.commands.get('@listcustom').aliases = aliases;
+            logger.info(logName + ' Success to register group custom commands');
+        }
+    });
+
+    //All custom commands
+    mongoConnection.find(logName, {}, 'customCommandsV2', function(error, data) {
         if (error || !data) {
             logger.error(logName + ' Error on retrieving informations and register custom commands', {'error': error});
         }

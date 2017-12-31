@@ -51,17 +51,36 @@ module.exports = class AddCustomCommand extends Command {
             logger.warn(logName + ' Errors on json data');
             return errorMessage.sendSpecificClientErrorMessage(msg, errors)
         }
+        commandData.showInMenu = commandData.showInMenu === true || commandData.showInMenu === 'true';
         commandData.createDate = new Date();
         commandData.createBy = utils.getUserNickName(msg) + '#' + msg.message.author.discriminator;
         commandData._id = String(commandData._id).toLowerCase().replace(/ /g, '');
 
-        mongoConnection.saveOrUpdate(logName, commandData, 'customCommands', function(error, result){
+        mongoConnection.saveOrUpdate(logName, commandData, 'customCommandsV2', function(error, result){
             if (error) {
                 logger.error(logName + ' Error to save data ', {'data': commandData, 'error': error});
                 return errorMessage.sendSpecificClientErrorMessage(msg, 'Erro ao salvar custom command, tente novamente.');
             } else {
                 logger.info(logName + ' Custom command saved = ', {'customCommand': commandData});
+                //registry command
                 msg.client.registry.commands.get('@general').aliases.push(commandData._id);
+                
+                //registry type
+                mongoConnection.findGroup(logName, {}, ['type'], 'customCommandsV2', function(error, data) {
+                    if (error || !data) {
+                        logger.error(logName + ' Error on retrieving informations and register custom commands', {'error': error});
+                    }
+                    if (data.length && data.length > 0) {
+                        const aliases = [];
+                        for(let item of data) {
+                            aliases.push(item.type);
+                        }
+                        msg.client.registry.commands.get('@listcustom').aliases = aliases;
+                        logger.info(logName + ' Success to register group custom commands');
+                    }
+                });
+                
+                //send message
                 const label = result.result.nModified === 0 ? 'criado' : 'alterado';
                 return msg.channel.send({'embed': new RichEmbed()
                     .setColor('#f00000')
@@ -87,7 +106,8 @@ module.exports = class AddCustomCommand extends Command {
                 '\t"alert": "alerta para tags ex: @Pesquisador",\n' +
                 '\t"image": "url de uma imagem",\n' +
                 '\t"thumbnail": "url de uma thumbnail",\n' +
-                '\t"type": "science"' +
+                '\t"type": "science",\n' +
+                '\t"showInMenu": true' +
             '\n}\n```\n';
         }
 

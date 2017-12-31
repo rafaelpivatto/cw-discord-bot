@@ -28,7 +28,7 @@ module.exports = class GetCustomCommand extends Command {
         
         const commandName = String(msg.message.content).replace(args, '').replace('!', '').toLowerCase();
         const query = {_id: commandName};
-        mongoConnection.find(logName, query, 'customCommands', function(error, data) {
+        mongoConnection.find(logName, query, 'customCommandsV2', function(error, data) {
             
             if (error) {
                 logger.error(logName + ' Error on find command = ' + commandName, {'error': error});

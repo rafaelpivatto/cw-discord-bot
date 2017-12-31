@@ -17,7 +17,7 @@ module.exports = class GetCustomCommand extends Command {
             name: '@listcustom',
             group: 'customcommands',
             memberName: 'listcustomcommand',
-            aliases: ['science', 'memes', 'ranks', 'fuelrats'],
+            //aliases: ['science', 'memes', 'ranks', 'fuelrats'],
             description: 'Command to list a custom commands',
             guildOnly: directMessage,
             patterns: [new RegExp('[a-zA-Z]')]
@@ -29,7 +29,7 @@ module.exports = class GetCustomCommand extends Command {
 
         const commandName = String(msg.message.content).replace(args, '').replace('!', '').toLowerCase();
         const query = {type: commandName};
-        mongoConnection.find(logName, query, 'customCommands', function(error, data) {
+        mongoConnection.find(logName, query, 'customCommandsV2', function(error, data) {
             
             if (error) {
                 logger.error(logName + ' Error on find command = ' + commandName, {'error': error});

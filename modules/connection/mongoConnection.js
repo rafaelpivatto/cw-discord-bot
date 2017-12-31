@@ -37,6 +37,29 @@ exports.find = function(logPrefix, query, collectionName, callback) {
     });
 };
 
+exports.findGroup = function(logPrefix, query, key, collectionName, callback) {
+    logger.info(logPrefix + logName + ' Retrieve informations on collection=' + collectionName + ', query=' + JSON.stringify(query));
+    getConnection(logPrefix, function(error, db) {
+        if(error) return callback(error);
+        const collection = db.collection(collectionName);
+
+        collection.group(
+            key, 
+            query, 
+            {}, 
+            "function (obj, prev) { }", 
+            function(err, results) {
+                if(err) {
+                    logger.error(logPrefix + logName + ' Error to retrieve collection=' + collectionName, {'error': error});
+                    return callback(error);
+                }
+                closeConnection(db);
+                logger.info(logPrefix + logName + ' Retrieve success');
+                return callback(null, results);
+            });
+    });
+};
+
 exports.delete = function(logPrefix, query, collectionName, callback) {
     logger.info(logPrefix + logName + ' Delete on collection=' + collectionName + ', query=' + JSON.stringify(query));
     getConnection(logPrefix, function(error, db) {
