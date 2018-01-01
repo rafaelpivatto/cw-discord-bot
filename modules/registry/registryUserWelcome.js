@@ -1,5 +1,8 @@
 const logger = require('heroku-logger');
 
+const mongoConnection = require('../connection/mongoConnection.js');
+const utils = require('../utils.js');
+
 const logName = '[RegistryUserWelcome] ';
 
 exports.execute = function(client) {
@@ -7,10 +10,20 @@ exports.execute = function(client) {
     
     client.on('guildMemberAdd', (member) => {
         setTimeout(() => {
+            const msg = {
+                member: member
+            };
+            const data = {
+                _id: new Date(),
+                userName: utils.getUserNickName(msg),
+                userID: member.user.id,
+                date: new Date()
+            };
             if (process.env.WELCOME_USER_MESSAGE === 'true' && process.env.GUILD_ID) {
                 if (member.guild.id !== process.env.GUILD_ID){
                     return;
                 }
+                mongoConnection.saveOrUpdate(logName, data, 'userJoin', () => {});
                 const role = member.guild.roles.filter(x => x.name === process.env.ACCCEPTANCE_RULE).first();
                 if (!role) {
                     logger.error(logName + ' Role not found to apply => ' + process.env.ACCCEPTANCE_RULE);
