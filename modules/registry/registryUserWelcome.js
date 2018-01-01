@@ -10,12 +10,9 @@ exports.execute = function(client) {
     
     client.on('guildMemberAdd', (member) => {
         setTimeout(() => {
-            const msg = {
-                member: member
-            };
             const data = {
                 _id: new Date(),
-                userName: utils.getUserNickName(msg),
+                userName: member.nickname || member.user.username,
                 userID: member.user.id,
                 date: new Date()
             };
