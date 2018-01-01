@@ -13,7 +13,7 @@ exports.execute = function(client) {
             const data = {
                 _id: new Date(),
                 userName: member.nickname || member.user.username,
-                userID: member.user.id,
+                userID: member.user.tag,
                 date: new Date()
             };
             if (process.env.WELCOME_USER_MESSAGE === 'true' && process.env.GUILD_ID) {
