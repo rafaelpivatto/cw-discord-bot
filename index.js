@@ -6,7 +6,7 @@ const logger = require('heroku-logger');
 const registryCustomCommands = require('./modules/registry/registryCustomCommands.js');
 const registryJobsExecution = require('./modules/registry/registryJobsExecution.js');
 const registryEndPoints = require('./modules/registry/registryEndPoints.js');
-const registryUserWelcome = require('./modules/registry/registryUserWelcome.js');
+const registryDiscordEvents = require('./modules/registry/registryDiscordEvents.js');
 const registryControllerToImageContest = require('./modules/registry/registryControllerToImageContest.js');
 
 const logName = '[Index]';
@@ -32,7 +32,7 @@ client.on('ready', (arg) => {
     registryCustomCommands.execute(client);
     registryJobsExecution.execute(client);
     registryEndPoints.execute();
-    registryUserWelcome.execute(client);
+    registryDiscordEvents.execute(client);
     registryControllerToImageContest.execute(client);
 
     logger.info(logName + ' Bot started');

@@ -6,7 +6,7 @@ const utils = require('../utils.js');
 const logName = '[RegistryUserWelcome] ';
 
 exports.execute = function(client) {
-    logger.info(logName + ' start registry user welcome');
+    logger.info(logName + ' start registry discord events');
     
     client.on('guildMemberAdd', (member) => {
         setTimeout(() => {
@@ -45,6 +45,18 @@ exports.execute = function(client) {
             }
         }, 1000);        
     });
+
+    client.on('guildMemberRemove', (member) => {
+        setTimeout(() => {
+            const data = {
+                _id: new Date(),
+                userName: member.nickname || member.user.username,
+                userID: member.user.tag,
+                date: new Date()
+            };
+            mongoConnection.saveOrUpdate(logName, data, 'userLeft', () => {});
+        }, 1000);        
+    })
 };
 
 module.exports = exports;
