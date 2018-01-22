@@ -49,7 +49,7 @@ module.exports = class GetCustomCommand extends Command {
                 aliases.splice(aliases.indexOf(query._id), 1);
                 
                 //registry type
-                mongoConnection.findGroup(logName, {}, ['type'], 'customCommandsV2', function(error, data) {
+                mongoConnection.findGroup(logName, ['type'], {}, {}, 'customCommandsV2', function(error, data) {
                     if (error || !data) {
                         logger.error(logName + ' Error on retrieving informations and register custom commands', {'error': error});
                     }
