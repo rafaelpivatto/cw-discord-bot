@@ -7,6 +7,7 @@ const usersPlayingEliteDangerousJob = require('../job/usersPlayingEliteDangerous
 const gameUpdateJob = require('../job/gameUpdateJob.js');
 const galnetJob = require('../job/galnetJob.js');
 const keepAlive = require('../job/keepAlive.js');
+const clearChannels = require('../job/clearChannels.js');
 
 const logName = '[RegistryJobsExecution] ';
 
@@ -20,6 +21,7 @@ exports.execute = function(client) {
     gameUpdateJob.execute(client);
     galnetJob.execute(client);
     keepAlive.execute();
+    clearChannels.execute(client);
 };
 
 module.exports = exports;
