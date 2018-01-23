@@ -31,7 +31,7 @@ module.exports = class HelpCommand extends Command {
             '**!elitedangerous** - *Comandos gerais para axiliar a jogabilidade no Elite Dangerous.*' + wrapLine +
             '**!utilidades** - *Conjunto de sites extremente úteis para auxiliar a jobabilidade geral.*';
         
-        mongoConnection.findGroup(logName, {'showInMenu': true}, ['type'], 'customCommandsV2', function(error, data) {
+        mongoConnection.findGroup(logName, ['type'], {'showInMenu': true}, {}, 'customCommandsV2', function(error, data) {
             if (!error && data && data.length > 0) {
                 message += '\n\n';
                 for(let item of data) {
