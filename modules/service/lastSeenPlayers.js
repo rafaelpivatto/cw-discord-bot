@@ -13,11 +13,12 @@ exports.getAndUpdate = function(logPrefix, qtd, callback) {
             callback(error);
         }
 
-        if (!resultFound || resultFound.length === 0 || qtd > resultFound[0].qtd) {
+        if (!resultFound || resultFound.length === 0 || (Number(qtd) > Number(resultFound[0].qtd))) {
             const dateSaved = {
                 _id: 'USERS-PLAYING-ED',
                 qtd: qtd,
-                date: new Date()
+                date: new Date(),
+                oldQtd: resultFound[0].qtd
             };
             logger.info(logPrefix + logName + ' Starting update, qtd: ' + qtd);
             mongoConnection.saveOrUpdate(logPrefix, dateSaved, 'statistics', function(error) {

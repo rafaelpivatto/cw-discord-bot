@@ -40,14 +40,17 @@ module.exports = class PingCommand extends Command {
 
             let topPlaying = doubleWrapLine + ':video_game: **O que a galera está jogando:**\n\n',
                 countLines = 0,
-                otherPlaying = 0;
+                otherPlaying = 0,
+                totalPlaying = 0;
             for(let game in infos.games) {
                 countLines++;
-                if (countLines < 11) {
+                if (countLines < 16) {
                     const g = infos.games[game];
                     const decoration = g.name === 'Elite: Dangerous' ? '**' : '';
                     topPlaying += decoration + '(' + g.count + ') ' + g.name + decoration + '\n';
+                    totalPlaying += g.count;
                 } else {
+                    totalPlaying += infos.games[game].count;
                     otherPlaying++;
                 }
             }
@@ -64,15 +67,15 @@ module.exports = class PingCommand extends Command {
                 .setTimestamp()
                 .setTitle('**Estatísticas CW**')
                 .setThumbnail(wingThumb)
-                .setFooter('Fly safe cmdr!')
+                .setFooter('Dados contabilizados a partir de 23/08/2017')
                 .setDescription(
                     'Há no momento:\n' + 
                     '**' + infos.playersOnline + '/' + infos.playersRegistered + ' pessoas** online no discord\n' + 
+                    '**' + getPlayersLabel(totalPlaying) + '** se divertindo com algum game\n' +
                     '**' + getPlayersLabel(infos.playingED) + '** jogando Elite: Dangerous' +
                     doubleWrapLine + 
                     ':trophy: O recorde foi de **' + getPlayersLabel(data.qtd) + '** jogando **Elite: Dangerous** em ' + 
-                    dateFormat(utils.getBRTDate(data.date), 'dd/mm/yyyy') +
-                    '\n\* *Dados contabilizados a partir de 23/08/2017*' + 
+                    dateFormat(utils.getBRTDate(data.date), 'dd/mm/yyyy') + 
                     topPlaying
                 );
             return msg.embed(embed);
