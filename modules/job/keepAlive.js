@@ -19,7 +19,7 @@ exports.execute = function() {
             
             const urls = process.env.KEEP_ALIVE_URL.split('|');
 
-            for(url in urls) {
+            for(let url of urls) {
                 getFromUrl.getHtml(logName, url, () => {});
             }
         }
