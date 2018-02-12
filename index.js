@@ -15,7 +15,7 @@ const client = new Commando.Client({
     unknownCommandResponse: false,
 });
 
-logger.info(logName + ' Initializing bot');
+logger.info(logName + ' =========> Initializing bot');
 
 client.registry.registerGroup('status');
 client.registry.registerGroup('help');
@@ -35,5 +35,8 @@ client.on('ready', (arg) => {
     registryDiscordEvents.execute(client);
     registryControllerToImageContest.execute(client);
 
-    logger.info(logName + ' Bot started');
+    setTimeout(() => {
+        logger.info(logName + ' =========> Bot started');
+    }, 3000);
+    
 });

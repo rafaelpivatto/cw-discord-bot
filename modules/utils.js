@@ -1,5 +1,9 @@
 const logger = require('heroku-logger');
 
+exports.isProdEnvironment = function () {
+    return process.env.ENVIRONMENT === 'PROD';
+};
+
 exports.lpad = function(text, width, z) {
     z = z || ' ';
     text = text + '';
