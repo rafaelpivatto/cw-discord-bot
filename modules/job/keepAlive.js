@@ -8,24 +8,22 @@ const logName = '[KeepAlive]';
 
 exports.execute = function() {
     
-    if (utils.isProdEnvironment()) {
-        logger.info(logName + ' registering...');
+    logger.info(logName + ' registering...');
 
-        //Execute every 15 minutes 
-        schedule.scheduleJob('*/15 * * * *', function(){
+    //Execute every 15 minutes 
+    schedule.scheduleJob('*/15 * * * *', function(){
+        
+        logger.info(logName + ' started...');
+        
+        if (process.env.KEEP_ALIVE_URL) {
             
-            logger.info(logName + ' started...');
-            
-            if (process.env.KEEP_ALIVE_URL) {
-                
-                const urls = process.env.KEEP_ALIVE_URL.split('|');
+            const urls = process.env.KEEP_ALIVE_URL.split('|');
 
-                for(url in urls) {
-                    getFromUrl.getHtml(logName, url, () => {});
-                }
+            for(url in urls) {
+                getFromUrl.getHtml(logName, url, () => {});
             }
-        });
-    }
+        }
+    });
 };
 
 module.exports = exports;
