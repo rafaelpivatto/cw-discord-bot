@@ -7,6 +7,9 @@ const logName = '[RegistryUserWelcome] ';
 
 exports.execute = function(client) {
     logger.info(logName + ' start registry discord events');
+
+    const guild = client.guilds.find('id', process.env.GUILD_ID);
+    if (!guild) return;
     
     client.on('guildMemberAdd', (member) => {
         setTimeout(() => {
@@ -28,7 +31,7 @@ exports.execute = function(client) {
                     member.addRole(role, 'added by bot.')
                 }
                 
-                const channel = client.channels.find('name', process.env.USER_PRESENTATION_CHANNEL);
+                const channel = guild.channels.find('name', process.env.USER_PRESENTATION_CHANNEL);
                 if (channel) {
                     const rulesChannel = client.channels.find('name', process.env.RULES_CHANNEL);
                     let rulesText = 'regras';
@@ -36,8 +39,9 @@ exports.execute = function(client) {
                         rulesText = '<#' + rulesChannel.id + '>';
                     }
                     return channel.send('<@' + member.user.id + '>, Bem-vindo a **Cobra Wing**, ' + 
-                        'aqui é a sala onde a galera conversa mais, seu acesso foi liberado e agora você ' + 
-                        'tem acesso às salas.\n' + 
+                        'aqui é a sala onde a galera conversa sobre Elite Dangerous.\n' + 
+                        'Nosso grupo privado no Elite é o **COBRA BR**' + 
+                        ', se precisar de ajuda para entrar digite !grupoprivado\n' +
                         'Não esqueça de ler as ' + rulesText + ' e quaisquer dúvidas é ' +
                         'só perguntar ou digitar !cwajuda :wink:\n' +
                         'Fly safe, commander!');

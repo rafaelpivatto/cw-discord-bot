@@ -1,39 +1,46 @@
 const schedule = require('node-schedule');
 const logger = require('heroku-logger');
 
+const utils = require('../utils.js');
+
 const logName = '[ClearChannelsJob]';
 
-exports.execute = function(client) {
-    //Execute every one minute
-    schedule.scheduleJob('0 */6 * * *', function(){
+exports.execute = (client) => {
 
-        logger.info(logName + ' was started...');
+    if (utils.isProdEnvironment()) {
+        logger.info(logName + ' registering...');
 
-        const guild = client.guilds.find('id', process.env.GUILD_ID);
+        //Execute every three hours
+        schedule.scheduleJob('0 */3 * * *', () => {
 
-        if (!guild) return;
+            const guild = client.guilds.find('id', process.env.GUILD_ID);
 
-        if (process.env.CHANNELS_TO_CLEAR){
-            const channels = process.env.CHANNELS_TO_CLEAR.split('|');
-            for(let c of channels) {
-                const channel = guild.channels.find('name', c);
-                
-                if (channel && channel.type === 'text') {
-                    //console.log('teste', channel);
-                    channel.fetchMessages().then(messages => {
-                        messages.delete(messages.lastKey())
-                        logger.info(logName + ' clear messages from channel: ' + c);
-                        channel.bulkDelete(messages);
-                        channel.send('Limpando as mensagens da sala...').then(msg => {
-                            msg.delete(5000);
+            if (!guild) return;
+
+            logger.info(logName + ' was started...');
+
+            if (process.env.CHANNELS_TO_CLEAR){
+                const channels = process.env.CHANNELS_TO_CLEAR.split('|');
+                for(let c of channels) {
+                    const channel = guild.channels.find('name', c);
+                    
+                    if (channel && channel.type === 'text') {
+                        //console.log('teste', channel);
+                        channel.fetchMessages().then(messages => {
+                            messages.delete(messages.lastKey())
+                            logger.info(logName + ' clear messages from channel: ' + c);
+                            channel.bulkDelete(messages);
+                            channel.send('Limpando as mensagens da sala...').then(msg => {
+                                msg.delete(20000);
+                            }).catch(console.error);
                         }).catch(console.error);
-                    }).catch(console.error);
+                    }
                 }
+                
             }
             
-        }
-        
-    });
+        });
+    }
 };
 
 module.exports = exports;

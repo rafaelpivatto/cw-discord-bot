@@ -1,9 +1,9 @@
 const schedule = require('node-schedule');
 const logger = require('heroku-logger');
 
-exports.execute = function(client) {
+exports.execute = (client) => {
     //Execute every one minute
-    schedule.scheduleJob('*/1 * * * *', function(){
+    schedule.scheduleJob('*/1 * * * *', () => {
         const target = new Date('2018-01-25T12:00:00Z');
         const today = new Date();
 
