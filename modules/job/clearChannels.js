@@ -11,7 +11,7 @@ exports.execute = (client) => {
         logger.info(logName + ' registering...');
 
         //Execute every three hours
-        schedule.scheduleJob('0 */3 * * *', () => {
+        schedule.scheduleJob('*/3 * * *', () => {
 
             const guild = client.guilds.find('id', process.env.GUILD_ID);
 
