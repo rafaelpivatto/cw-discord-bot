@@ -13,23 +13,24 @@ exports.get = (logPrefix, callback) => {
     const keyf = function(doc) {
         var date = new Date(doc.date);
         date.setTime( date.getTime() - (3600000*2));
-        var dateKey = date.getUTCDate()+"/"+(date.getUTCMonth()+1)+"/"+date.getUTCFullYear()+'';
+        var dateKey = '0' + date.getUTCDate() + '/' + '0' + (date.getUTCMonth()+1);
         return {'day':dateKey};
     };
 
     const inicialDate = new Date();
-    inicialDate.setUTCDate(inicialDate.getUTCDate() - 8);
+    inicialDate.setUTCMonth(inicialDate.getUTCMonth() - 1);
     inicialDate.setUTCHours(0, 0, 0, 0);
     
     const condition = {_id : { '$gte' : inicialDate }};
-    mongoConnection.findGroup(logName, keyf, condition, {count: 0}, 'userJoin', (error, data) => {
+    mongoConnection.findGroup(logName, keyf, condition, {count: 0}, 'userJoin', (error, dataResult) => {
+        const data = dataResult.slice(dataResult.length-10, dataResult.length)
         if (error || !data) {
             logger.error(logName + ' Error on retrieving informations and register custom commands', {'error': error});
             callback(error, result);
         }
         if (data.length && data.length > 0) {
             for(let dA of data) {
-                result.push({'date': dA.day, 'join': dA.count, 'left': 0});
+                result.push({'date': format(dA.day), 'join': dA.count, 'left': 0});
             }
             mongoConnection.findGroup(logName, keyf, condition, {count: 0}, 'userLeft', (error, data) => {
                 if (error || !data) {
@@ -39,7 +40,7 @@ exports.get = (logPrefix, callback) => {
                 if (data.length && data.length > 0) {
                     for(let dB of data) {
                         for(let i=0; i < result.length; i++) {
-                            if (dB.day === result[i].date) {
+                            if (format(dB.day) === result[i].date) {
                                 result[i].left = dB.count;
                                 break;
                             }
@@ -52,4 +53,11 @@ exports.get = (logPrefix, callback) => {
             callback(null, result);
         }
     });
+
+    const format = (date) => {
+        const pieces = date.split('/');
+        const f = pieces[0];
+        const s = pieces[1];
+        return f.substring(f.length-2, f.length) + '/' + s.substring(s.length-2, s.length);
+    };
 };

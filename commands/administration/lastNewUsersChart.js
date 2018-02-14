@@ -14,9 +14,9 @@ const logName = '[LastNewUsersChart]';
 module.exports = class HelpCommand extends Command {
     constructor(client) {
         super(client, {
-            name: 'novosusuarios',
+            name: 'novosmembros',
             group: 'administration',
-            memberName: 'novosusuarios',
+            memberName: 'novosmembros',
             description: 'Command to generate chart for news users',
             patterns: [new RegExp('[a-zA-Z]')]
         });
@@ -25,12 +25,44 @@ module.exports = class HelpCommand extends Command {
     async run(msg, args) {
         utils.logMessageUserExecuteCommand(logName, msg);
 
-        if (!msg.member.roles.find('name', process.env.RULE_ADMIN_BOT)) return;
+        msg.delete();
+
+        if (!msg.member.roles.find('name', process.env.RULE_MODERATOR)) return;
         
-        generateUsersGraph.generate(logName, (err, img) => {
-            if (err) {
-                return errorMessage.sendSpecificClientErrorMessage(msg, err);
-            }
+        msg.channel.send({'embed': new RichEmbed()
+            .setColor(wingColor)
+            .setAuthor(utils.getUserNickName(msg), utils.getUserAvatar(msg))
+            .setTimestamp()
+            .setFooter('Fly safe cmdr!')
+            .setDescription(':arrows_counterclockwise: Aguarde um instante, o gráfico está sendo gerado...')}).then(waitMessage => {
+
+            generateUsersGraph.generate(logName, (err, imageAddress) => {
+                if (err) {
+                    return errorMessage.sendSpecificClientErrorMessage(msg, err);
+                }
+
+                let embed = new RichEmbed()
+                    .setTitle('**Gráfico de usuários no Discord**')
+                    .setAuthor(utils.getUserNickName(msg), utils.getUserAvatar(msg))
+                    .setImage(imageAddress)
+                    .setColor(wingColor)
+                    .setTimestamp()
+                    .setFooter('Fly safe cmdr!');
+                
+                onlyInDev(msg, imageAddress);
+                
+                waitMessage.delete();
+
+                return msg.embed(embed);
+            });
         });
+
+        const onlyInDev = (msg, imageAddress) => {
+            if (process.env.ENVIRONMENT === 'DEV') {
+                msg.channel.send('', {
+                    file: imageAddress
+                });
+            }
+        }
     }
 }    
