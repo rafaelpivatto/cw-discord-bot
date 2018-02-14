@@ -1,4 +1,4 @@
-const logger = require('heroku-logger')
+const logger = require('heroku-logger');
 
 const mongoConnection = require('../connection/mongoConnection.js');
 

@@ -23,6 +23,8 @@ module.exports = class HelpCommand extends Command {
 
     async run(msg, args) {
         utils.logMessageUserExecuteCommand(logName, msg);
+
+        if (!msg.member.roles.find('name', process.env.RULE_MODERATOR)) return;
         
         if (!args || args === '') {
             logger.warn(logName + ' Command without args');

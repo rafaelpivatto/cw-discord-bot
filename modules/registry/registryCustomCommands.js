@@ -8,7 +8,7 @@ exports.execute = function(client) {
     logger.info(logName + ' start get custom commands to register');
     
     //List of custom commands by type
-    mongoConnection.findGroup(logName, {}, ['type'], 'customCommandsV2', function(error, data) {
+    mongoConnection.findGroup(logName, ['type'], {}, {}, 'customCommandsV2', function(error, data) {
         if (error || !data) {
             logger.error(logName + ' Error on retrieving informations and register custom commands', {'error': error});
         }

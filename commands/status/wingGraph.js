@@ -43,15 +43,17 @@ module.exports = class GraphCommand extends Command {
             .setTimestamp()
             .setFooter('Fly safe cmdr!')
             .setDescription(':arrows_counterclockwise: Aguarde um instante, o gráfico está sendo gerado...')}).then(waitMessage => {
-
+            
+            msg.delete();
+            
             const inicialDate = new Date();
             inicialDate.setDate(inicialDate.getDate() - 9);
             inicialDate.setUTCHours(0, 0, 0, 0);
             const query = {_id : { '$gte' : inicialDate }, wingName: wgName };
             
-            mongoConnection.find(logName, query, 'wingData', function(error, results){
-                if (error) {
-                    logger.error(logName + ' Error on retrieving informations', {'error': error});
+            mongoConnection.find(logName, query, 'wingData', function(err, results){
+                if (err) {
+                    logger.error(logName + ' Error on retrieving informations', {'err': err});
                     waitMessage.delete();
                     return errorMessage.sendClientErrorMessage(msg);
                 }
@@ -59,8 +61,8 @@ module.exports = class GraphCommand extends Command {
                 const graphOptions = getGraphOptions();
                 
                 plotly.plot(data, graphOptions, function (err, res) {
-                    if (error) {
-                        logger.error(logName + ' Error on plotly graph', {'error': error});
+                    if (err) {
+                        logger.error(logName + ' Error on plotly graph', {'err': err});
                         waitMessage.delete();
                         return errorMessage.sendClientErrorMessage(msg);
                     }
@@ -68,8 +70,8 @@ module.exports = class GraphCommand extends Command {
                     const imageUrl = res.url + '.png';
 
                     request.get({url: imageUrl, encoding: 'binary'}, function (err, response, body) {
-                        if (error) {
-                            logger.error(logName + ' Error get Imagem from plotly', {'error': error});
+                        if (err) {
+                            logger.error(logName + ' Error get Imagem from plotly', {'err': err});
                             waitMessage.delete();
                             return errorMessage.sendClientErrorMessage(msg);
                         }
@@ -77,9 +79,9 @@ module.exports = class GraphCommand extends Command {
                         const now = dateFormat(utils.getUTCDateNow(), 'yyyymmddHHMMss');
                         const fullFilename =  now + '-' + utils.removeSpaces(wgName) + fileExtension;
 
-                        fileManagement.saveFile(logName, body, fileDir, fullFilename, function(error) {
-                            if (error) {
-                                logger.error(logName + ' Error to save file = ' + fileDir + fullFilename, {'error': error});
+                        fileManagement.saveFile(logName, body, fileDir, fullFilename, function(err) {
+                            if (err) {
+                                logger.error(logName + ' Error to save file = ' + fileDir + fullFilename, {'err': err});
                                 waitMessage.delete();
                                 return errorMessage.sendClientErrorMessage(msg);
                             }

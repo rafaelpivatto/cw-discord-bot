@@ -66,7 +66,7 @@ module.exports = class AddCustomCommand extends Command {
                 msg.client.registry.commands.get('@general').aliases.push(commandData._id);
                 
                 //registry type
-                mongoConnection.findGroup(logName, {}, ['type'], 'customCommandsV2', function(error, data) {
+                mongoConnection.findGroup(logName, ['type'], {}, {} , 'customCommandsV2', function(error, data) {
                     if (error || !data) {
                         logger.error(logName + ' Error on retrieving informations and register custom commands', {'error': error});
                     }
