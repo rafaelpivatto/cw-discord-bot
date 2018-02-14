@@ -141,7 +141,7 @@ exports.generate = (logPrefix, callback) => {
                     }, 
                     opacity: 1, 
                     showarrow: false, 
-                    text: 'Membros que chegaram/saíram do Discord Cobra Wing - útimos 10 dias', 
+                    text: 'Membros que chegaram/saíram do Discord Cobra Wing - últimos 10 dias', 
                     xref: 'paper', 
                     yref: 'paper'
                 }, 
