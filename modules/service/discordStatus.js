@@ -26,8 +26,10 @@ exports.getDiscordStatus = function(logPrefix, client) {
         if (!user.presence || !user.presence.game || user.bot) {
                 continue;
         }
-        const gameName = user.presence.game.name;
-        if (gameName === 'Elite: Dangerous') infos.playingED++;
+        let gameName = user.presence.game.name;
+        if (gameName.indexOf('Elite') != -1 && gameName.indexOf('Dangerous') != -1) {
+            infos.playingED++;
+        }
         
         let item = infos.games.find(x => x.name === gameName);
         if (!item) {

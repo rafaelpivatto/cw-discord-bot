@@ -22,9 +22,11 @@ exports.execute = (client) => {
         schedule.scheduleJob('*/30 * * * *', () => {
             logger.info(logName + ' started...');
 
+            if (!process.env.GUILD_ID || !process.env.SERVER_STATUS_CHANNEL) return;
+
             const guild = client.guilds.find('id', process.env.GUILD_ID);
 
-            if (!guild || !process.env.SERVER_STATUS_CHANNEL) return;
+            if (!guild) return;
             
             getServerStatusFromEdsm.getServerStatus(logName, (error, currentServerStatus) => {
                 
@@ -58,7 +60,7 @@ exports.execute = (client) => {
                                     .setFooter('Fly safe cmdr!')
                                     .setDescription(infos.message);
                                     
-                                return channel.send(infos.notify, {'embed': embed});
+                                return channel.send({'embed': embed});
                             }
                         }
                     });
@@ -81,7 +83,6 @@ exports.execute = (client) => {
 
             switch(currentServerStatus.status) {
                 case 2:
-                    obj.notify = fromStatus == 0 ? '@here' : '';
                     obj.message = '**ATENÇÃO:** Ao que tudo indica, o servidor do Elite:Dangerous voltou ao normal ' +
                                     'e está __ONLINE__ novamente.' +
                                     defaultMessage;
@@ -99,7 +100,6 @@ exports.execute = (client) => {
                     break;
 
                 case 0:
-                    obj.notify = fromStatus == 2 ? '@here': '';
                     obj.message = '**ATENÇÃO:** O servidor do Elite:Dangerous aparenta estar __OFFLINE__!!!' + 
                                     doubleWrapLine +
                                     '__Possíveis causas:__' + 

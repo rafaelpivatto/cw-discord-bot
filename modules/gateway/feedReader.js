@@ -10,6 +10,11 @@ const logName = '[FeedReader] ';
 
 exports.readFeed = function(logPrefix, client) {
     logger.info(logPrefix + logName + ' start read feed url=' + url);
+
+    if (!process.env.NEWSLETTER_CHANNEL) {
+        logger.warn(logPrefix + logName + ' not NEWSLETTER_CHANNEL configured.');
+        return;
+    }
     feedparser.parse(url).then( (items) => {
         logger.info(logPrefix + logName + ' feed readed.');
         

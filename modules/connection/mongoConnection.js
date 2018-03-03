@@ -78,6 +78,9 @@ exports.delete = function(logPrefix, query, collectionName, callback) {
 };
 
 function getConnection(logPrefix, callback) {
+    if (!process.env.MONGO_URL) {
+        return callback('Not MONGO_URL configured', null);
+    }
     return mongodb.MongoClient.connect(process.env.MONGO_URL, function(error, db) {
         if(error) {
             logger.error(logPrefix + logName + ' Error to get connection on mongodb', {'error': error});

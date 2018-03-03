@@ -20,10 +20,12 @@ exports.execute = (client) => {
     if (utils.isProdEnvironment()) {
         logger.info(logName + ' registering...');
 
-        googl.setKey(process.env.GOOGL_KEY);
+        if (process.env.GOOGL_KEY) googl.setKey(process.env.GOOGL_KEY);
         
         //Execute every hour **:02
         schedule.scheduleJob('2 * * * *', () => {
+
+            if (!process.env.GUILD_ID || !process.env.GALNET_INFO_CHANNEL) return;
 
             const guild = client.guilds.find('id', process.env.GUILD_ID);
 
@@ -69,24 +71,31 @@ exports.execute = (client) => {
                                     }
                                 }
                                 
-                                googl.shorten('https://translate.google.com.br/?hl=pt-BR#en/pt/' + 
-                                    textToTranslate(desc)).then((shortUrl) => {
-                                    
-                                    let embed = new RichEmbed()
-                                        .setColor(wingColor)
-                                        .setTimestamp()
-                                        .setTitle('**' + title + '**')
-                                        .setDescription(desc + 
-                                                        wrapLine +
-                                                        ':flag_br: [Clique aqui para traduzir](' + shortUrl + ')')
-                                        .setURL(fullUrl)
-                                        .setThumbnail(thumb);
-            
-                                    channel.send(i === 0 ? '@here Atualizações da Galnet ' + getDate() : '', 
-                                                    {'embed': embed});
-
-                                    mongoConnection.saveOrUpdate(logName, dataToSave, 'notify', () => {});
-                                });
+                                let embed = new RichEmbed()
+                                    .setColor(wingColor)
+                                    .setTimestamp()
+                                    .setTitle('**' + title + '**')
+                                    .setDescription(desc)
+                                    .setURL(fullUrl)
+                                    .setThumbnail(thumb);
+                                
+                                if (process.env.GOOGL_KEY) {
+                                    googl.shorten('https://translate.google.com.br/?hl=pt-BR#en/pt/' + 
+                                        textToTranslate(desc)).then((shortUrl) => {
+                                        
+                                        embed.setDescription(desc + 
+                                            wrapLine +
+                                            ':flag_br: [Clique aqui para traduzir](' + shortUrl + ')');
+                
+                                        channel.send({'embed': embed});
+                                    }).error((err) => {
+                                        logger.error(logName + ' Error on shorten description: ', {'error': err});
+                                        channel.send({'embed': embed});
+                                    });
+                                } else {
+                                    channel.send({'embed': embed});
+                                }
+                                mongoConnection.saveOrUpdate(logName, dataToSave, 'notify', () => {});
                             }
                         });
                     }

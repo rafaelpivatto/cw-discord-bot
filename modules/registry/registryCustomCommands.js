@@ -11,6 +11,7 @@ exports.execute = function(client) {
     mongoConnection.findGroup(logName, ['type'], {}, {}, 'customCommandsV2', function(error, data) {
         if (error || !data) {
             logger.error(logName + ' Error on retrieving informations and register custom commands', {'error': error});
+            return;
         }
         if (data.length && data.length > 0) {
             const aliases = [];
@@ -26,6 +27,7 @@ exports.execute = function(client) {
     mongoConnection.find(logName, {}, 'customCommandsV2', function(error, data) {
         if (error || !data) {
             logger.error(logName + ' Error on retrieving informations and register custom commands', {'error': error});
+            return;
         }
         if (data.length && data.length > 0) {
             const aliases = [];

@@ -35,7 +35,13 @@ module.exports = class GraphCommand extends Command {
     }
 
     async run(msg, args) {
+
         utils.logMessageUserExecuteCommand(logName, msg);
+
+        if (!checkApplyRequirements()) {
+            logger.warn(logName + ' not apply requirements');
+            return errorMessage.sendSpecificClientErrorMessage(msg, 'Este comando está desabilitado.');
+        }
 
         msg.channel.send({'embed': new RichEmbed()
             .setColor(wingColor)
@@ -51,7 +57,7 @@ module.exports = class GraphCommand extends Command {
             inicialDate.setUTCHours(0, 0, 0, 0);
             const query = {_id : { '$gte' : inicialDate }, wingName: wgName };
             
-            mongoConnection.find(logName, query, 'wingData', function(err, results){
+            mongoConnection.find(logName, query, 'wingData', (err, results) => {
                 if (err) {
                     logger.error(logName + ' Error on retrieving informations', {'err': err});
                     waitMessage.delete();
@@ -60,7 +66,7 @@ module.exports = class GraphCommand extends Command {
                 const data = normalizeObjects(results);
                 const graphOptions = getGraphOptions();
                 
-                plotly.plot(data, graphOptions, function (err, res) {
+                plotly.plot(data, graphOptions, (err, res) => {
                     if (err) {
                         logger.error(logName + ' Error on plotly graph', {'err': err});
                         waitMessage.delete();
@@ -69,7 +75,7 @@ module.exports = class GraphCommand extends Command {
 
                     const imageUrl = res.url + '.png';
 
-                    request.get({url: imageUrl, encoding: 'binary'}, function (err, response, body) {
+                    request.get({url: imageUrl, encoding: 'binary'}, (err, response, body) => {
                         if (err) {
                             logger.error(logName + ' Error get Imagem from plotly', {'err': err});
                             waitMessage.delete();
@@ -79,7 +85,7 @@ module.exports = class GraphCommand extends Command {
                         const now = dateFormat(utils.getUTCDateNow(), 'yyyymmddHHMMss');
                         const fullFilename =  now + '-' + utils.removeSpaces(wgName) + fileExtension;
 
-                        fileManagement.saveFile(logName, body, fileDir, fullFilename, function(err) {
+                        fileManagement.saveFile(logName, body, fileDir, fullFilename, (err) => {
                             if (err) {
                                 logger.error(logName + ' Error to save file = ' + fileDir + fullFilename, {'err': err});
                                 waitMessage.delete();
@@ -110,7 +116,7 @@ module.exports = class GraphCommand extends Command {
             });
         }).catch(console.log);
 
-        function onlyInDev(msg, imageAddress) {
+        const onlyInDev = (msg, imageAddress) => {
             if (process.env.ENVIRONMENT === 'DEV') {
                 msg.channel.send('', {
                     file: imageAddress
@@ -118,7 +124,7 @@ module.exports = class GraphCommand extends Command {
             }
         }
 
-        function normalizeObjects(results) {
+        const normalizeObjects = (results) => {
             const map = [];
             let count = 0;
             const lastButOneInfluence = [];
@@ -174,7 +180,7 @@ module.exports = class GraphCommand extends Command {
             return resultNormalized;
         }
 
-        function sortFunction(a, b) {
+        const sortFunction = (a, b) => {
             if (a.influence === b.influence) {
                 return 0;
             } else {
@@ -182,7 +188,7 @@ module.exports = class GraphCommand extends Command {
             }
         }
 
-        function treatInfluence(influence) {
+        const treatInfluence = (influence) => {
             let inf = influence;
             if (inf.toString().indexOf('.') == -1) {
                 inf += '.0';
@@ -190,7 +196,7 @@ module.exports = class GraphCommand extends Command {
             return utils.lpad(inf, 6);
         }
 
-        function getGraphOptions() {
+        const getGraphOptions = () => {
             return {
                 fileopt : 'overwrite', 
                 filename : 'cwgraph',
@@ -232,6 +238,10 @@ module.exports = class GraphCommand extends Command {
                     }
                 }
             };
+        }
+
+        function checkApplyRequirements() {
+            return process.env.BASE_URL && process.env.PLOTLY_USER && process.env.PLOTLY_PASS;
         }
     }
 }

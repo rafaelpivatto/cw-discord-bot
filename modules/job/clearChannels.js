@@ -13,30 +13,29 @@ exports.execute = (client) => {
         //Execute every three hours
         schedule.scheduleJob('0 */3 * * *', () => {
 
+            if (!process.env.GUILD_ID || !process.env.CHANNELS_TO_CLEAR) return;
+
             const guild = client.guilds.find('id', process.env.GUILD_ID);
 
             if (!guild) return;
 
             logger.info(logName + ' was started...');
 
-            if (process.env.CHANNELS_TO_CLEAR){
-                const channels = process.env.CHANNELS_TO_CLEAR.split('|');
-                for(let c of channels) {
-                    const channel = guild.channels.find('name', c);
-                    
-                    if (channel && channel.type === 'text') {
-                        //console.log('teste', channel);
-                        channel.fetchMessages().then(messages => {
-                            messages.delete(messages.lastKey())
-                            logger.info(logName + ' clear messages from channel: ' + c);
-                            channel.bulkDelete(messages);
-                            channel.send('Limpando as mensagens da sala...').then(msg => {
-                                msg.delete(20000);
-                            }).catch(console.error);
-                        }).catch(console.error);
-                    }
-                }
+            const channels = process.env.CHANNELS_TO_CLEAR.split('|');
+            for(let c of channels) {
+                const channel = guild.channels.find('name', c);
                 
+                if (channel && channel.type === 'text') {
+                    //console.log('teste', channel);
+                    channel.fetchMessages().then(messages => {
+                        messages.delete(messages.lastKey())
+                        logger.info(logName + ' clear messages from channel: ' + c);
+                        channel.bulkDelete(messages);
+                        channel.send('Limpando as mensagens da sala...').then(msg => {
+                            msg.delete(20000);
+                        }).catch(console.error);
+                    }).catch(console.error);
+                }
             }
             
         });

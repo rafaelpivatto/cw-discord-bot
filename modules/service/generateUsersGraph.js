@@ -17,6 +17,11 @@ exports.generate = (logPrefix, callback) => {
 
     logger.info(logPrefix + logName + ' Starting generate');
 
+    if (!checkApplyRequirements()) {
+        logger.warn(logName + ' not apply requirements');
+        callback('Este comando está desabilitado.');
+    }
+
     usersJoinAndLeft.get(logName, (err, data) => {
         if (err) {
             logger.error(logName + ' Error on retrieving informations', {'error': error});
@@ -309,4 +314,8 @@ exports.generate = (logPrefix, callback) => {
         });
         return data;
     };
+
+    function checkApplyRequirements() {
+        return process.env.BASE_URL && process.env.PLOTLY_USER && process.env.PLOTLY_PASS;
+    }
 };

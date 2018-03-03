@@ -34,6 +34,11 @@ module.exports = class SystemFactionsCommand extends Command {
 
     async run(msg, args) {
         utils.logMessageUserExecuteCommand(logName, msg);
+
+        if (!checkApplyRequirements()) {
+            logger.warn(logName + ' not apply requirements');
+            return errorMessage.sendSpecificClientErrorMessage(msg, 'Este comando está desabilitado.');
+        }
         
         const systemName = utils.removeDiacritics(String(args)).toUpperCase();
         logger.info(logName + ' System name = ' + systemName);
@@ -126,7 +131,7 @@ module.exports = class SystemFactionsCommand extends Command {
             }).catch(console.log);
         });
 
-        function normalizeObjects(json) {
+        const normalizeObjects = (json) => {
             let data = [
                 {   
                     textfont: {
@@ -167,11 +172,11 @@ module.exports = class SystemFactionsCommand extends Command {
             return data;
         };
 
-        function playerFactionIcon(faction) {
+        const playerFactionIcon = (faction) => {
             return faction.isPlayer ? ' (Player faction)' : '';
         }
 
-        function getGraphOption(systemName, wingControlledName) {
+        const getGraphOption = (systemName, wingControlledName) => {
             return {
                 fileopt : 'overwrite', 
                 filename : 'systemFactions',
@@ -197,12 +202,16 @@ module.exports = class SystemFactionsCommand extends Command {
             };
         }
 
-        function onlyInDev(msg, imageAddress) {
+        const onlyInDev = (msg, imageAddress) => {
             if (process.env.ENVIRONMENT === 'DEV') {
                 msg.channel.send('', {
                     file: imageAddress
                 });
             }
+        }
+
+        function checkApplyRequirements() {
+            return process.env.BASE_URL && process.env.PLOTLY_USER && process.env.PLOTLY_PASS;
         }
     }
     
