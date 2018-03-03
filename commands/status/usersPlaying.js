@@ -47,6 +47,7 @@ module.exports = class PingCommand extends Command {
                 countLines++;
                 if (countLines < 16) {
                     const g = infos.games[game];
+                    g.name = g.name.replace(/:/g, '');
                     let decoration = '';
                     if (g.name.indexOf('Elite') != -1 && g.name.indexOf('Dangerous')) {
                         decoration = '**';
