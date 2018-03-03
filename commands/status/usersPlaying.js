@@ -13,6 +13,7 @@ const doubleWrapLine = '\n\n';
 const wingThumb = 'http://i.imgur.com/ro5DQx9.png';
 const wingUrlSite = 'http://elitedangerouscobra.com.br';
 const wingColor = '#f00000';
+let gameName;
 
 module.exports = class PingCommand extends Command {
     constructor(client) {
@@ -46,7 +47,11 @@ module.exports = class PingCommand extends Command {
                 countLines++;
                 if (countLines < 16) {
                     const g = infos.games[game];
-                    const decoration = g.name === 'Elite: Dangerous' ? '**' : '';
+                    let decoration = '';
+                    if (g.name.indexOf('Elite') != -1 && g.name.indexOf('Dangerous')) {
+                        decoration = '**';
+                        gameName = g.name;
+                    }
                     topPlaying += decoration + '(' + g.count + ') ' + g.name + decoration + '\n';
                     totalPlaying += g.count;
                 } else {
@@ -72,7 +77,7 @@ module.exports = class PingCommand extends Command {
                     'Há no momento:\n' + 
                     '**' + infos.playersOnline + '/' + infos.playersRegistered + ' pessoas** online no discord\n' + 
                     '**' + getPlayersLabel(totalPlaying) + '** se divertindo com algum game\n' +
-                    '**' + getPlayersLabel(infos.playingED) + '** jogando Elite: Dangerous' +
+                    '**' + getPlayersLabel(infos.playingED) + '** jogando ' + gameName +
                     doubleWrapLine + 
                     ':trophy: O recorde foi de **' + getPlayersLabel(data.qtd) + '** jogando **Elite: Dangerous** em ' + 
                     dateFormat(utils.getBRTDate(data.date), 'dd/mm/yyyy') + 
