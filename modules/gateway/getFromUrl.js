@@ -10,10 +10,14 @@ exports.get = function(logPrefix, url, callback) {
         if (error) {
             logger.error(logPrefix + logName + ' error to get server status by url: ' + url, 
                         {'error': error});
+            callback(error);
+            return;
         }
         if (response && response.statusCode != 200) {
-            logger.error(logPrefix + logName + ' response code != 200', response);
-            logger.error(logPrefix + logName + ' statusMessage', statusMessage);
+            logger.error(logPrefix + logName + ' response code != 200', response.statusCode);
+            logger.error(logPrefix + logName + ' statusMessage', response.body);
+            callback('Error on status code: ' + response.statusCode);
+            return;
         }
         
         logger.info(logPrefix + logName + ' Finish getting data from url');
@@ -29,10 +33,14 @@ exports.getHtml = function(logPrefix, url, callback) {
         if (error) {
             logger.error(logPrefix + logName + ' error to get server status by url: ' + url, 
                         {'error': error});
+            callback(error);
+            return;
         }
         if (response && response.statusCode != 200) {
-            logger.error(logPrefix + logName + ' response code != 200', response);
-            logger.error(logPrefix + logName + ' statusMessage', statusMessage);
+            logger.error(logPrefix + logName + ' response code != 200', response.statusCode);
+            logger.error(logPrefix + logName + ' statusMessage', response.body);
+            callback('Error on status code: ' + response.statusCode);
+            return;
         }
         
         logger.info(logPrefix + logName + ' Finish getting data from url');
