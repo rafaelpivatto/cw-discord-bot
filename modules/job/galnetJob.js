@@ -22,7 +22,7 @@ exports.execute = (client) => {
 
         if (process.env.GOOGL_KEY) googl.setKey(process.env.GOOGL_KEY);
         
-        //Execute every hour **:02
+        //Execute every hour **:02 
         schedule.scheduleJob('2 * * * *', () => {
 
             if (!process.env.GUILD_ID || !process.env.GALNET_INFO_CHANNEL) return;
@@ -88,7 +88,7 @@ exports.execute = (client) => {
                                             ':flag_br: [Clique aqui para traduzir](' + shortUrl + ')');
                 
                                         channel.send({'embed': embed});
-                                    }).error((err) => {
+                                    }).catch((err) => {
                                         logger.error(logName + ' Error on shorten description: ', {'error': err});
                                         channel.send({'embed': embed});
                                     });
