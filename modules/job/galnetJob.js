@@ -2,7 +2,8 @@ const schedule = require('node-schedule');
 const logger = require('heroku-logger');
 const cheerio = require('cheerio');
 const { RichEmbed } = require('discord.js');
-const googl = require('goo.gl');
+const BitlyClient = require('bitly');
+let bitly;
 
 const getFromUrl = require('../gateway/getFromUrl.js');
 const mongoConnection = require('../connection/mongoConnection.js');
@@ -20,7 +21,7 @@ exports.execute = (client) => {
     if (utils.isProdEnvironment()) {
         logger.info(logName + ' registering...');
 
-        if (process.env.GOOGL_KEY) googl.setKey(process.env.GOOGL_KEY);
+        if (process.env.BITLY_KEY) bitly = BitlyClient(process.env.BITLY_KEY);
         
         //Execute every hour **:02 
         schedule.scheduleJob('2 * * * *', () => {
@@ -79,13 +80,13 @@ exports.execute = (client) => {
                                     .setURL(fullUrl)
                                     .setThumbnail(thumb);
                                 
-                                if (process.env.GOOGL_KEY) {
-                                    googl.shorten('https://translate.google.com.br/?hl=pt-BR#en/pt/' + 
-                                        textToTranslate(desc)).then((shortUrl) => {
+                                if (bitly) {
+                                    bitly.shorten('https://translate.google.com.br/?hl=pt-BR#en/pt/' + 
+                                        textToTranslate(desc)).then((res) => {
                                         
                                         embed.setDescription(desc + 
                                             wrapLine +
-                                            ':flag_br: [Clique aqui para traduzir](' + shortUrl + ')');
+                                            ':flag_br: [Clique aqui para traduzir](' + res.data.url + ')');
                 
                                         channel.send({'embed': embed});
                                     }).catch((err) => {
@@ -115,6 +116,7 @@ exports.execute = (client) => {
         }
         const textToTranslate = (desc) => {
             return desc.replace(/\n/g, '%0A')
+                .replace(/(?:\r\n|\r|\n)/g, '')
                 .replace(/"/g, '%22')
                 .replace(/‘/g, '%E2%80%98')
                 .replace(/’/g, '%E2%80%99')
