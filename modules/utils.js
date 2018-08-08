@@ -1,4 +1,39 @@
 const logger = require('heroku-logger');
+const config = require('config');
+
+exports.getGeneralConfig = function (target) {
+    return new Promise(function(resolve, reject) {
+        const path = `general.${target}`;
+        const exists = config.has(path);
+        const value = config.get(path);
+    
+        if (exists && value) {
+            resolve(value);
+        } else {
+            logger.error(`${logName} config not found: ${path}`); 
+            reject();
+        }
+    });
+};
+
+exports.getGuildConfig = function (guild, target) {
+    return new Promise(function(resolve, reject) {
+        if (!guild || !guild.id) {
+            logger.error(`${logName} guild id not found`); 
+            reject();
+        }
+        const path = `guild.id-${guild.id}.${target}`;
+        const exists = config.has(path);
+        const value = config.get(path);
+    
+        if (exists && value) {
+            resolve(value);
+        } else {
+            logger.error(`${logName} config not found: ${path}`); 
+            reject();
+        }
+    });
+};
 
 exports.isProdEnvironment = function () {
     return process.env.ENVIRONMENT !== 'DEV';

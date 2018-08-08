@@ -8,6 +8,7 @@ const registryJobsExecution = require('./modules/registry/registryJobsExecution.
 const registryEndPoints = require('./modules/registry/registryEndPoints.js');
 const registryDiscordEvents = require('./modules/registry/registryDiscordEvents.js');
 const registryControllerToImageContest = require('./modules/registry/registryControllerToImageContest.js');
+const utils = require('./modules/utils.js');
 
 const logName = '[Index]';
 
@@ -38,5 +39,16 @@ client.on('ready', (arg) => {
     setTimeout(() => {
         logger.info(logName + ' =========> Bot started');
     }, 3000);
-    
+
+    client.guilds.array().forEach(guild => {
+        utils.getGuildConfig(guild, 'msg').then(value => {
+            console.log(value);
+        }).catch(() => {
+            console.log('error');
+        });
+        utils.getGeneralConfig('test').then(value => {
+            console.log(value);
+        });
+    });
+        
 });
