@@ -19,7 +19,7 @@ exports.getGeneralConfig = function (target) {
 exports.getGuildConfig = function (guild, target) {
     return new Promise(function(resolve, reject) {
         if (!guild || !guild.id) {
-            logger.error(`${logName} guild id not found`); 
+            logger.error(`${logName} guild or guild id not found`);
             reject();
         }
         const path = `guild.id-${guild.id}.${target}`;
@@ -34,6 +34,15 @@ exports.getGuildConfig = function (guild, target) {
         }
     });
 };
+
+exports.isGuildConfigEnabled = function (guild, target) {
+    if (!guild || !guild.id) {
+        logger.error(`${logName} guild or guild id not found`);
+        return false;
+    }
+    const path = `guild.id-${guild.id}.${target}`;
+    return config.has(path);
+}
 
 exports.isProdEnvironment = function () {
     return process.env.ENVIRONMENT !== 'DEV';

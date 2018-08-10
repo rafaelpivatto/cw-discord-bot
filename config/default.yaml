@@ -1,5 +1,17 @@
+#General configs
 general:
-  test: general test
+  test: "general test"
+
+#Guild configs
 guild:
-  id-310478561574256640:
-    msg: hello world!
+
+  #Dev Server
+  id-310478561574256640: 
+    msg: "hello world!"
+    wingColor: "#00efec"
+    wingThumb: "https://i.imgur.com/MAssmRj.png"
+
+  #Cobra Wing Server
+  id-117579849794715652:
+    wingColor: "#f00000"
+    wingThumb: "https://i.imgur.com/ro5DQx9.png"

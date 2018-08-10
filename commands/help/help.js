@@ -6,9 +6,9 @@ const utils = require('../../modules/utils.js');
 const mongoConnection = require('../../modules/connection/mongoConnection.js');
 
 const wrapLine = '\n';
-const wingThumb = 'http://i.imgur.com/ro5DQx9.png';
-const wingColor = '#f00000';
 const logName = '[CWAjuda]';
+
+let wingThumb, wingColor;
 
 module.exports = class HelpCommand extends Command {
     constructor(client) {
@@ -40,6 +40,10 @@ module.exports = class HelpCommand extends Command {
             }
 
             message += '\n**\*Caso não encontrar algo, procure ou pergunte na sala** <#189856121580683266>';
+            
+            utils.getGuildConfig(msg.guild, 'msg').then(value => {
+                console.log(value);
+            })
 
             let embed = new RichEmbed()
                     .setColor(wingColor)
