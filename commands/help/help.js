@@ -16,7 +16,7 @@ module.exports = class HelpCommand extends Command {
             name: 'cwajuda',
             group: 'help',
             memberName: 'help',
-            aliases: ['cwhelp'],
+            aliases: ['cwhelp', 'ajuda', 'help'],
             description: 'Help for CW bot',
             guildOnly: true,
             patterns: [new RegExp('[a-zA-Z]')]
@@ -24,12 +24,12 @@ module.exports = class HelpCommand extends Command {
     }
 
     async run(msg, args) {
+        if (!utils.isGuildConfigEnabled(msg.guild, 'help.enabled')) {
+            return;
+        }
         utils.logMessageUserExecuteCommand(logName, msg);
         
-        let message = '__**Abaixo os principais comandos que possam ajudar:**__\n\n' +
-            '**!cobrawing** - *Comandos de auxilio ao power play e outras coisas voltadas a Cobra Wing .*' + wrapLine +
-            '**!elitedangerous** - *Comandos gerais para axiliar a jogabilidade no Elite Dangerous.*' + wrapLine +
-            '**!utilidades** - *Conjunto de sites extremente úteis para auxiliar a jobabilidade geral.*';
+        let message = utils.getGuildConfig(msg.guild, 'help.description');
         
         mongoConnection.findGroup(logName, ['type'], {'showInMenu': true}, {}, 'customCommandsV2', function(error, data) {
             if (!error && data && data.length > 0) {
@@ -39,20 +39,16 @@ module.exports = class HelpCommand extends Command {
                 }
             }
 
-            message += '\n**\*Caso não encontrar algo, procure ou pergunte na sala** <#189856121580683266>';
+            message += utils.getGuildConfig(msg.guild, 'help.footer');
             
-            utils.getGuildConfig(msg.guild, 'msg').then(value => {
-                console.log(value);
-            })
-
             let embed = new RichEmbed()
-                    .setColor(wingColor)
-                    .setTimestamp()
-                    .setTitle('Comandos do CobraWingBot')
-                    .setAuthor(utils.getUserNickName(msg), utils.getUserAvatar(msg))
-                    .setThumbnail(wingThumb)
-                    .setFooter('Fly safe cmdr!')
-                    .setDescription(message);
+                .setColor(utils.getGuildConfig(msg.guild, 'help.color'))
+                .setTimestamp()
+                .setTitle('Comandos do CobraWingBot')
+                .setAuthor(utils.getUserNickName(msg), utils.getUserAvatar(msg))
+                .setThumbnail(utils.getGuildConfig(msg.guild, 'help.thumb'))
+                .setFooter('Fly safe cmdr!')
+                .setDescription(message);
 
             return msg.embed(embed);
         });

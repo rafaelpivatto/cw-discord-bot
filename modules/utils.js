@@ -1,47 +1,53 @@
 const logger = require('heroku-logger');
 const config = require('config');
+const logName = '[Utils]';
 
-exports.getGeneralConfig = function (target) {
-    return new Promise(function(resolve, reject) {
-        const path = `general.${target}`;
-        const exists = config.has(path);
-        const value = config.get(path);
-    
-        if (exists && value) {
-            resolve(value);
-        } else {
-            logger.error(`${logName} config not found: ${path}`); 
-            reject();
-        }
-    });
+const getDefaultConfigByKey = (key) => {
+    const defaultExists = config.has(key);
+    if (defaultExists) {
+        logger.info(`${logName} getting default: ${key}`); 
+        return config.get(key);
+    } else {
+        logger.error(`${logName} default not found`); 
+        return '';
+    }
 };
 
-exports.getGuildConfig = function (guild, target) {
-    return new Promise(function(resolve, reject) {
-        if (!guild || !guild.id) {
-            logger.error(`${logName} guild or guild id not found`);
-            reject();
-        }
-        const path = `guild.id-${guild.id}.${target}`;
-        const exists = config.has(path);
-        const value = config.get(path);
-    
-        if (exists && value) {
-            resolve(value);
-        } else {
-            logger.error(`${logName} config not found: ${path}`); 
-            reject();
-        }
-    });
+exports.getGlobalConfig = function (key) {
+    const path = `global.${key}`;
+    const exists = config.has(path);
+
+    if (exists) {
+        return config.get(path);
+    } else {
+       return '';
+    }
 };
 
-exports.isGuildConfigEnabled = function (guild, target) {
+exports.getGuildConfig = function (guild, key) {
+    const defaultKey = `global.default.${key}`;
+    
+    if (!guild || !guild.id) {
+        return getDefaultConfigByKey(defaultKey);
+    }
+    const path = `guild.id-${guild.id}.${key}`;
+    const exists = config.has(path);
+    
+    if (exists) {
+        return config.get(path);
+    } else {
+        return getDefaultConfigByKey(defaultKey);
+    }
+};
+
+exports.isGuildConfigEnabled = function (guild, key) {
     if (!guild || !guild.id) {
         logger.error(`${logName} guild or guild id not found`);
         return false;
     }
-    const path = `guild.id-${guild.id}.${target}`;
-    return config.has(path);
+    const path = `guild.id-${guild.id}.${key}`;
+    logger.info(`${logName} find guild config enabled: ${path}`);
+    return config.has(path) && config.get(path) === true;
 }
 
 exports.isProdEnvironment = function () {

@@ -1,17 +1,47 @@
 #General configs
-general:
-  test: "general test"
+global:
+  job:
+    galnet:
+      url: "https://community.elitedangerous.com/en/galnet/"
+      cron: "2 * * * *"
+  #Defaults configs, using when server id not found bellow
+  default:
+    embed:
+      color: "#1700ef"
 
 #Guild configs
 guild:
 
   #Dev Server
-  id-310478561574256640: 
-    msg: "hello world!"
-    wingColor: "#00efec"
-    wingThumb: "https://i.imgur.com/MAssmRj.png"
+  id-310478561574256640:
+    embed:
+      color: "#00efec"
+      thumb: "https://i.imgur.com/MAssmRj.png"
+    help:
+      enabled: true
+      color: "#00efec"
+      thumb: "https://i.imgur.com/MAssmRj.png"
+      description: "__**Abaixo os principais comandos que possam ajudar:**__\n\n**!cobrawing** - *Comandos de auxilio ao power play e outras coisas voltadas a Cobra Wing .* \n**!elitedangerous** - *Comandos gerais para axiliar a jogabilidade no Elite Dangerous.* \n**!utilidades** - *Conjunto de sites extremente úteis para auxiliar a jobabilidade geral.*"
+      footer: "\n***Caso não encontrar algo, procure ou pergunte na sala** <#189856121580683266>"
+    galnet:
+      enabled: false
+      color: "#00efec"
+      channel: "dev"
+      thumb: "https://i.imgur.com/Ig6OgUj.png"
 
   #Cobra Wing Server
   id-117579849794715652:
-    wingColor: "#f00000"
-    wingThumb: "https://i.imgur.com/ro5DQx9.png"
+    embed:
+      color: "#f00000"
+      thumb: "https://i.imgur.com/ro5DQx9.png"
+    help:
+      enabled: true
+      color: "#f00000"
+      thumb: "https://i.imgur.com/ro5DQx9.png"
+      description: "__**Abaixo os principais comandos que possam ajudar:**__\n\n**!cobrawing** - *Comandos de auxilio ao power play e outras coisas voltadas a Cobra Wing .* \n**!elitedangerous** - *Comandos gerais para axiliar a jogabilidade no Elite Dangerous.* \n**!utilidades** - *Conjunto de sites extremente úteis para auxiliar a jobabilidade geral.*"
+      footer: "\n***Caso não encontrar algo, procure ou pergunte na sala** <#189856121580683266>"
+    galnet:
+      enabled: true
+      color: "#f00000"
+      channel: "galnet"
+      thumb: "https://i.imgur.com/Ig6OgUj.png"

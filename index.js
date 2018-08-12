@@ -28,7 +28,7 @@ client.registry.registerCommandsIn(__dirname + '/commands');
 client.login(process.env.BOT_KEY);
 
 client.on('ready', (arg) => {
-    client.user.setPresence({ game: { name: '!cwajuda', type: 0 } });
+    client.user.setPresence({ game: { name: '!ajuda', type: 0 } });
     
     registryCustomCommands.execute(client);
     registryJobsExecution.execute(client);
@@ -40,7 +40,7 @@ client.on('ready', (arg) => {
         logger.info(logName + ' =========> Bot started');
     }, 3000);
 
-    client.guilds.array().forEach(guild => {
+    /*client.guilds.array().forEach(guild => {
         utils.getGuildConfig(guild, 'msg').then(value => {
             console.log(value);
         }).catch(() => {
@@ -49,6 +49,6 @@ client.on('ready', (arg) => {
         utils.getGeneralConfig('test').then(value => {
             console.log(value);
         });
-    });
-        
+    });*/
+    
 });
