@@ -11,7 +11,7 @@ exports.execute = (client) => {
         logger.info(logName + ' registering...');
 
         //Execute every three hours
-        schedule.scheduleJob('0 */3 * * *', () => {
+        schedule.scheduleJob('0 */12 * * *', () => {
 
             if (!process.env.GUILD_ID || !process.env.CHANNELS_TO_CLEAR) return;
 
