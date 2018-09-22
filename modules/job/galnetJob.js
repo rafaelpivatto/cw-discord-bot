@@ -23,7 +23,7 @@ exports.execute = (client) => {
 
         if (process.env.BITLY_KEY) bitly = BitlyClient(process.env.BITLY_KEY);
         
-        //Execute every hour **:02 
+        //Execute every hour **:02 ==> 2 * * * * 
         schedule.scheduleJob('2 * * * *', () => {
 
             if (!process.env.GUILD_ID || !process.env.GALNET_INFO_CHANNEL) return;
@@ -119,6 +119,9 @@ exports.execute = (client) => {
                 .replace(/(?:\r\n|\r|\n)/g, '')
                 .replace(/"/g, '%22')
                 .replace(/‘/g, '%E2%80%98')
+                .replace(/’ /g, '%E2%80%98')
+                .replace(/'/g, '')
+                .replace(/–/g, '-')
                 .replace(/’/g, '%E2%80%99')
                 .replace(/“/g, '%E2%80%9C')
                 .replace(/”/g, '%E2%80%9D');
