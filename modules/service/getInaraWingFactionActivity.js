@@ -62,7 +62,7 @@ exports.getFactionActivity = (logPrefix, callback) => {
                     let line = lines[i];
                     data.commanders.push({
                         name: line.children[1].children[0].children[0].data,
-                        influence: line.children[2].children[0].data,
+                        influence: parseInt(line.children[2].children[0].data),
                         missions: line.children[3].children[0].data,
                         percentOfMissions: line.children[4].children[0].data
                     });
