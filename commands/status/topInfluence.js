@@ -28,7 +28,6 @@ module.exports = class PingCommand extends Command {
             .setColor(wingColor)
             .setAuthor(utils.getUserNickName(msg), utils.getUserAvatar(msg))
             .setTimestamp()
-            .setFooter('Fly safe cmdr!')
             .setDescription(':arrows_counterclockwise: Aguarde um instante...')}).then(waitMessage => {
             
             getInaraWingFactionActivity.getFactionActivity(logName, (data) => {
@@ -38,8 +37,8 @@ module.exports = class PingCommand extends Command {
                     .setAuthor(utils.getUserNickName(msg), utils.getUserAvatar(msg))
                     .setFooter('Fly safe cmdr!')
                     .setThumbnail(wingThumb)
-                    .setTitle('Top 10 de influencia dos guardians of Cobra Wing')
-                    .setDescription('Informações dos ultimos 30 dias, enviadas ao [Inara](https://inara.cz/wing-faction-activity/163/) \n' +
+                    .setTitle('Top 10 de influência dos Guardians of Cobra Wing')
+                    .setDescription('Informações dos últimos 30 dias, enviadas ao [Inara.cz](https://inara.cz/wing-faction-activity/163/) \n' +
                         `**${data.wingName}**  |  Membros: **${data.members}**  |  Naves: **${data.ships}**\n` + 
                         `Estação principal: **${data.headQuarters}**\n\n\n`);
                 
