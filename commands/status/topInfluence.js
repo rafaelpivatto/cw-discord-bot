@@ -24,6 +24,9 @@ module.exports = class PingCommand extends Command {
     async run(msg, args) {
         utils.logMessageUserExecuteCommand(logName, msg);
 
+
+        return msg.channel.send('Desculpe, este comando está temporariamente desabilitado.');
+
         msg.channel.send({'embed': new RichEmbed()
             .setColor(wingColor)
             .setAuthor(utils.getUserNickName(msg), utils.getUserAvatar(msg))
