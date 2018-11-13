@@ -18,7 +18,8 @@ exports.getFactionActivity = (logPrefix, callback) => {
                 formact: 'USER_LOGIN',
                 loginid: process.env.INARA_LOGIN,
                 loginpass: process.env.INARA_PASS,
-                loginremember: '1'
+                loginremember: '1',
+                formuniquecode: '1738084920'
             }
         };
 
@@ -28,7 +29,7 @@ exports.getFactionActivity = (logPrefix, callback) => {
     };
 
     const doGetInfos = (callback) => {
-        const url = 'https://inara.cz/wing-faction-activity/163/';
+        const url = 'https://inara.cz/squadron-faction-activity/163/';
         getFromUrl.getHtml(logName, url, (err, data) => {
             callback(err, data);
         });
@@ -52,10 +53,11 @@ exports.getFactionActivity = (logPrefix, callback) => {
             const lines = $('table tbody tr');
             const data = {
                 commanders: [],
-                members: $("div")[81].children[1].children[27].data,
-                ships: $("div")[81].children[1].children[30].data,
-                headQuarters: $("div")[81].children[1].children[37].children[0].data,
-                wingName: $("div")[81].children[1].children[41].children[0].data
+                members: $("div")[82].children[27].data,
+                ships: $("div")[82].children[30].data,
+                headQuarters: $("div")[82].children[40].children[0].data,
+                squadronName: $("div")[82].children[44].children[0].data,
+                squadronAge: $("div")[82].children[36].data
             };
             if (lines && lines.length > 0) {
                 for(let i=0; i < lines.length; i++) {

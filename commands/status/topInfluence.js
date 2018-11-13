@@ -24,8 +24,7 @@ module.exports = class PingCommand extends Command {
     async run(msg, args) {
         utils.logMessageUserExecuteCommand(logName, msg);
 
-
-        return msg.channel.send('Desculpe, este comando está temporariamente desabilitado.');
+        //return msg.channel.send('Desculpe, este comando está temporariamente desabilitado.');
 
         msg.channel.send({'embed': new RichEmbed()
             .setColor(wingColor)
@@ -42,18 +41,25 @@ module.exports = class PingCommand extends Command {
                     .setThumbnail(wingThumb)
                     .setTitle('Top 10 de influência dos Guardians of Cobra Wing')
                     .setDescription('Informações dos últimos 30 dias, enviadas ao [Inara.cz](https://inara.cz/wing-faction-activity/163/) \n' +
-                        `**${data.wingName}**  |  Membros: **${data.members}**  |  Naves: **${data.ships}**\n` + 
+                        `**${data.squadronName}**  -  Idade: **${String(data.squadronAge).replace('days', 'dias')}**\n` +
+                        `Membros: **${data.members}**  -  Naves: **${data.ships}**\n` + 
                         `Estação principal: **${data.headQuarters}**\n\n\n`);
                 
                 for(let i=0; i < 10; i) {
                     let commander = data.commanders[i];
                     embed.addField(`#${++i}`, `Influência: ${commander.influence}`, true);
-                    embed.addField(`${commander.name}`, 
+                    embed.addField(`${adjustCmdrName(commander.name)}`, 
                             `Missões comp.: ${commander.missions} (${commander.percentOfMissions})`, true);
                 }
                 waitMessage.delete();
                 return msg.embed(embed);
             });
-        });        
+        }); 
+        
+        //--- methrods ---
+        const adjustCmdrName = (name) => {
+            return name.replace(/_/g, '\\_')
+                .replace(/\*/g, '\\*');
+        };
     }
 }    
