@@ -40,14 +40,14 @@ module.exports = class TopGuardiansCommand extends Command {
                     .setFooter('Fly safe cmdr!')
                     .setThumbnail(wingThumb)
                     .setTitle('Top 10 de influência dos Guardians of Cobra Wing')
-                    .setDescription('Informações dos últimos 30 dias, enviadas ao [Inara.cz](https://inara.cz/wing-faction-activity/163/) \n' +
+                    .setDescription('Informações dos últimos 30 dias, enviadas ao [Inara.cz](https://inara.cz/wing-faction-activity/163/) \n\n' +
                         `**${data.squadronName}**  -  Idade: **${String(data.squadronAge).replace('days', 'dias')}**\n` +
                         `Membros: **${data.members}**  -  Naves: **${data.ships}**\n` + 
                         `Estação principal: **${data.headQuarters}**\n\n\n`);
                 
                 for(let i=0; i < 10; i) {
                     let commander = data.commanders[i];
-                    embed.addField(`#${++i}`, `Influência: ${commander.influence}`, true);
+                    embed.addField(`${getEmoji(i)} #${++i}`, `Influência: ${commander.influence}`, true);
                     embed.addField(`${adjustCmdrName(commander.name)}`, 
                             `Missões comp.: ${commander.missions} (${commander.percentOfMissions})`, true);
                 }
@@ -61,5 +61,13 @@ module.exports = class TopGuardiansCommand extends Command {
             return name.replace(/_/g, '\\_')
                 .replace(/\*/g, '\\*');
         };
+
+        const getEmoji = (i) => {
+            if (i === 0) {
+                return ':trophy: ';
+            } else {
+                return ':sports_medal: ';
+            }
+        }
     }
 }    

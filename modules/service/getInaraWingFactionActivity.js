@@ -43,6 +43,15 @@ exports.getFactionActivity = (logPrefix, callback) => {
         }
     }
 
+    const _try = (func, fallbackValue = '#error#') => {
+        try {
+            const value = func();
+            return (value === null || value === undefined) ? fallbackValue : value;
+        } catch (e) {
+            return fallbackValue;
+        }
+    }
+
     doLogin((err, data) => {
         if (err) callback(null);
 
@@ -51,22 +60,23 @@ exports.getFactionActivity = (logPrefix, callback) => {
 
             const $ = cheerio.load(JSON.stringify(html));
             const lines = $('table tbody tr');
+            const divData = $("div")[82].children[1];
             const data = {
                 commanders: [],
-                members: $("div")[82].children[1].children[49].data,
-                ships: $("div")[82].children[1].children[52].data,
-                squadronAge: $("div")[82].children[1].children[58].data,
-                headQuarters: $("div")[82].children[1].children[62].children[0].data,
-                squadronName: $("div")[82].children[1].children[66].children[0].data
+                members: _try(() => divData.children[49].data),
+                ships: _try(() => divData.children[52].data),
+                squadronAge: _try(() => divData.children[58].data),
+                headQuarters: _try(() => divData.children[62].children[0].data),
+                squadronName: _try(() => divData.children[66].children[0].data)
             };
             if (lines && lines.length > 0) {
                 for(let i=0; i < lines.length; i++) {
                     let line = lines[i];
                     data.commanders.push({
-                        name: line.children[1].children[0].children[0].data,
-                        influence: parseInt(line.children[2].children[0].data),
-                        missions: line.children[3].children[0].data,
-                        percentOfMissions: line.children[4].children[0].data
+                        name: _try(() => line.children[1].children[0].children[0].data),
+                        influence: parseInt(_try(() => line.children[2].children[0].data), 0),
+                        missions: _try(() => line.children[3].children[0].data),
+                        percentOfMissions: _try(() => line.children[4].children[0].data)
                     });
                 }
             }

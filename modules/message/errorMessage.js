@@ -11,17 +11,23 @@ exports.sendClientErrorMessage = function(msg) {
             'novamente, fly safe CMDR!')});
 };
 
-exports.sendSpecificClientErrorMessage = function(msg, errorMessage, thumbnail) {
-    let thumb = 'https://i.imgur.com/JYY3pCv.png';
-    if (thumbnail) {
-        thumb = thumbnail;
-    }
-    msg.channel.send({'embed': new RichEmbed()
+exports.sendSpecificClientErrorMessage = function(
+    msg, 
+    errorMessage, 
+    thumbnail = 'https://i.imgur.com/JYY3pCv.png', 
+    image = '') {
+    const embed = new RichEmbed()
         .setColor('#f00000')
         .setTimestamp()
-        .setThumbnail(thumb)
+        .setThumbnail(thumbnail)
         .setAuthor(utils.getUserNickName(msg), utils.getUserAvatar(msg))
-        .setDescription(errorMessage)});
+        .setDescription(errorMessage);
+    
+    if (image) {
+        embed.setImage(image);
+    }
+
+    msg.channel.send({'embed': embed});
 };
 
 module.exports = exports;

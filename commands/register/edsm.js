@@ -48,13 +48,15 @@ module.exports = class HelpCommand extends Command {
             if (json.msgnum === 203) {
                 logger.info(logName + ' commander not found: ' + commanderName);
                 return errorMessage.sendSpecificClientErrorMessage(msg, 
-                    'O perfil do comandante não foi encontrado no EDSM, verifique se a URL esta correta.');
+                    'O perfil do comandante não foi encontrado no EDSM, verifique se o nome ou URL estão corretos.');
             }
 
             if (!json.system) {
                 logger.info(logName + ' commander don\'t have public profile: ' + commanderName);
                 return errorMessage.sendSpecificClientErrorMessage(msg, 
-                    'O perfil não é público no EDSM, garanta essa configuração e tente novamente.');
+                    'O perfil não é público no EDSM, coloque no menu "Public Profile" a configuração conforme abaixo, '+
+                    'aguarde um instante e tente novamente.',
+                    null, 'https://i.imgur.com/H6qW6cQ.png');
             }
             const data = {
                 _id: msg.author.id,

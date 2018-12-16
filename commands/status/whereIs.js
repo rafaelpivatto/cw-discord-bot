@@ -165,62 +165,59 @@ module.exports = class WherIsCommand extends Command {
 
                 let message = 'Dados do comandante: **' + commanderName + '**\n' +
                     'Último sistema: **' + json.system + '**\n' +
-                    'Data (UTC): **' + json.date + '**\n\n';
+                    'Data do último envio (UTC): **' + json.date + '**\n\n';
 
                 getFromUrl.getHtml(logName, json.url, function(error, body){
 
                     if(!error) {
                         const $ = cheerio.load(body);
+                        const siteDivs = $('.col-md-6 > div');
+                        
+                        //thumbnail
                         const imgField = $('.img-thumbnail');
-                        if (imgField && imgField[0] && imgField[0].attribs['src']) {
-                            const img = imgField[0].attribs['src'];
-                            embed.setThumbnail('https://www.edsm.net' + img);
+                        const imgThumbnail = _try(() => imgField[0] && imgField[0].attribs['src']);
+                        if (imgThumbnail) {
+                            embed.setThumbnail('https://www.edsm.net' + imgThumbnail);
                         }
-                        const imgShip = $('.thumbnail');
-                        if (imgShip && imgShip[0] && imgShip[0].children[1] && imgShip[0].children[1].children[1] && 
-                            imgShip[0].children[1].children[1].attribs['src']){
-                            const img = imgShip[0].children[1].children[1].attribs['src'];
-                            embed.setImage('https://www.edsm.net' + img);
+                        
+                        //ship image
+                        const imgShipField = $('.img-thumbnail img');
+                        const imgShip = _try(() => imgShipField[0].attribs['src']);
+                        if (imgShip){
+                            embed.setImage('https://www.edsm.net' + imgShip);
                         }
-                        const shipField = $('.col-sm-6 > div');
-                        if (shipField && shipField[1] && shipField[1].children[3] &&
-                            shipField[1].children[3].children[1] && 
-                            shipField[1].children[3].children[1].children[0] &&
-                            shipField[1].children[3].children[1].children[0].data) {
 
-                            let shipName = shipField[1].children[3].children[1].children[0].data.trim();
+                        //memberSince
+                        const memberSince = _try(() => siteDivs[3].children[3].children[1].children[0].data);
+                        if (memberSince) {
+                            message += 'Joga Elite desde: **' + memberSince + '**\n';
+                        }
+                        
+                        //shipName
+                        let shipName = _try(() => siteDivs[1].children[3].children[1].children[0].data.trim());
+                        if (shipName) {                            
                             shipName = shipName.replace(/  /g, '').replace(/\[/g, ' [');
-
                             message += 'Nave atual: **' + shipName + '**\n';
                         }
-                        if (shipField && shipField[7] && shipField[7].children[3] &&
-                            shipField[7].children[3].children[1] && 
-                            shipField[7].children[3].children[1].children[0] &&
-                            shipField[7].children[3].children[1].children[0].data) {
 
-                            let systemsVisited = shipField[7].children[3].children[1].children[0].data.trim();
-                            systemsVisited = systemsVisited.replace(/\,/g, '.');
-
+                        //systemsVisited
+                        let systemsVisited = _try(() => siteDivs[7].children[3].children[1].children[0].data);
+                        if (systemsVisited) {
+                            systemsVisited = systemsVisited.trim().replace(/\,/g, '.');
                             message += 'Sistemas visitados (EDSM): **' + systemsVisited + '**\n';
                         }
-                        if (shipField && shipField[8] && shipField[8].children[3] &&
-                            shipField[8].children[3].children[1] && 
-                            shipField[8].children[3].children[1].children[0] &&
-                            shipField[8].children[3].children[1].children[0].data) {
 
-                            let systemsDiscoveryFirst = shipField[8].children[3].children[1].children[0].data.trim();
-                            systemsDiscoveryFirst = systemsDiscoveryFirst.replace(/\,/g, '.');
-
+                        //systemsDiscoveryFirst
+                        let systemsDiscoveryFirst = _try(() => siteDivs[8].children[3].children[1].children[0].data);
+                        if (systemsDiscoveryFirst) {                            
+                            systemsDiscoveryFirst = systemsDiscoveryFirst.trim().replace(/\,/g, '.');
                             message += 'Sistemas encontrados (EDSM): **' + systemsDiscoveryFirst + '**\n';
                         }
-                        if (shipField && shipField[5] && shipField[5].children[3] &&
-                            shipField[5].children[3].children[1] && 
-                            shipField[5].children[3].children[1].children[0] &&
-                            shipField[5].children[3].children[1].children[0].data) {
 
-                            let systemsSubmmited = shipField[5].children[3].children[1].children[0].data.trim();
-                            systemsSubmmited = systemsSubmmited.replace(/\,/g, '.');
-
+                        //systemsSubmmited
+                        let systemsSubmmited = _try(() => siteDivs[5].children[3].children[1].children[0].data);
+                        if (systemsSubmmited) {
+                            systemsSubmmited = systemsSubmmited.trim().replace(/\,/g, '.');
                             message += 'Sistemas enviados/confirmados (EDSM): **' + systemsSubmmited + '**\n\n';
                         }
                     }
@@ -229,19 +226,19 @@ module.exports = class WherIsCommand extends Command {
                         commanderName, function(error, data){
 
                         if(!error && data.ranks) {
-                            message += '__Ranks__\n';
+                            message += '__Ranks:__\n';
                             
-                            message += 'Combate: **' + data.ranksVerbose.Combat + ' / ' + 
+                            message += getEmoji(msg, 'EliteCombat') + 'Combate: **' + data.ranksVerbose.Combat + ' / ' + 
                                 rankCombat[data.ranks.Combat] + ' ( ' + data.progress.Combat + '% ' + (data.ranks.Combat+1) + '/'+ rankCombat.length + ' )**\n';
                             
-                            message += 'Comércio: **' + data.ranksVerbose.Trade + ' / ' + 
+                            message += getEmoji(msg, 'EliteTrading') + 'Comércio: **' + data.ranksVerbose.Trade + ' / ' + 
                             rankTrade[data.ranks.Trade] + ' (' + data.progress.Trade + '% ' + (data.ranks.Trade+1) + '/'+ rankTrade.length + ' )**\n';
                             
-                            message += 'Exploração: **' + data.ranksVerbose.Explore + ' / ' + 
-                            rankExploration[data.ranks.Explore] + ' (' + data.progress.Explore + '% ' + (data.ranks.Explore+1) + '/'+ rankExploration.length + ' )**\n';
+                            message += getEmoji(msg, 'EliteExploration') + 'Exploração: **' + data.ranksVerbose.Explore + ' / ' + 
+                            rankExploration[data.ranks.Explore] + ' (' + data.progress.Explore + '% ' + (data.ranks.Explore+1) + '/'+ rankExploration.length + ' )**\n\n';
 
                             message += 'CQC: **' + data.ranksVerbose.CQC + ' / ' + 
-                            rankCQC[data.ranks.CQC] + ' (' + data.progress.CQC + '% ' + (data.ranks.CQC+1) + '/'+ rankCQC.length + ' )**\n';
+                            rankCQC[data.ranks.CQC] + ' (' + data.progress.CQC + '% ' + (data.ranks.CQC+1) + '/'+ rankCQC.length + ' )**\n\n';
 
                             message += 'Federação: **' + data.ranksVerbose.Federation + ' / ' + 
                             rankFederation[data.ranks.Federation] + ' (' + data.progress.Federation + '% ' + data.ranks.Federation+ '/'+ (rankFederation.length-1) + ' )**\n';
@@ -263,6 +260,24 @@ module.exports = class WherIsCommand extends Command {
         
         function capitalizeFirstLetter(string) {
             return string.charAt(0).toUpperCase() + string.slice(1);
+        }
+
+        function getEmoji(msg, name) {
+            const emoji = msg.client.emojis.find(emoji => emoji.name === name);
+            if (emoji) {
+                return `<:${emoji.identifier}> `;
+            } else {
+                return '';
+            }
+        }
+
+        function _try(func, fallbackValue = null) {
+            try {
+                const value = func();
+                return (value === null || value === undefined) ? fallbackValue : value;
+            } catch (e) {
+                return fallbackValue;
+            }
         }
     }
 }    
