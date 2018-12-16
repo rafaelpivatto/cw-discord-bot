@@ -28,7 +28,7 @@ module.exports = class HelpCommand extends Command {
         msg.delete();
 
         if (!process.env.RULE_MODERATOR) return;
-        if (!msg.member.roles.find('name', process.env.RULE_MODERATOR)) return;
+        if (!msg.member.roles.find(val => val.name === process.env.RULE_MODERATOR)) return;
         
         msg.channel.send({'embed': new RichEmbed()
             .setColor(wingColor)

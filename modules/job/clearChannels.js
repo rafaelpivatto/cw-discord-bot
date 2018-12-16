@@ -15,7 +15,7 @@ exports.execute = (client) => {
 
             if (!process.env.GUILD_ID || !process.env.CHANNELS_TO_CLEAR) return;
 
-            const guild = client.guilds.find('id', process.env.GUILD_ID);
+            const guild = client.guilds.find(val => val.id === process.env.GUILD_ID);
 
             if (!guild) return;
 
@@ -23,7 +23,7 @@ exports.execute = (client) => {
 
             const channels = process.env.CHANNELS_TO_CLEAR.split('|');
             for(let c of channels) {
-                const channel = guild.channels.find('name', c);
+                const channel = guild.channels.find(val => val.name === c);
                 
                 if (channel && channel.type === 'text') {
                     //console.log('teste', channel);

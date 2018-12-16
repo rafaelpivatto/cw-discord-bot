@@ -23,12 +23,12 @@ exports.execute = (client) => {
                 logger.warn(logPrefix + logName + ' not NEWSLETTER_CHANNEL configured.');
                 return;
             }
-            const guild = client.guilds.find('id', process.env.GUILD_ID);
+            const guild = client.guilds.find(val => val.id === process.env.GUILD_ID);
             if (!guild) return;
 
             logger.info(logName + ' started...');
 
-            const channel = guild.channels.find('name', process.env.NEWSLETTER_CHANNEL);
+            const channel = guild.channels.find(val => val.name === process.env.NEWSLETTER_CHANNEL);
                     
             if (channel) {
                 const query = {_id: 'NEWSLETTER'}

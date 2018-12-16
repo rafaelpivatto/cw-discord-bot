@@ -13,6 +13,7 @@ module.exports = class PingCommand extends Command {
             name: 'cwping',
             group: 'status',
             memberName: 'ping',
+            aliases: ['ping'],
             description: 'Ping CW bot',
             guildOnly: true,
             patterns: [new RegExp('[a-zA-Z]')]

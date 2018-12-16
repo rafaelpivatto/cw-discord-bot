@@ -24,12 +24,14 @@ exports.generate = (logPrefix, callback) => {
 
     usersJoinAndLeft.get(logName, (err, data) => {
         if (err) {
-            logger.error(logName + ' Error on retrieving informations', {'error': error});
+            logger.error(logName + ' Error on retrieving informations', {'error': err});
             callback('Houve um erro ao gerar o gráfico, tente novamente em breve, Fly safe, CMDR!');
+            return;
         }
         if (!data || data.length === 0) {
-            logger.error(logName + ' Error on retrieving informations', {'error': error});
+            logger.error(logName + ' Error on retrieving informations', {'error': err});
             callback('Nenhum dado foi encontrado para gerar o gráfico.');
+            return;
         }
 
         const dataTraces = getTraces(data);

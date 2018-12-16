@@ -10,7 +10,7 @@ exports.do = function(logPrefix, options, isJson, callback) {
         options = {};
     }
     options.jar = cookieJar;
-    logger.info(`${logPrefix} ${logName} Request with options= ${options}`);
+    logger.info(`${logPrefix} ${logName} Request with options= ${JSON.stringify(options)}`);
     
     request(options, function (error, response, body) {
         if (error) {

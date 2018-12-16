@@ -25,7 +25,7 @@ module.exports = class HelpCommand extends Command {
         utils.logMessageUserExecuteCommand(logName, msg);
 
         if (!process.env.RULE_MODERATOR) return;
-        if (!msg.member.roles.find('name', process.env.RULE_MODERATOR)) return;
+        if (!msg.member.roles.find(val => val.name === process.env.RULE_MODERATOR)) return;
         
         if (!args || args === '') {
             logger.warn(logName + ' Command without args');
@@ -45,7 +45,7 @@ module.exports = class HelpCommand extends Command {
                 errorMessage.sendSpecificClientErrorMessage(msg, 'Os campos "message" e "channelName" são obrigatórios.\n');
                 return msg.message.channel.send(getExample());
             }
-            channel = msg.client.channels.find('name', messageData.channelName);
+            channel = msg.client.channels.find(val => val.name === messageData.channelName);
             if (!channel) {
                 logger.warn(logName + ' channel not found');
                 errorMessage.sendSpecificClientErrorMessage(msg, 'Os campos "message" e "channelName" são obrigatórios.\n');

@@ -10,7 +10,7 @@ exports.execute = function(client) {
 
     if (!process.env.GUILD_ID || !process.env.ACCCEPTANCE_RULE || !process.env.USER_PRESENTATION_CHANNEL) return;
 
-    const guild = client.guilds.find('id', process.env.GUILD_ID);
+    const guild = client.guilds.find(val => val.id === process.env.GUILD_ID);
     if (!guild) return;
     
     client.on('guildMemberAdd', (member) => {
@@ -32,9 +32,9 @@ exports.execute = function(client) {
                 member.addRole(role, 'added by bot.')
             }
             
-            const channel = guild.channels.find('name', process.env.USER_PRESENTATION_CHANNEL);
+            const channel = guild.channels.find(val => val.name === process.env.USER_PRESENTATION_CHANNEL);
             if (channel) {
-                const rulesChannel = client.channels.find('name', process.env.RULES_CHANNEL);
+                const rulesChannel = client.channels.find(val => val.name === process.env.RULES_CHANNEL);
                 let rulesText = 'regras';
                 if (rulesChannel) {
                     rulesText = '<#' + rulesChannel.id + '>';

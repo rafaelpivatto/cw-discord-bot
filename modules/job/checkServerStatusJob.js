@@ -24,7 +24,7 @@ exports.execute = (client) => {
 
             if (!process.env.GUILD_ID || !process.env.SERVER_STATUS_CHANNEL) return;
 
-            const guild = client.guilds.find('id', process.env.GUILD_ID);
+            const guild = client.guilds.find(val => val.id === process.env.GUILD_ID);
 
             if (!guild) return;
             
@@ -44,7 +44,7 @@ exports.execute = (client) => {
                         if (lastOneNotify.status !== currentServerStatus.status &&
                             getDate(lastOneNotify.lastUpdate) < getDate(currentServerStatus.lastUpdate)) {
                             
-                            const channel = guild.channels.find('name', process.env.SERVER_STATUS_CHANNEL);
+                            const channel = guild.channels.find(val => val.name === process.env.SERVER_STATUS_CHANNEL);
                             if (channel) {
                                 
                                 if (lastOneNotify.message === 'Unknown') {

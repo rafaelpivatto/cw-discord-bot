@@ -28,12 +28,12 @@ exports.execute = (client) => {
 
             if (!process.env.GUILD_ID || !process.env.GALNET_INFO_CHANNEL) return;
 
-            const guild = client.guilds.find('id', process.env.GUILD_ID);
+            const guild = client.guilds.find(val => val.id === process.env.GUILD_ID);
 
             if (!guild) return;
             
             logger.info(logName + ' started...');
-            const channel = guild.channels.find('name', process.env.GALNET_INFO_CHANNEL);
+            const channel = guild.channels.find(val => val.name === process.env.GALNET_INFO_CHANNEL);
                     
             if (channel) {
                 const query = {_id: 'GALNET_INFO'}
