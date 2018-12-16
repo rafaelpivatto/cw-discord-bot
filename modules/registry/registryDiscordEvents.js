@@ -39,12 +39,12 @@ exports.execute = function(client) {
                 if (rulesChannel) {
                     rulesText = '<#' + rulesChannel.id + '>';
                 }
-                return channel.send('<@' + member.user.id + '>, Bem-vindo a **Cobra Wing**, ' + 
-                    'aqui é a sala onde a galera conversa sobre Elite Dangerous.\n' + 
-                    'Nosso grupo privado no Elite é o **COBRA BR**' + 
-                    ', se precisar de ajuda para entrar digite !grupoprivado\n' +
+                return channel.send('Olá <@' + member.user.id + '>, seja bem-vindo(a) a **Cobra Wing**.\n' + 
+                    'No Elite, nosso grupo privado é: **COBRA BR** e nosso esquadrão: *COBRA WING*,' + 
+                    'se precisar de ajuda para entrar digite !grupoprivado\n' +
+                    'Nosso link do Inara: <https://inara.cz/wing/163>\n'+
                     'Não esqueça de ler as ' + rulesText + ' e quaisquer dúvidas é ' +
-                    'só perguntar ou digitar !cwajuda :wink:\n' +
+                    'só perguntar ou digitar !ajuda :wink:\n' +
                     'Fly safe, commander!');
             }
         }, 1000);        

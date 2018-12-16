@@ -11,7 +11,7 @@ const logName = '[ServerStatus]';
 const doubleWrapLine = '\n\n';
 const wingColor = '#f00000';
 
-module.exports = class PingCommand extends Command {
+module.exports = class ServerStatusCommand extends Command {
     constructor(client) {
         super(client, {
             name: 'elitestatus',

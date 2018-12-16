@@ -53,11 +53,11 @@ exports.getFactionActivity = (logPrefix, callback) => {
             const lines = $('table tbody tr');
             const data = {
                 commanders: [],
-                members: $("div")[82].children[27].data, //TODO: fix error
-                ships: $("div")[82].children[30].data,
-                headQuarters: $("div")[82].children[40].children[0].data,
-                squadronName: $("div")[82].children[44].children[0].data,
-                squadronAge: $("div")[82].children[36].data
+                members: $("div")[82].children[1].children[49].data,
+                ships: $("div")[82].children[1].children[52].data,
+                squadronAge: $("div")[82].children[1].children[58].data,
+                headQuarters: $("div")[82].children[1].children[62].children[0].data,
+                squadronName: $("div")[82].children[1].children[66].children[0].data
             };
             if (lines && lines.length > 0) {
                 for(let i=0; i < lines.length; i++) {

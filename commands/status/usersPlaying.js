@@ -15,7 +15,7 @@ const wingUrlSite = 'http://elitedangerouscobra.com.br';
 const wingColor = '#f00000';
 let gameName;
 
-module.exports = class PingCommand extends Command {
+module.exports = class UsersPlayingCommand extends Command {
     constructor(client) {
         super(client, {
             name: 'cwjogando',

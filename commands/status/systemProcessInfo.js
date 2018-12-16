@@ -9,7 +9,7 @@ const utils = require('../../modules/utils.js');
 const logName = '[SystemProcessInfo]';
 const wingColor = '#f00000';
 
-module.exports = class PingCommand extends Command {
+module.exports = class SystemProcessInfoCommand extends Command {
     constructor(client) {
         super(client, {
             name: 'botinfo',

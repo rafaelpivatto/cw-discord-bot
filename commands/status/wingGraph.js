@@ -21,7 +21,7 @@ const DOWN = '⬇';
 const EQUAL = '⬌';
 let startGraphDate, endGraphDate;
 
-module.exports = class GraphCommand extends Command {
+module.exports = class WingGraphCommand extends Command {
 
     constructor(client) {
         super(client, {

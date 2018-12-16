@@ -9,7 +9,7 @@ const logName = '[TopInfluence]';
 const wingColor = '#f00000';
 const wingThumb = 'http://i.imgur.com/ro5DQx9.png';
 
-module.exports = class PingCommand extends Command {
+module.exports = class TopGuardiansCommand extends Command {
     constructor(client) {
         super(client, {
             name: 'topguardians',

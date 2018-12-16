@@ -16,7 +16,7 @@ const wingThumb = 'http://i.imgur.com/ro5DQx9.png';
 const wingUrlSite = 'http://elitedangerouscobra.com.br';
 const wingColor = '#f00000';
 
-module.exports = class EmbedCommand extends Command {
+module.exports = class WingStatusCommand extends Command {
     constructor(client) {
         super(client, {
             name: 'cwstatus',
