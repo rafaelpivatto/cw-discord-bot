@@ -24,7 +24,7 @@ module.exports = class SystemFactionsCommand extends Command {
     constructor(client) {
         super(client, {
             name: 'sistema',
-            group: 'status',
+            group: 'system',
             memberName: 'systemfactionsgraph',
             description: 'Retrieve status for system factions',
             guildOnly: true,

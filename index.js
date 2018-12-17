@@ -17,17 +17,18 @@ const client = new Commando.Client({
 
 logger.info(logName + ' =========> Initializing bot');
 
-client.registry.registerGroup('status');
-client.registry.registerGroup('help');
-client.registry.registerGroup('customcommands');
-client.registry.registerGroup('register');
 client.registry.registerGroup('administration');
+client.registry.registerGroup('customcommands');
+client.registry.registerGroup('help');
+client.registry.registerGroup('register');
+client.registry.registerGroup('status');
+client.registry.registerGroup('system');
 client.registry.registerCommandsIn(__dirname + '/commands');
 
 client.login(process.env.BOT_KEY);
 
 client.on('ready', (arg) => {
-    client.user.setPresence({ game: { name: '!cwajuda', type: 0 } });
+    client.user.setPresence({ game: { name: '!ajuda', type: 0 } });
     
     registryCustomCommands.execute(client);
     registryJobsExecution.execute(client);
