@@ -36,13 +36,17 @@ exports.execute = function(client) {
             if (channel) {
                 const rulesChannel = client.channels.find(val => val.name === process.env.RULES_CHANNEL);
                 const rulesText = rulesChannel ? `<#${rulesChannel.id}>` : 'regras';
-                return channel.send('Olá <@' + member.user.id + '>, seja bem-vindo(a) a **Cobra Wing**.\n' + 
-                    'No Elite, nosso grupo privado é: **COBRA BR** e nosso esquadrão: **COBRA WING**.\n' + 
-                    'Se precisar de ajuda para entrar digite !grupoprivado\n' +
+                channel.send('Olá <@' + member.user.id + '>, seja bem-vindo(a) a **Cobra Wing**.\n' + 
+                    'No Elite, nosso grupo privado é: **COBRA BR** e nosso esquadrão: **COBRA WING [CWBR]**.\n' + 
+                    'Se não souber como fazer isso digite !grupoprivado e/ou !esquadrao\n' +
                     'Nosso grupo no Inara: <https://inara.cz/wing/163>\n'+
                     'Não esqueça de ler as ' + rulesText + ' e quaisquer dúvidas é ' +
                     'só perguntar ou digitar !ajuda :wink:\n' +
-                    'Fly safe, commander!');
+                    'Fly safe, commander! (cuidado com o Mathot e o Disco)').then(postMessage => {
+
+                    postMessage.react('🎉');
+                        
+                }).catch(console.log);
             }
         }, 1000);
     });
