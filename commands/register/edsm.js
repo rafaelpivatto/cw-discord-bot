@@ -7,10 +7,10 @@ const errorMessage = require('../../modules/message/errorMessage.js');
 const getFromUrl = require('../../modules/gateway/getFromUrl.js');
 const mongoConnection = require('../../modules/connection/mongoConnection.js');
 
-const logName = '[CWAjuda]';
+const logName = '[EDSM]';
 const wingColor = '#f00000';
 
-module.exports = class HelpCommand extends Command {
+module.exports = class EdsmCommand extends Command {
     constructor(client) {
         super(client, {
             name: 'edsm',

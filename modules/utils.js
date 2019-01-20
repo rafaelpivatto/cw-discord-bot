@@ -29,10 +29,10 @@ exports.getUTCDateNow = function() {
 
 exports.getBRTDate = function(date) {
     const utc = exports.getUTCDate(date);
-    return new Date(utc.valueOf() + utc.getTimezoneOffset() * -60000)
+    return new Date(utc.valueOf() + utc.getTimezoneOffset() * -60000);
 };
 
-exports.getBRTDateNow = function(date) {
+exports.getBRTDateNow = function() {
     return exports.getBRTDate(new Date());
 };
 
@@ -51,18 +51,20 @@ exports.getUserNickName = function(msg) {
     } else {
         return 'user';
     }
-}
+};
 
 exports.getUserAvatar = function(msg) {
     if (msg.author.avatarURL) {
         const index = msg.author.avatarURL.indexOf('?');
         if (index > 0) {
             return msg.author.avatarURL.substring(0, index);
+        } else if (msg.author.avatarURL.indexOf('.gif') > 0) {
+            return msg.author.avatarURL;
         }
     } else {
         return msg.author.defaultAvatarURL;
     }
-}
+};
 
 exports.logMessageUserExecuteCommand = function(logName, msg) {
     let channel = '';
@@ -73,7 +75,7 @@ exports.logMessageUserExecuteCommand = function(logName, msg) {
     }
     logger.info(logName + ' Execute command ' + msg.command.name + ' by user = ' + exports.getUserNickName(msg) + 
         ' #' + msg.message.author.discriminator + channel);
-}
+};
 
 exports.removeDiacritics = function(str) {
     const defaultDiacriticsRemovalMap = [
@@ -171,6 +173,6 @@ exports.removeDiacritics = function(str) {
     }
     str = str.replace(/'/g, '').replace(/"/g, '');
     return str;
-}
+};
 
 module.exports = exports;

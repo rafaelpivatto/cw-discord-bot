@@ -1,7 +1,6 @@
 const logger = require('heroku-logger');
 
 const mongoConnection = require('../connection/mongoConnection.js');
-const utils = require('../utils.js');
 
 const logName = '[RegistryUserWelcome] ';
 
@@ -29,7 +28,7 @@ exports.execute = function(client) {
             if (!role) {
                 logger.error(logName + ' Role not found to apply => ' + process.env.ACCCEPTANCE_RULE);
             } else {
-                member.addRole(role, 'added by bot when member joined.')
+                member.addRole(role, 'added by bot when member joined.');
             }
             
             const channel = guild.channels.find(val => val.name === process.env.USER_PRESENTATION_CHANNEL);
@@ -61,7 +60,7 @@ exports.execute = function(client) {
             };
             mongoConnection.saveOrUpdate(logName, data, 'userLeft', () => {});
         }, 1000);        
-    })
+    });
 };
 
 module.exports = exports;
