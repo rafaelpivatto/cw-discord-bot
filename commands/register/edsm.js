@@ -28,7 +28,11 @@ module.exports = class EdsmCommand extends Command {
         if (!args || args === '') {
             logger.info(logName + ' invalid association to edsm: ');
             return errorMessage.sendSpecificClientErrorMessage(msg, 
-                'Para associar seu usuário do EDSM no discord, execute o comando !edsm nome_do_comander ou !edsm link_do_edsm', ' ');
+                'Para associar seu usuário do EDSM no discord, execute o comando !edsm nome_do_comander ou !edsm link_do_edsm\n\n' +
+                'Após esse procedimeno você poderá consultar usando o comando !cmdr @seu_usuario_discord\n\n' +
+                '* Não esqueça de deixar o perfil público no EDSM (imagem abaixo)',
+                ' ', 'https://i.imgur.com/H6qW6cQ.png'
+            );
         }
         let commanderName = args;
         if (args.indexOf('edsm.net') !== -1) {
@@ -48,7 +52,10 @@ module.exports = class EdsmCommand extends Command {
             if (json.msgnum === 203) {
                 logger.info(logName + ' commander not found: ' + commanderName);
                 return errorMessage.sendSpecificClientErrorMessage(msg, 
-                    'O perfil do comandante não foi encontrado no EDSM, verifique se o nome ou URL estão corretos.');
+                    'O perfil do comandante não foi encontrado no EDSM, verifique se o nome ou URL estão corretos.\n\n' +
+                    '* Não esqueça de deixar o perfil público no EDSM (imagem abaixo)',
+                    ' ', 'https://i.imgur.com/H6qW6cQ.png'
+                );
             }
 
             if (!json.system) {

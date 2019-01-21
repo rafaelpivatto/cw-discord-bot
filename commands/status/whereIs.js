@@ -117,7 +117,11 @@ module.exports = class WherIsCommand extends Command {
                 if (!data || data.length === 0) {
                     logger.error(logName + ' User not associated', {'error': error});
                     return errorMessage.sendSpecificClientErrorMessage(msg, 
-                        'O usuário ' + args + ' não tem perfil do discord vinculado ao EDSM.'
+                        'O usuário ' + args + ' não tem perfil do discord vinculado ao EDSM.\n\n' +
+                        'Para associar seu usuário do EDSM no discord, execute o comando !edsm nome_do_comander ou !edsm link_do_edsm.\n\n' +
+                        'Após esse procedimeno você poderá consultar usando o comando !cmdr @seu_usuario_discord\n\n' +
+                        '* Não esqueça de deixar o perfil público no EDSM (imagem abaixo)',
+                        '', 'https://i.imgur.com/H6qW6cQ.png' 
                     );
                 } else {
                     findCommanderInfo(data[0].commanderName);
@@ -148,13 +152,21 @@ module.exports = class WherIsCommand extends Command {
                 if (json.msgnum === 203) {
                     logger.info(logName + ' commander not found: ' + commanderName);
                     return errorMessage.sendSpecificClientErrorMessage(msg, 
-                        'O comandante **"' + args + '"**não foi encontrado no EDSM, verifique se o nome está correto.');
+                        'O comandante **"' + args + '"** não foi encontrado no EDSM, verifique se o nome está correto.\n\n' +
+                        'Para associar seu usuário do EDSM no discord, execute o comando !edsm nome_do_comander ou !edsm link_do_edsm.\n' +
+                        'Após esse procedimeno você poderá consultar usando o comando !cmdr @seu_usuario_discord\n\n' +
+                        '* Não esqueça de deixar o perfil público no EDSM (imagem abaixo)',
+                        '', 'https://i.imgur.com/H6qW6cQ.png' 
+                    );
                 }
 
                 if (!json.system) {
                     logger.info(logName + ' commander don\'t have public profile: ' + commanderName);
                     return errorMessage.sendSpecificClientErrorMessage(msg, 
-                        'O comandante **"' + args + '"**não tem perfil público no EDSM.');
+                        'O comandante **"' + args + '"**não tem perfil público no EDSM.\n\n' +
+                        'Para deixar o perfil público no EDSM siga as recomendações abaixo:',
+                        '', 'https://i.imgur.com/H6qW6cQ.png'
+                    );
                 }
 
                 const embed = new RichEmbed()
