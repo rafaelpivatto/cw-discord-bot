@@ -14,8 +14,7 @@ exports.do = function(logPrefix, options, isJson, callback) {
     
     request(options, function (error, response, body) {
         if (error) {
-            logger.error(logPrefix + logName + ' error to get server status by url: ' + url, 
-                        {'error': error});
+            logger.error(logPrefix + logName + ' error to get server status by url: ', {'error': error});
             callback(error);
             return;
         }
