@@ -11,12 +11,12 @@ const wingColor = '#f00000';
 const tags = [
     {
         name: 'X-ONE',
-        aliases: ['x-one', 'xone', 'xbox'],
+        aliases: ['x-one', 'xone', 'x-box', 'xbox'],
         description: 'Jogadores de Xbox One',
     },
     {
         name: 'PS4',
-        aliases: ['ps4', 'ps-4', 'playstation'],
+        aliases: ['ps4', 'ps-4', 'playstation', 'play', 'play station'],
         description: 'Jogadores de PS4',
     },
     {
