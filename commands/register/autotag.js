@@ -12,27 +12,29 @@ const tags = [
     {
         name: 'X-ONE',
         aliases: ['x-one', 'xone', 'x-box', 'xbox'],
-        description: 'Jogadores de Xbox One',
+        description: 'Jogadores de Xbox One.',
     },
     {
         name: 'PS4',
         aliases: ['ps4', 'ps-4', 'playstation', 'play', 'play station'],
-        description: 'Jogadores de PS4',
+        description: 'Jogadores de PS4.',
     },
     {
         name: 'PC',
         aliases: ['pc', 'computador'],
-        description: 'Jogadores de PC',
+        description: 'Jogadores de PC.',
+        doubleWrapper: true,
     },
     {
         name: 'Fuel Rat',
         aliases: ['fuel rat', 'fuelrat', 'rato'],
-        description: 'Quem deseja ajudar como Fuel Rat',
+        description: 'Quem deseja ajudar como Fuel Rat.',
     },
     {
         name: 'Orientador',
         aliases: ['orientador'],
-        description: 'Quem deseja ajudar jogadores novatos',
+        description: 'Quem deseja ajudar jogadores novatos.',
+        doubleWrapper: true,
     },
     {
         description: '',
@@ -69,6 +71,7 @@ const tags = [
         name: 'Uber',
         aliases: ['uber', 'transportador', 'transporter'],
         description: 'Porque transportar passageiros é legal.',
+        doubleWrapper: true,
     },
     {
         name: 'Império',
@@ -78,17 +81,17 @@ const tags = [
     {
         name: 'Aliança',
         aliases: ['alianca', 'aliança', 'alliance', 'aliance'],
-        description: 'Se você é aliado ao power play da aliança',
+        description: 'Se você é aliado ao power play da aliança.',
     },
     {
         name: 'Federação',
         aliases: ['federaçao', 'federacao', 'federation'],
-        description: 'Se você é aliado ao power play da federal',
+        description: 'Se você é aliado ao power play da federal.',
     },
     {
         name: 'Independente',
         aliases: ['independente', 'independent'],
-        description: 'Se você é aliado ao power play independente',
+        description: 'Se você é aliado ao power play independente.',
     },
 ];
 
@@ -120,6 +123,9 @@ module.exports = class AutotagCommand extends Command {
                 'execute o comando !autotag seguido de umas das opções abaixo: \n\n';
             tags.forEach(tag => {
                 description += `**${tag.name}** - *${tag.description}*\n`;
+                if (tag.doubleWrapper) {
+                    description += '\n';
+                }
             });
             embed.setDescription(description);
             logger.info(`${logName} args not found!`);
