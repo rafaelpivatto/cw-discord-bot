@@ -28,18 +28,19 @@ const tags = [
     {
         name: 'Fuel Rat',
         aliases: ['fuel rat', 'fuelrat', 'rato'],
-        description: 'Quem deseja ajudar como Fuel Rat.',
+        description: 'Quem deseja ajudar como Fuel Rat. (sujeito a moderação)',
     },
     {
         name: 'Orientador',
         aliases: ['orientador'],
-        description: 'Quem deseja ajudar jogadores novatos.',
+        description: 'Quem deseja ajudar jogadores novatos. (sujeito a moderação)',
         doubleWrapper: true,
     },
     {
         description: '',
         name: 'Caçador Thargoid',
-        aliases: ['cacador thargoid', 'cacadorthargoid', 'caçador thargoid', 'caçadorthargoid', 'thargoid hunter', 'thargoidhunter', 'cacador targoid'],
+        aliases: ['cacador thargoid', 'cacador de thargoid', 'cacadorthargoid', 'caçador thargoid', 
+                  'caçador de thargoid', 'caçadorthargoid', 'thargoid hunter', 'thargoidhunter', 'cacador targoid'],
         description: 'Se você é um legítimo caçador de thargoid',
     },
     {
@@ -64,7 +65,8 @@ const tags = [
     },
     {
         name: 'Caçador Recompensas',
-        aliases: ['cacador recompensas', 'caçador recompensas', 'cacadorrecompensas', 'caçadorrecompensas', 'bounty hunter', 'bountyhunter'],
+        aliases: ['cacador recompensas', 'cacador de recompensas', 'caçador recompensas', 'caçador de recompensas', 
+                  'cacadorrecompensas', 'caçadorrecompensas', 'bounty hunter', 'bountyhunter'],
         description: 'Para um caçador de recompensas, quanto vale aquela cabeça?',
     },
     {
@@ -109,6 +111,11 @@ module.exports = class AutotagCommand extends Command {
 
     async run(msg, args) {
         utils.logMessageUserExecuteCommand(logName, msg);
+
+        if (!AutotagCommand.checkRequirements(msg)) {
+            return;
+        }
+
         let description = '';
         let embed = new RichEmbed()
                 .setColor(wingColor)
@@ -119,8 +126,8 @@ module.exports = class AutotagCommand extends Command {
 
         if (!args || args === '') {
             
-            description += 'Para adicionar ou remover uma tag, ' +
-                'execute o comando !autotag seguido de umas das opções abaixo: \n\n';
+            description += 'Para **adicionar** ou **remover** uma tag ao seu perfil do discord, ' +
+                'execute o comando !autotag seguido de umas das opções abaixo na sala <#309828038286114816>: \n\n';
             tags.forEach(tag => {
                 description += `**${tag.name}** - *${tag.description}*\n`;
                 if (tag.doubleWrapper) {
@@ -177,5 +184,32 @@ module.exports = class AutotagCommand extends Command {
         embed.setDescription(description);
         logger.error(`${logName} tagFound or role not found`, { 'tagFound': tagFound, 'role': role });
         return msg.embed(embed);
+    }
+
+    static isModeratorUser(msg) {
+        if (process.env.RULE_MODERATOR) {
+            return msg.member.roles.find('name', process.env.RULE_MODERATOR);
+        }
+        return false;
+    }
+
+    static checkRequirements(msg) {
+        const textChannelAuthorized = process.env.MISCELLANEOUS_TEXT_CHANNEL;
+        const userTextChannelCommand = msg.message.channel.name;
+
+        if (AutotagCommand.isModeratorUser(msg)) {
+            return true;
+        }
+
+        if (textChannelAuthorized !== userTextChannelCommand) {
+            msg.delete();
+            errorMessage.sendSpecificClientErrorMessage(msg, 
+                'Por favor, execute esse comando na sala **<#' + 
+                msg.client.channels.find('name', textChannelAuthorized).id + '>**', ' ');
+            logger.info(logName + ' command executed out of channel');
+            return false;
+        }
+
+        return true;
     }
 };
