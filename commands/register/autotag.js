@@ -13,87 +13,118 @@ const tags = [
         name: 'X-ONE',
         aliases: ['x-one', 'xone', 'x-box', 'xbox'],
         description: 'Jogadores de Xbox One.',
+        incompatibleList: [],
     },
     {
         name: 'PS4',
         aliases: ['ps4', 'ps-4', 'playstation', 'play', 'play station'],
         description: 'Jogadores de PS4.',
+        incompatibleList: [],
     },
     {
         name: 'PC',
         aliases: ['pc', 'computador'],
         description: 'Jogadores de PC.',
+        incompatibleList: [],
         doubleWrapper: true,
     },
     {
         name: 'Fuel Rat',
         aliases: ['fuel rat', 'fuelrat', 'rato'],
         description: 'Quem deseja ajudar como Fuel Rat. (sujeito a moderação)',
+        incompatibleList: [],
     },
     {
         name: 'Orientador',
         aliases: ['orientador'],
         description: 'Quem deseja ajudar jogadores novatos. (sujeito a moderação)',
+        incompatibleList: [],
         doubleWrapper: true,
     },
     {
         description: '',
+        incompatibleList: [],
         name: 'Caçador Thargoid',
         aliases: ['cacador thargoid', 'cacador de thargoid', 'cacadorthargoid', 'caçador thargoid', 
                   'caçador de thargoid', 'caçadorthargoid', 'thargoid hunter', 'thargoidhunter', 'cacador targoid'],
         description: 'Se você é um legítimo caçador de thargoid',
+        incompatibleList: ['Adorador Thargoid'],
+    },
+    {
+        description: '',
+        incompatibleList: [],
+        name: 'Adorador Thargoid',
+        aliases: ['adorador thargoid', 'adoradorthargoid', 'thargoid cult', 'thargoidcult'],
+        description: 'Se ama os thargoids e quer ser um...',
+        incompatibleList: ['Caçador Thargoid'],
     },
     {
         name: 'Explorador',
         aliases: ['explorador', 'explorer'],
         description: 'Se explorar é uma arte e a galáxia é pequena.',
+        incompatibleList: [],
     },
     {
         name: 'Minerador',
         aliases: ['minerador', 'mineirador', 'miner'],
         description: 'Se minerar é sua praia.',
+        incompatibleList: [],
     },
     {
         name: 'Comerciante',
         aliases: ['comerciante', 'comerciador', 'trader'],
         description: 'Comprar e vender para ser um grande comerciante.',
+        incompatibleList: [],
     },
     {
         name: 'Pirata',
         aliases: ['pirata', 'pirate'],
         description: 'se você é um pirata!? yarr!',
+        incompatibleList: ['Caçador Recompensas', 'Mercenário'],
     },
     {
         name: 'Caçador Recompensas',
         aliases: ['cacador recompensas', 'cacador de recompensas', 'caçador recompensas', 'caçador de recompensas', 
                   'cacadorrecompensas', 'caçadorrecompensas', 'bounty hunter', 'bountyhunter'],
         description: 'Para um caçador de recompensas, quanto vale aquela cabeça?',
+        incompatibleList: ['Pirata', 'Mercenário'],
+    },
+    {
+        name: 'Mercenário',
+        aliases: ['mercenário', 'mercenario', 'mercenary'],
+        description: 'Se vc faz qualquer coisa por uns trocados.',
+        incompatibleList: ['Pirata', 'Caçador Recompensas'],
     },
     {
         name: 'Uber',
         aliases: ['uber', 'transportador', 'transporter'],
         description: 'Porque transportar passageiros é legal.',
+        incompatibleList: [],
         doubleWrapper: true,
     },
     {
         name: 'Império',
         aliases: ['imperio', 'empire'],
         description: 'Se você é aliado ao power play imperial.',
+        incompatibleList: ['Aliança', 'Federação', 'Independente'],
     },
     {
         name: 'Aliança',
         aliases: ['alianca', 'aliança', 'alliance', 'aliance'],
         description: 'Se você é aliado ao power play da aliança.',
+        incompatibleList: ['Império', 'Federação', 'Independente'],
     },
     {
         name: 'Federação',
         aliases: ['federaçao', 'federacao', 'federation'],
         description: 'Se você é aliado ao power play da federal.',
+        incompatibleList: ['Império', 'Aliança', 'Independente'],
     },
     {
         name: 'Independente',
         aliases: ['independente', 'independent'],
         description: 'Se você é aliado ao power play independente.',
+        incompatibleList: ['Império', 'Aliança', 'Federação'],
     },
 ];
 
@@ -145,6 +176,18 @@ module.exports = class AutotagCommand extends Command {
         const role = tagFound ? member.guild.roles.filter(role => role.name === tagFound.name).first() : undefined;
         
         if (role) {
+            const userConflictRoles = member.roles.some(r=> tagFound.incompatibleList.indexOf(r.name) >= 0);
+
+            if (userConflictRoles) {
+                const description = `Desculpe, mas não é possível adicionar a tag **${tagFound.name}**... 🚫\n` +
+                    `Você tem outra tag (${tagFound.incompatibleList.join(' ou ')}) que é incompatível com essa nova.\n` +
+                    'Remova a tag incompatível antes de adicionar a nova.'
+                embed.setTitle('Ops! algo deu errado.')
+                embed.setDescription(description);
+                logger.info(`${logName} user conflict roles`, { 'tagFound': tagFound, 'roles': member.roles });
+                return msg.embed(embed);
+            }
+
             const userRoleFound = member.roles.filter(role => role.name === tagFound.name);
             const isAdd = userRoleFound && userRoleFound.size === 0;
 
@@ -152,11 +195,11 @@ module.exports = class AutotagCommand extends Command {
 
             let promise;
             if(isAdd) {
-                description += '__adicionada__!'
+                description += '__adicionada__! 👍'
                 logger.info(`${logName} role added! => ${role.name}`);
                 promise = member.addRole(role, 'added by command !autotag');
             } else {
-                description += '__removida__!'
+                description += '__removida__! 👎'
                 logger.info(`${logName} role removed! => ${role.name}`);
                 promise = member.removeRole(role, 'removed by command !autotag');
             }
@@ -178,7 +221,7 @@ module.exports = class AutotagCommand extends Command {
     }
 
     static errorMessage(msg, description, tagFound, role, embed) {
-        description += 'A tag não pode ser adicionada, verifique o nome dela e tente novamente, ' + 
+        description += '🚧 A tag não pode ser adicionada 🚧\nVerifique o nome dela e tente novamente, ' + 
             'qualquer dúvida, chame algum moderador.';
         embed.setTitle('Ops! algo deu errado.')
         embed.setDescription(description);
@@ -204,7 +247,7 @@ module.exports = class AutotagCommand extends Command {
         if (textChannelAuthorized !== userTextChannelCommand) {
             msg.delete();
             errorMessage.sendSpecificClientErrorMessage(msg, 
-                'Por favor, execute esse comando na sala **<#' + 
+                'Por favor, execute o comando !autotag na sala **<#' + 
                 msg.client.channels.find('name', textChannelAuthorized).id + '>**', ' ');
             logger.info(logName + ' command executed out of channel');
             return false;
