@@ -7,9 +7,10 @@
     "npm": "6.4.1"
   },
   "scripts": {
-    "start": "node index.js --harmony-async-await"
+    "start": "node app.js --harmony-async-await",
+    "debug": "node --nolazy --inspect-brk=9229 app.js"
   },
-  "main": "index.js",
+  "main": "app.js",
   "author": "",
   "license": "ISC",
   "dependencies": {
@@ -29,6 +30,7 @@
     "mkdirp": "^0.5.1",
     "mongodb": "^2.2.30",
     "node-schedule": "^1.2.3",
+    "path": "^0.12.7",
     "pc-stats": "0.0.7",
     "plotly": "^1.0.6",
     "remove-array-items": "^1.0.0",

@@ -1,0 +1,26 @@
+body {
+    background-color: #36393f;
+}
+
+.container {
+    font-family: 'Roboto', sans-serif;
+    color: white;
+}
+
+.title {
+    margin-top: 50px;
+}
+
+.join-area {
+    margin-top: 150px;
+}
+
+.btn-join {
+    background: #7289da;
+    color: white;
+}
+
+.btn-join:hover {
+    background: #4e5d94;
+    color: white;
+}
