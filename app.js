@@ -7,7 +7,9 @@ global.appRoot = path.resolve(__dirname);
 
 const registryCustomCommands = require('./modules/registry/registryCustomCommands.js');
 const registryJobsExecution = require('./modules/registry/registryJobsExecution.js');
-const registryEndPoints = require('./modules/registry/registryEndPoints.js');
+const registryExpress = require('./modules/registry/registryExpress.js');
+const registryBotEndPoints = require('./modules/registry/registryBotEndPoints.js');
+const registrySiteEndPoints = require('./modules/registry/registrySiteEndPoints.js');
 const registryDiscordEvents = require('./modules/registry/registryDiscordEvents.js');
 const registryControllerToImageContest = require('./modules/registry/registryControllerToImageContest.js');
 
@@ -34,7 +36,10 @@ client.on('ready', () => {
     
     registryCustomCommands.execute(client);
     registryJobsExecution.execute(client);
-    registryEndPoints.execute();
+    registryExpress.execute((app) => {
+        registryBotEndPoints.execute(app);
+        registrySiteEndPoints.execute(app);
+    });
     registryDiscordEvents.execute(client);
     registryControllerToImageContest.execute(client);
 

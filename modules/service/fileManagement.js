@@ -8,7 +8,7 @@ exports.loadFile = function(logPrefix, res, fileName) {
     logger.info(logPrefix + logName + ' Starting load file = ' + fileName);
     let dir = __dirname.replace('\\modules\\service', '');
     dir = dir.replace('/modules/service', '');
-    fs.readFile(dir + fileName, function (error, dt) {
+    fs.readFile(dir + fileName, function (error) {
         if (error) {
             logger.error(logPrefix + logName + ' Error to load file ', {'error': error});
             return res.status(404).send('Desculpe, essa imagem não está mais disponível!');
