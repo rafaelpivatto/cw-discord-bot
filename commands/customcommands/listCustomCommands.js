@@ -71,7 +71,7 @@ module.exports = class GetCustomCommand extends Command {
         }
 
         function getDescription(item) {
-            if (item.description && String(item.description).trim() === '') {
+            if (item.description && String(item.description).trim() !== '') {
                 return  `- *${String(item.description).trim()}*`;
             } else {
                 return '';
