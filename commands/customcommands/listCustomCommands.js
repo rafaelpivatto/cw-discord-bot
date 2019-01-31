@@ -43,7 +43,7 @@ module.exports = class GetCustomCommand extends Command {
             let description = '';
 
             for (let item of data) {
-                description += `**!${item._id}** ${getDescription(item)}{$wrapLine}`;
+                description += `**!${item._id}** ${getDescription(item)}${wrapLine}`;
             }
             let embed = new RichEmbed()
                 .setColor(wingColor)
