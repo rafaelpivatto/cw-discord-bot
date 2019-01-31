@@ -43,7 +43,7 @@ module.exports = class GetCustomCommand extends Command {
             let description = '';
 
             for (let item of data) {
-                description += '**!' + item._id + '** - *' + String(item.description).trim() + '*' + wrapLine;
+                description += `**!${item._id}** ${getDescription(item)}{$wrapLine}`;
             }
             let embed = new RichEmbed()
                 .setColor(wingColor)
@@ -67,6 +67,14 @@ module.exports = class GetCustomCommand extends Command {
                 return 0;
             } else {
                 return (a._id < b._id) ? -1 : 1;
+            }
+        }
+
+        function getDescription(item) {
+            if (item.description && String(item.description).trim() === '') {
+                return  `- *${String(item.description).trim()}*`;
+            } else {
+                return '';
             }
         }
         
