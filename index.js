@@ -32,7 +32,7 @@ client.on('ready', (arg) => {
     
     registryCustomCommands.execute(client);
     registryJobsExecution.execute(client);
-    registryEndPoints.execute();
+    registryEndPoints.execute(client);
     registryDiscordEvents.execute(client);
     registryControllerToImageContest.execute(client);
 
