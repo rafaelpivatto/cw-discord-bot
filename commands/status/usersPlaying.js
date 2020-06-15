@@ -70,7 +70,7 @@ module.exports = class UsersPlayingCommand extends Command {
         topPlaying += ':frowning: Poxa, não estão jogando nada...';
       }
       if (otherPlaying > 0) {
-        topPlaying += '(' + otherPlaying + ') Jogando outros variados jogos...';
+        topPlaying += '(' + otherPlaying + ') Jogando outros jogos...';
       }
 
       let embed = new RichEmbed()

@@ -8,16 +8,19 @@ exports.getDiscordStatus = function (logPrefix, guild) {
   const members = guild.members.filter((member) => member.user.bot === false);
   const memberGamePresences = members
     .filter(
-      (m) => m.presence.status !== 'offline' && m.presence.activities.length > 0
+      (member) =>
+        member.presence.status !== 'offline' &&
+        member.presence.activities.length > 0
     )
-    .map((m) => m.presence.activities)
+    .map((member) => member.presence.activities)
     .map((activities) => {
       for (const activity of activities) {
         if (activity.type === 0) {
           return activity;
         }
       }
-    });
+    })
+    .filter((activity) => activity !== undefined);
 
   const infos = {
     games: [],
@@ -26,8 +29,9 @@ exports.getDiscordStatus = function (logPrefix, guild) {
     playingED:
       memberGamePresences.filter(
         (game) =>
-          game.name.indexOf('Elite') !== -1 && game.name.indexOf('Dangerous')
-      ).size || 0,
+          game.name.indexOf('Elite') !== -1 &&
+          game.name.indexOf('Dangerous') !== -1
+      ).length || 0,
   };
 
   memberGamePresences.forEach((game) => {
