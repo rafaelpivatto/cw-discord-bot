@@ -1,49 +1,50 @@
-const logger = require('heroku-logger')
+const logger = require('heroku-logger');
 
 const logName = '[DiscordStatus]';
 
-exports.getDiscordStatus = function(logPrefix, client) {
-    logger.info(logPrefix + logName + ' Starting get discord status');
-    
-    const infos = {
-        games: [],
-        playersRegistered: 0,
-        playersOnline: 0,
-        playingED: 0
-    };
-    const users = client.users,
-    keyArray = users.keyArray();
+exports.getDiscordStatus = function (logPrefix, guild) {
+  logger.info(logPrefix + logName + ' Starting get discord status');
 
-    for (var i = 0; i < keyArray.length; i++) {
-        const user = users.get(keyArray[i]);
-        if (user.bot) {
-            continue;
+  const members = guild.members.filter((member) => member.user.bot === false);
+  const memberGamePresences = members
+    .filter(
+      (m) => m.presence.status !== 'offline' && m.presence.activities.length > 0
+    )
+    .map((m) => m.presence.activities)
+    .map((activities) => {
+      for (const activity of activities) {
+        if (activity.type === 0) {
+          return activity;
         }
-        infos.playersRegistered++;
-        if (user.presence && user.presence.status && user.presence.status !== 'offline') {
-            infos.playersOnline++;
-        }
-        if (!user.presence || !user.presence.game || user.bot) {
-                continue;
-        }
-        let gameName = user.presence.game.name.replace(/:/g, '');
-        if (gameName.indexOf('Elite') != -1 && gameName.indexOf('Dangerous') != -1) {
-            infos.playingED++;
-        }
-        
-        let item = infos.games.find(x => x.name === gameName);
-        if (!item) {
-            infos.games.push({
-                name: gameName,
-                count: 1
-            });
-        } else {
-            item.count++; 
-        }
+      }
+    });
+
+  const infos = {
+    games: [],
+    playersRegistered: members.size,
+    playersOnline: members.filter((m) => m.presence.status !== 'offline').size,
+    playingED:
+      memberGamePresences.filter(
+        (game) =>
+          game.name.indexOf('Elite') !== -1 && game.name.indexOf('Dangerous')
+      ).size || 0,
+  };
+
+  memberGamePresences.forEach((game) => {
+    const gameName = game.name.replace(/:/g, '');
+    const gameFound = infos.games.find((i) => i.name === gameName);
+
+    if (gameFound) {
+      gameFound.count++;
+    } else {
+      infos.games.push({
+        name: gameName,
+        count: 1,
+      });
     }
+  });
 
-
-    return infos;
+  return infos;
 };
 
 module.exports = exports;
