@@ -5,7 +5,7 @@ const logName = '[DiscordStatus]';
 exports.getDiscordStatus = function (logPrefix, guild) {
   logger.info(logPrefix + logName + ' Starting get discord status');
 
-  if (guild.available) {
+  if (!guild.available) {
     return null;
   }
 
@@ -17,15 +17,16 @@ exports.getDiscordStatus = function (logPrefix, guild) {
     playersRegistered: members.size,
     playersOnline: membersOnline.size,
     playingED:
-      memberGamePresences.filter(
+    membersOnline.filter(
         (game) =>
+          game.name &&
           game.name.indexOf('Elite') !== -1 &&
           game.name.indexOf('Dangerous') !== -1
-      ).length || 0,
+      ).size || 0,
   };
 
-  const memberGamePresences = membersOnline
-    .filter((member) => member.presence.activities.length > 0)
+  membersOnline
+    .filter((member) => member.presence.activities && member.presence.activities.length > 0)
     .map((member) => {
       for (const activity of member.presence.activities) {
         if (activity && activity.type === 0) {

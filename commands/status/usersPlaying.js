@@ -32,7 +32,7 @@ module.exports = class UsersPlayingCommand extends Command {
 
     const infos = discordStatus.getDiscordStatus(logName, msg.guild);
 
-    if (!infos) {
+    if (!infos || infos.games.length === 0) {
       let embed = new RichEmbed()
         .setColor(wingColor)
         .setAuthor(utils.getUserNickName(msg), utils.getUserAvatar(msg))
