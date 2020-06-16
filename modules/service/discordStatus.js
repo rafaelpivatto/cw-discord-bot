@@ -16,13 +16,7 @@ exports.getDiscordStatus = function (logPrefix, guild) {
     games: [],
     playersRegistered: members.size,
     playersOnline: membersOnline.size,
-    playingED:
-    membersOnline.filter(
-        (game) =>
-          game.name &&
-          game.name.indexOf('Elite') !== -1 &&
-          game.name.indexOf('Dangerous') !== -1
-      ).size || 0,
+    playingED: 0,
   };
 
   membersOnline
@@ -37,6 +31,11 @@ exports.getDiscordStatus = function (logPrefix, guild) {
     .filter((activity) => activity !== undefined)
     .forEach((activity) => {
       const gameName = activity.name.replace(/:/g, '');
+      
+      if (gameName.indexOf('Elite') !== -1 && gameName.indexOf('Dangerous') !== -1) {
+        infos.playingED++;
+      }
+
       var existGame = infos.games.find(game => game.name === gameName);
       if (existGame) {
           existGame.count++;

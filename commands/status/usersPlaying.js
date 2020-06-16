@@ -33,13 +33,7 @@ module.exports = class UsersPlayingCommand extends Command {
     const infos = discordStatus.getDiscordStatus(logName, msg.guild);
 
     if (!infos || infos.games.length === 0) {
-      let embed = new RichEmbed()
-        .setColor(wingColor)
-        .setAuthor(utils.getUserNickName(msg), utils.getUserAvatar(msg))
-        .setTimestamp()
-        .setDescription('O bot tomou interdiction, aguarde um instante e tente ' +
-          'novamente, fly safe CMDR!');
-      return msg.embed(embed);
+      return errorMessage.sendClientErrorMessage(msg);
     }
 
     infos.games.sort(sortFunction);
@@ -52,7 +46,7 @@ module.exports = class UsersPlayingCommand extends Command {
         logger.error(logName + ' Error on retrieving informations', {
           error: error,
         });
-        return errorMessage.sendClientErrorMessage(msg);
+        //return errorMessage.sendClientErrorMessage(msg);
       }
 
       let topPlaying =
@@ -61,6 +55,7 @@ module.exports = class UsersPlayingCommand extends Command {
         otherPlaying = 0,
         totalPlaying = 0;
       for (let game in infos.games) {
+       
         countLines++;
         if (countLines < 16) {
           const g = infos.games[game];
@@ -105,17 +100,24 @@ module.exports = class UsersPlayingCommand extends Command {
             getPlayersLabel(infos.playingED) +
             '** jogando ' +
             gameName +
-            doubleWrapLine +
-            ':trophy: O recorde foi de **' +
-            getPlayersLabel(data.qtd) +
-            '** jogando **Elite: Dangerous** em ' +
-            dateFormat(utils.getBRTDate(data.date), 'dd/mm/yyyy') +
+            getRecordLabel(data) + 
             topPlaying
         );
       return msg.embed(embed);
     });
 
     //--- Methods ---
+
+    function getRecordLabel(data) {
+      if (data) {
+        return doubleWrapLine +
+          ':trophy: O recorde foi de **' +
+          getPlayersLabel(data.qtd) +
+          '** jogando **Elite: Dangerous** em ' +
+          dateFormat(utils.getBRTDate(data.date), 'dd/mm/yyyy');
+      }
+      return '';
+    }
 
     function getPlayersLabel(qtd) {
       switch (qtd) {
