@@ -5,27 +5,17 @@ const logName = '[DiscordStatus]';
 exports.getDiscordStatus = function (logPrefix, guild) {
   logger.info(logPrefix + logName + ' Starting get discord status');
 
+  if (guild.available) {
+    return null;
+  }
+
   const members = guild.members.filter((member) => member.user.bot === false);
-  const memberGamePresences = members
-    .filter(
-      (member) =>
-        member.presence.status !== 'offline' &&
-        member.presence.activities.length > 0
-    )
-    .map((member) => member.presence.activities)
-    .map((activities) => {
-      for (const activity of activities) {
-        if (activity.type === 0) {
-          return activity;
-        }
-      }
-    })
-    .filter((activity) => activity !== undefined);
+  const membersOnline = members.filter((m) => m.presence.status !== 'offline');
 
   const infos = {
     games: [],
     playersRegistered: members.size,
-    playersOnline: members.filter((m) => m.presence.status !== 'offline').size,
+    playersOnline: membersOnline.size,
     playingED:
       memberGamePresences.filter(
         (game) =>
@@ -34,19 +24,28 @@ exports.getDiscordStatus = function (logPrefix, guild) {
       ).length || 0,
   };
 
-  memberGamePresences.forEach((game) => {
-    const gameName = game.name.replace(/:/g, '');
-    const gameFound = infos.games.find((i) => i.name === gameName);
-
-    if (gameFound) {
-      gameFound.count++;
-    } else {
-      infos.games.push({
-        name: gameName,
-        count: 1,
-      });
-    }
-  });
+  const memberGamePresences = membersOnline
+    .filter((member) => member.presence.activities.length > 0)
+    .map((member) => {
+      for (const activity of member.presence.activities) {
+        if (activity && activity.type === 0) {
+          return activity;
+        }
+      }
+    })
+    .filter((activity) => activity !== undefined)
+    .forEach((activity) => {
+      const gameName = activity.name.replace(/:/g, '');
+      var existGame = infos.games.find(game => game.name === gameName);
+      if (existGame) {
+          existGame.count++;
+      } else {
+        infos.games.push({
+            name: gameName,
+            count: 1,
+        });
+      }
+    });
 
   return infos;
 };

@@ -31,6 +31,17 @@ module.exports = class UsersPlayingCommand extends Command {
     utils.logMessageUserExecuteCommand(logName, msg);
 
     const infos = discordStatus.getDiscordStatus(logName, msg.guild);
+
+    if (!infos) {
+      let embed = new RichEmbed()
+        .setColor(wingColor)
+        .setAuthor(utils.getUserNickName(msg), utils.getUserAvatar(msg))
+        .setTimestamp()
+        .setDescription('O bot tomou interdiction, aguarde um instante e tente ' +
+          'novamente, fly safe CMDR!');
+      return msg.embed(embed);
+    }
+
     infos.games.sort(sortFunction);
 
     lastSeenPlayers.getAndUpdate(logName, infos.playingED, function (
