@@ -15,8 +15,8 @@ module.exports = class HelpCommand extends Command {
         super(client, {
             name: 'cwajuda',
             group: 'help',
-            memberName: 'help',
-            aliases: ['cwhelp', 'help', 'ajuda'],
+            memberName: 'ajuda',
+            aliases: ['cwhelp', 'help', 'ajuda', 'cwajuda'],
             description: 'Help for CW bot',
             guildOnly: true,
             patterns: [new RegExp('[a-zA-Z]')]
