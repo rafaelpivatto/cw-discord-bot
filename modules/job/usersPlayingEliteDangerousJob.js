@@ -15,8 +15,18 @@ exports.execute = (client) => {
         schedule.scheduleJob('*/15 * * * *', () => {
             logger.info(logName + ' started...');
             
-            const infos = discordStatus.getDiscordStatus(logName, client);
-            lastSeenPlayers.getAndUpdate(logName, infos.playingED, () => {});
+            const guild = client.guilds.find(g => g.id === process.env.GUILD_ID);
+            if (guild) {
+                const infos = discordStatus.getDiscordStatus(logName, guild);
+                if (infos) {
+                    lastSeenPlayers.getAndUpdate(logName, infos.playingED, () => {});
+                } else {
+                    logger.error(logName + ' infos not found...');
+                }
+            } else {
+                logger.error(logName + ' guild not found...');
+            }
+            
         });
     }
 };

@@ -6,6 +6,7 @@ exports.getDiscordStatus = function (logPrefix, guild) {
   logger.info(logPrefix + logName + ' Starting get discord status');
 
   if (!guild.available) {
+    logger.error(logName + ' guild not available', guild);
     return null;
   }
 
