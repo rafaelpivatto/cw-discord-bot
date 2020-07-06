@@ -54,21 +54,21 @@ exports.execute = function (client) {
         member.addRole(role, 'added by bot when member joined.');
       }
 
-      const channel = guild.channels.find(
+      const channel = member.guild.channels.find(
         (val) => val.name === process.env.USER_PRESENTATION_CHANNEL
       );
       if (channel) {
-        const rulesChannel = client.channels.find(
+        const rulesChannel = member.guild.channels.find(
           (val) => val.name === process.env.RULES_CHANNEL
         );
         const rulesChannelText = rulesChannel
           ? `<#${rulesChannel.id}>`
           : '#regras';
 
-        const faqChannel = client.channels.find((val) => val.name === 'faq');
+        const faqChannel = member.guild.channels.find((val) => val.name === 'faq');
         const faqChannelText = faqChannel ? `<#${faqChannel.id}>` : '#faq';
 
-        const botChannel = client.channels.find(
+        const botChannel = member.guild.channels.find(
           (val) => val.name === 'zueira_bot'
         );
         const botChannelText = botChannel
