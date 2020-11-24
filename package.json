@@ -27,7 +27,7 @@
     "imgur": "^0.3.1",
     "jsonminify": "^0.4.1",
     "mkdirp": "^0.5.1",
-    "mongodb": "^2.2.30",
+    "mongodb": "^3.1.13",
     "node-schedule": "^1.2.3",
     "pc-stats": "0.0.7",
     "plotly": "^1.0.6",
