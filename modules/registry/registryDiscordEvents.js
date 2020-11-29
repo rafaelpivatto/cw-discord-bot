@@ -41,7 +41,9 @@ exports.execute = function (client) {
         return;
       }
 
-      mongoConnection.saveOrUpdate(logName, data, 'userJoin', () => {});
+      if (process.env.ENABLED_ADMINISTRATION === 'true') {
+        mongoConnection.saveOrUpdate(logName, data, 'userJoin', () => {});
+      }
 
       const role = member.guild.roles
         .filter((role) => role.name === process.env.ACCCEPTANCE_RULE)
@@ -127,15 +129,17 @@ exports.execute = function (client) {
   });
 
   client.on('guildMemberRemove', (member) => {
-    setTimeout(() => {
-      const data = {
-        _id: new Date(),
-        userName: member.nickname || member.user.username,
-        userID: member.user.tag,
-        date: new Date(),
-      };
-      mongoConnection.saveOrUpdate(logName, data, 'userLeft', () => {});
-    }, 1000);
+    if (process.env.ENABLED_ADMINISTRATION === 'true') {
+      setTimeout(() => {
+        const data = {
+          _id: new Date(),
+          userName: member.nickname || member.user.username,
+          userID: member.user.tag,
+          date: new Date(),
+        };
+        mongoConnection.saveOrUpdate(logName, data, 'userLeft', () => {});
+      }, 1000);
+    }
   });
 };
 

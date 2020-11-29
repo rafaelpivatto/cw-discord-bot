@@ -23,6 +23,8 @@ module.exports = class HelpCommand extends Command {
     }
 
     async run(msg, args) {
+        if (process.env.ENABLED_ADMINISTRATION !== 'true') return;
+        
         utils.logMessageUserExecuteCommand(logName, msg);
 
         msg.delete();

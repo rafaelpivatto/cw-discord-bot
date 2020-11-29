@@ -24,6 +24,8 @@ module.exports = class HelpCommand extends Command {
     }
 
     async run(msg, args) {
+        if (process.env.ENABLED_HELP !== 'true') return;
+        
         utils.logMessageUserExecuteCommand(logName, msg);
         
         let message = '__**Abaixo os principais comandos que possam ajudar:**__\n\n' +

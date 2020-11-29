@@ -23,6 +23,8 @@ module.exports = class GetCustomCommand extends Command {
     }
 
     async run(msg, args) {
+        if (process.env.ENABLED_CUSTOM_COMMANDS !== 'true') return;
+
         utils.logMessageUserExecuteCommand(logName, msg);
         let commandData = utils.removeDiacritics(String(args)).toLowerCase();
         

@@ -24,6 +24,8 @@ module.exports = class GetCustomCommand extends Command {
     }
 
     async run(msg, args) {
+        if (process.env.ENABLED_CUSTOM_COMMANDS !== 'true') return;
+        
         utils.logMessageUserExecuteCommand(logName, msg);
         
         const commandName = String(msg.message.content).replace(args, '').replace('!', '').toLowerCase();

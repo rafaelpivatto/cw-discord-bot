@@ -18,8 +18,11 @@ const client = new Commando.Client({
 logger.info(logName + ' =========> Initializing bot');
 
 client.registry.registerGroup('administration');
+
 client.registry.registerGroup('customcommands');
+
 client.registry.registerGroup('help');
+
 client.registry.registerGroup('register');
 client.registry.registerGroup('status');
 client.registry.registerGroup('system');
