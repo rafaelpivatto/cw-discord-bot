@@ -38,16 +38,16 @@ module.exports = class UsersPlayingCommand extends Command {
 
     infos.games.sort(sortFunction);
 
-    lastSeenPlayers.getAndUpdate(logName, infos.playingED, function (
-      error,
-      data
-    ) {
-      if (error) {
-        logger.error(logName + ' Error on retrieving informations', {
-          error: error,
-        });
-        //return errorMessage.sendClientErrorMessage(msg);
-      }
+    // lastSeenPlayers.getAndUpdate(logName, infos.playingED, function (
+    //   error,
+    //   data
+    // ) {
+    //   if (error) {
+    //     logger.error(logName + ' Error on retrieving informations', {
+    //       error: error,
+    //     });
+    //     //return errorMessage.sendClientErrorMessage(msg);
+    //   }
 
       let topPlaying =
           doubleWrapLine + ':video_game: **O que a galera está jogando:**\n\n',
@@ -85,7 +85,7 @@ module.exports = class UsersPlayingCommand extends Command {
         .setTimestamp()
         .setTitle('**Estatísticas CW**')
         .setThumbnail(wingThumb)
-        .setFooter('Dados contabilizados a partir de 23/08/2017')
+        //.setFooter('Dados contabilizados a partir de 23/08/2017')
         .setDescription(
           'Há no momento:\n' +
             '**' +
@@ -100,11 +100,11 @@ module.exports = class UsersPlayingCommand extends Command {
             getPlayersLabel(infos.playingED) +
             '** jogando ' +
             gameName +
-            getRecordLabel(data) + 
+            //getRecordLabel(data) + 
             topPlaying
         );
       return msg.embed(embed);
-    });
+    // });
 
     //--- Methods ---
 

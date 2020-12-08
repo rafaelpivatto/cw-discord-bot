@@ -40,7 +40,7 @@ module.exports = class WingStatusCommand extends Command {
                 );
             }
             const data = normalizeWingInfoFromEddb.getInfos(logName, body);
-            saveToMongo(data);
+            //saveToMongo(data);
             if (data.wingName == null) {
                 logger.error(logName + ' Wing name not found');
                 return errorMessage.sendClientErrorMessage(msg);

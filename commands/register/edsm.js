@@ -23,6 +23,8 @@ module.exports = class EdsmCommand extends Command {
     }
 
     async run(msg, args) {
+        return;
+        
         utils.logMessageUserExecuteCommand(logName, msg);
 
         if (!args || args === '') {

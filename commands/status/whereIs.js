@@ -104,30 +104,30 @@ module.exports = class WherIsCommand extends Command {
         utils.logMessageUserExecuteCommand(logName, msg);
 
         let commanderId, commanderName;
-        if (args.indexOf('<@') !== -1) {
-            commanderId = args.replace('<', '').replace('@', '').replace('!', '').replace('>', '');
+        // if (args.indexOf('<@') !== -1) {
+        //     commanderId = args.replace('<', '').replace('@', '').replace('!', '').replace('>', '');
 
-            mongoConnection.find(logName, {_id: commanderId}, 'cwUsers', (error, data) => {
-                if (error) {
-                    logger.error(logName + ' Error on retrieving informations', {'error': error});
-                    return errorMessage.sendSpecificClientErrorMessage(msg, 
-                        'Houve um erro ao consultar esse commander, tente novamente em breve, Fly safe, CMDR!'
-                    );
-                }
-                if (!data || data.length === 0) {
-                    logger.error(logName + ' User not associated', {'error': error});
-                    return errorMessage.sendSpecificClientErrorMessage(msg, 
-                        'O usuário ' + args + ' não tem perfil do discord vinculado ao EDSM.\n\n' +
-                        'Para associar seu usuário do EDSM no discord, execute o comando !edsm nome_do_comander ou !edsm link_do_edsm.\n\n' +
-                        'Após esse procedimeno você poderá consultar usando o comando !cmdr @seu_usuario_discord\n\n' +
-                        '* Não esqueça de deixar o perfil público no EDSM (imagem abaixo)',
-                        '', 'https://i.imgur.com/H6qW6cQ.png' 
-                    );
-                } else {
-                    findCommanderInfo(data[0].commanderName);
-                }
-            });
-        } else {
+        //     mongoConnection.find(logName, {_id: commanderId}, 'cwUsers', (error, data) => {
+        //         if (error) {
+        //             logger.error(logName + ' Error on retrieving informations', {'error': error});
+        //             return errorMessage.sendSpecificClientErrorMessage(msg, 
+        //                 'Houve um erro ao consultar esse commander, tente novamente em breve, Fly safe, CMDR!'
+        //             );
+        //         }
+        //         if (!data || data.length === 0) {
+        //             logger.error(logName + ' User not associated', {'error': error});
+        //             return errorMessage.sendSpecificClientErrorMessage(msg, 
+        //                 'O usuário ' + args + ' não tem perfil do discord vinculado ao EDSM.\n\n' +
+        //                 'Para associar seu usuário do EDSM no discord, execute o comando !edsm nome_do_comander ou !edsm link_do_edsm.\n\n' +
+        //                 'Após esse procedimeno você poderá consultar usando o comando !cmdr @seu_usuario_discord\n\n' +
+        //                 '* Não esqueça de deixar o perfil público no EDSM (imagem abaixo)',
+        //                 '', 'https://i.imgur.com/H6qW6cQ.png' 
+        //             );
+        //         } else {
+        //             findCommanderInfo(data[0].commanderName);
+        //         }
+        //     });
+        // } else {
             commanderName = utils.removeDiacritics(String(args))
             if (!commanderName || commanderName === '') {
                 logger.warn(logName + ' Error on retrieving informations about commander.');
@@ -135,7 +135,7 @@ module.exports = class WherIsCommand extends Command {
                     'Comando inválido, execute !cmdr <NOME DO COMMANDER>');
             }
             findCommanderInfo(commanderName);
-        }
+        // }
 
         
         function findCommanderInfo(commanderName) {

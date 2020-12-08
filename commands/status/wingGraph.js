@@ -36,6 +36,8 @@ module.exports = class WingGraphCommand extends Command {
 
     async run(msg, args) {
 
+        return;
+
         utils.logMessageUserExecuteCommand(logName, msg);
 
         if (!checkApplyRequirements()) {
