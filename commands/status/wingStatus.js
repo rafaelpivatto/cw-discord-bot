@@ -29,6 +29,8 @@ module.exports = class WingStatusCommand extends Command {
     }
 
     async run(msg, args) {
+        return;
+        
         utils.logMessageUserExecuteCommand(logName, msg);
         
         let out = '';
