@@ -1,17 +1,17 @@
 const logger = require('heroku-logger');
 
-const extractEddbInfosJob = require('../job/extractEddbInfosJob.js');
-const newsletterJob = require('../job/newsletterJob.js');
-const checkServerStatusJob = require('../job/checkServerStatusJob.js');
-const usersPlayingEliteDangerousJob = require('../job/usersPlayingEliteDangerousJob.js');
-const gameUpdateJob = require('../job/gameUpdateJob.js');
-const galnetJob = require('../job/galnetJob.js');
+// const extractEddbInfosJob = require('../job/extractEddbInfosJob.js');
+// const newsletterJob = require('../job/newsletterJob.js');
+// const checkServerStatusJob = require('../job/checkServerStatusJob.js');
+// const usersPlayingEliteDangerousJob = require('../job/usersPlayingEliteDangerousJob.js');
+// const gameUpdateJob = require('../job/gameUpdateJob.js');
+// const galnetJob = require('../job/galnetJob.js');
 const keepAlive = require('../job/keepAlive.js');
-const clearChannels = require('../job/clearChannels.js');
+// const clearChannels = require('../job/clearChannels.js');
 
 const logName = '[RegistryJobsExecution] ';
 
-exports.execute = function(client) {
+exports.execute = function() {
     logger.info(logName + ' start registry job execution');
     
     //extractEddbInfosJob.execute();
@@ -21,7 +21,7 @@ exports.execute = function(client) {
     //gameUpdateJob.execute(client);
     //galnetJob.execute(client);
     keepAlive.execute();
-    clearChannels.execute(client);
+    // clearChannels.execute(client);
 };
 
 module.exports = exports;
